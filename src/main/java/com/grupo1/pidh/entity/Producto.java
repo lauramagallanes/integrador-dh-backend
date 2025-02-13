@@ -1,16 +1,19 @@
 package com.grupo1.pidh.entity;
 
+import com.grupo1.pidh.utils.converter.DiaSemanaConverter;
+import com.grupo1.pidh.utils.enums.DiaSemana;
+import com.grupo1.pidh.utils.enums.TipoEvento;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name="PRODUCTOS")
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Producto {
+public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,6 +40,18 @@ public abstract class Producto {
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_evento", nullable = false)
+    private TipoEvento tipoEvento;
+
+
+    @Column(name = "fecha_evento", nullable = false)
+    private LocalDate fechaEvento;
+
+    @Convert(converter = DiaSemanaConverter.class) //uso el converter que creé
+    @Column(name = "dias_disponible")
+    private List<DiaSemana> diasDisponible;
+
     @ManyToMany
     @JoinTable(
             name = "producto_categorias",
@@ -46,14 +61,10 @@ public abstract class Producto {
     private Set<Categoria> categorias;
 
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_evento_id", nullable = false)
-    private TipoEvento tipoEvento;
-
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Imagen> imagenes;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, Set<Categoria> categorias, TipoEvento tipoEvento, List<Imagen> imagenes) {
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, List<Imagen> imagenes) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -62,11 +73,20 @@ public abstract class Producto {
         this.idioma = idioma;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
-        this.categorias = categorias;
         this.tipoEvento = tipoEvento;
+        this.fechaEvento = fechaEvento;
+        this.diasDisponible = diasDisponible;
+        this.categorias = categorias;
         this.imagenes = imagenes;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getNombre() {
         return nombre;
@@ -84,36 +104,12 @@ public abstract class Producto {
         this.descripcion = descripcion;
     }
 
-    public List<Imagen> getImagenes() {
-        return imagenes;
+    public Double getValorTarifa() {
+        return valorTarifa;
     }
 
-    public void setImagenes(List<Imagen> imagenes) {
-        this.imagenes = imagenes;
-    }
-
-    public LocalTime getHoraFin() {
-        return horaFin;
-    }
-
-    public void setHoraFin(LocalTime horaFin) {
-        this.horaFin = horaFin;
-    }
-
-    public LocalTime getHoraInicio() {
-        return horaInicio;
-    }
-
-    public void setHoraInicio(LocalTime horaInicio) {
-        this.horaInicio = horaInicio;
-    }
-
-    public String getIdioma() {
-        return idioma;
-    }
-
-    public void setIdioma(String idioma) {
-        this.idioma = idioma;
+    public void setValorTarifa(Double valorTarifa) {
+        this.valorTarifa = valorTarifa;
     }
 
     public TipoTarifa getTipoTarifa() {
@@ -124,24 +120,52 @@ public abstract class Producto {
         this.tipoTarifa = tipoTarifa;
     }
 
+    public String getIdioma() {
+        return idioma;
+    }
+
+    public void setIdioma(String idioma) {
+        this.idioma = idioma;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
+
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
+
     public TipoEvento getTipoEvento() {
         return tipoEvento;
     }
 
-    public Double getValorTarifa() {
-        return valorTarifa;
+    public void setTipoEvento(TipoEvento tipoEvento) {
+        this.tipoEvento = tipoEvento;
     }
 
-    public void setValorTarifa(Double valorTarifa) {
-        this.valorTarifa = valorTarifa;
+    public LocalDate getFechaEvento() {
+        return fechaEvento;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFechaEvento(LocalDate fechaEvento) {
+        this.fechaEvento = fechaEvento;
     }
 
-    public Long getId() {
-        return id;
+    public List<DiaSemana> getDiasDisponible() {
+        return diasDisponible;
+    }
+
+    public void setDiasDisponible(List<DiaSemana> diasDisponible) {
+        this.diasDisponible = diasDisponible;
     }
 
     public Set<Categoria> getCategorias() {
@@ -152,8 +176,12 @@ public abstract class Producto {
         this.categorias = categorias;
     }
 
-    public void setTipoEvento(TipoEvento tipoEvento) {
-        this.tipoEvento = tipoEvento;
+    public List<Imagen> getImagenes() {
+        return imagenes;
+    }
+
+    public void setImagenes(List<Imagen> imagenes) {
+        this.imagenes = imagenes;
     }
 
     public Producto(){}

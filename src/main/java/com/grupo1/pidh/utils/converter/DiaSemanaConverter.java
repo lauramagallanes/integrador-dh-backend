@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EnumListConverter implements AttributeConverter<List<DiaSemana>, String> {
+public class DiaSemanaConverter implements AttributeConverter<List<DiaSemana>, String> {
 
     private static final String SEPARADOR = ",";
 

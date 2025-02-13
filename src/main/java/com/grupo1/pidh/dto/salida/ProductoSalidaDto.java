@@ -1,15 +1,16 @@
 package com.grupo1.pidh.dto.salida;
 
 import com.grupo1.pidh.entity.Categoria;
-import com.grupo1.pidh.entity.Imagen;
-import com.grupo1.pidh.entity.TipoEvento;
+import com.grupo1.pidh.utils.enums.DiaSemana;
+import com.grupo1.pidh.utils.enums.TipoEvento;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-public abstract class ProductoSalidaDto {
+public class ProductoSalidaDto {
 
     private Long id;
     private String nombre;
@@ -20,14 +21,16 @@ public abstract class ProductoSalidaDto {
     private LocalTime horaInicio;
     private LocalTime horaFin;
     private TipoEvento tipoEvento;
-    private Set<Categoria> categorias;
+    private LocalDate fechaEvento;
+    private List<DiaSemana> diasDisponible;
+    private Set<CategoriaSalidaDto> categorias;
     private List<ImagenSalidaDto> imagenesSalidaDto;
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, Set<Categoria> categorias, List<ImagenSalidaDto> imagenesSalidaDto) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, Set<CategoriaSalidaDto> categorias, List<ImagenSalidaDto> imagenesSalidaDto) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -117,11 +120,11 @@ public abstract class ProductoSalidaDto {
         this.tipoEvento = tipoEvento;
     }
 
-    public Set<Categoria> getCategorias() {
+    public Set<CategoriaSalidaDto> getCategorias() {
         return categorias;
     }
 
-    public void setCategorias(Set<Categoria> categorias) {
+    public void setCategorias(Set<CategoriaSalidaDto> categorias) {
         this.categorias = categorias;
     }
 

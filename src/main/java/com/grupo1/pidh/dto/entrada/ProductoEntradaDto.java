@@ -1,14 +1,17 @@
 package com.grupo1.pidh.dto.entrada;
 
 import com.grupo1.pidh.entity.Imagen;
+import com.grupo1.pidh.utils.enums.DiaSemana;
+import com.grupo1.pidh.utils.enums.TipoEvento;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
 
 import javax.validation.constraints.*;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-public abstract class ProductoEntradaDto {
+public class ProductoEntradaDto {
 
     @NotBlank(message = "El nombre no puede estar vacio")
     @Size(max = 50, message = "El nombre debe tener hasta 50 caracteres")
@@ -35,7 +38,12 @@ public abstract class ProductoEntradaDto {
     private LocalTime horaFin;
 
     @NotBlank(message = "Debe seleccionar un tipo de evento")
-    private String tipoEventoNombre;
+    private TipoEvento tipoEvento;
+
+    private List<DiaSemana> diasDisponible;
+
+    private LocalDate fechaEvento;
+
 
     @NotEmpty(message = "Debe seleccionar al menos una categoría")
     private Set<String> categoriasNombres;
@@ -46,7 +54,7 @@ public abstract class ProductoEntradaDto {
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, String tipoEventoNombre, Set<String> categoriasNombres, List<Imagen> imagenes) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<String> categoriasNombres, List<Imagen> imagenes) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -54,7 +62,9 @@ public abstract class ProductoEntradaDto {
         this.idioma = idioma;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
-        this.tipoEventoNombre = tipoEventoNombre;
+        this.tipoEvento = tipoEvento;
+        this.diasDisponible = diasDisponible;
+        this.fechaEvento = fechaEvento;
         this.categoriasNombres = categoriasNombres;
         this.imagenes = imagenes;
     }
@@ -75,14 +85,6 @@ public abstract class ProductoEntradaDto {
         this.descripcion = descripcion;
     }
 
-    public List<Imagen> getImagenes() {
-        return imagenes;
-    }
-
-    public void setImagenes(List<Imagen> imagenes) {
-        this.imagenes = imagenes;
-    }
-
     public Double getValorTarifa() {
         return valorTarifa;
     }
@@ -97,22 +99,6 @@ public abstract class ProductoEntradaDto {
 
     public void setTipoTarifa(TipoTarifa tipoTarifa) {
         this.tipoTarifa = tipoTarifa;
-    }
-
-    public String getTipoEventoNombre() {
-        return tipoEventoNombre;
-    }
-
-    public void setTipoEventoNombre(String tipoEventoNombre) {
-        this.tipoEventoNombre = tipoEventoNombre;
-    }
-
-    public Set<String> getCategoriasNombres() {
-        return categoriasNombres;
-    }
-
-    public void setCategoriasNombres(Set<String> categoriasNombres) {
-        this.categoriasNombres = categoriasNombres;
     }
 
     public String getIdioma() {
@@ -137,5 +123,45 @@ public abstract class ProductoEntradaDto {
 
     public void setHoraFin(LocalTime horaFin) {
         this.horaFin = horaFin;
+    }
+
+    public TipoEvento getTipoEvento() {
+        return tipoEvento;
+    }
+
+    public void setTipoEvento(TipoEvento tipoEvento) {
+        this.tipoEvento = tipoEvento;
+    }
+
+    public List<DiaSemana> getDiasDisponible() {
+        return diasDisponible;
+    }
+
+    public void setDiasDisponible(List<DiaSemana> diasDisponible) {
+        this.diasDisponible = diasDisponible;
+    }
+
+    public LocalDate getFechaEvento() {
+        return fechaEvento;
+    }
+
+    public void setFechaEvento(LocalDate fechaEvento) {
+        this.fechaEvento = fechaEvento;
+    }
+
+    public Set<String> getCategoriasNombres() {
+        return categoriasNombres;
+    }
+
+    public void setCategoriasNombres(Set<String> categoriasNombres) {
+        this.categoriasNombres = categoriasNombres;
+    }
+
+    public List<Imagen> getImagenes() {
+        return imagenes;
+    }
+
+    public void setImagenes(List<Imagen> imagenes) {
+        this.imagenes = imagenes;
     }
 }
