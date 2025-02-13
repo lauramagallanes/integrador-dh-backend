@@ -1,23 +1,43 @@
 package com.grupo1.pidh.dto.salida;
 
+import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.entity.Imagen;
+import com.grupo1.pidh.entity.TipoEvento;
+import com.grupo1.pidh.utils.enums.TipoTarifa;
 
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
-public class ProductoSalidaDto {
+public abstract class ProductoSalidaDto {
 
     private Long id;
     private String nombre;
     private String descripcion;
+    private Double valorTarifa;
+    private TipoTarifa tipoTarifa;
+    private String idioma;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
+    private TipoEvento tipoEvento;
+    private Set<Categoria> categorias;
     private List<ImagenSalidaDto> imagenesSalidaDto;
 
     public ProductoSalidaDto(){
 
     }
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, List<ImagenSalidaDto> imagenesSalidaDto) {
+
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, Set<Categoria> categorias, List<ImagenSalidaDto> imagenesSalidaDto) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.valorTarifa = valorTarifa;
+        this.tipoTarifa = tipoTarifa;
+        this.idioma = idioma;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.tipoEvento = tipoEvento;
+        this.categorias = categorias;
         this.imagenesSalidaDto = imagenesSalidaDto;
     }
 
@@ -47,6 +67,62 @@ public class ProductoSalidaDto {
 
     public List<ImagenSalidaDto> getImagenesSalidaDto() {
         return imagenesSalidaDto;
+    }
+
+    public Double getValorTarifa() {
+        return valorTarifa;
+    }
+
+    public void setValorTarifa(Double valorTarifa) {
+        this.valorTarifa = valorTarifa;
+    }
+
+    public TipoTarifa getTipoTarifa() {
+        return tipoTarifa;
+    }
+
+    public void setTipoTarifa(TipoTarifa tipoTarifa) {
+        this.tipoTarifa = tipoTarifa;
+    }
+
+    public String getIdioma() {
+        return idioma;
+    }
+
+    public void setIdioma(String idioma) {
+        this.idioma = idioma;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
+
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
+
+    public TipoEvento getTipoEvento() {
+        return tipoEvento;
+    }
+
+    public void setTipoEvento(TipoEvento tipoEvento) {
+        this.tipoEvento = tipoEvento;
+    }
+
+    public Set<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public void setCategorias(Set<Categoria> categorias) {
+        this.categorias = categorias;
     }
 
     public void setImagenesSalidaDto(List<ImagenSalidaDto> imagenesSalidaDto) {
