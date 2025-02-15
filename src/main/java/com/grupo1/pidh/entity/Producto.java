@@ -80,6 +80,8 @@ public class Producto {
         this.imagenes = imagenes;
     }
 
+    public Producto(){}
+
     public Long getId() {
         return id;
     }
@@ -184,5 +186,5 @@ public class Producto {
         this.imagenes = imagenes;
     }
 
-    public Producto(){}
+
 }

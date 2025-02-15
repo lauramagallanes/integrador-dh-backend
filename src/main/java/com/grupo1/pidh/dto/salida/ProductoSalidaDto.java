@@ -30,7 +30,7 @@ public class ProductoSalidaDto {
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, Set<CategoriaSalidaDto> categorias, List<ImagenSalidaDto> imagenesSalidaDto) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, List<ImagenSalidaDto> imagenesSalidaDto) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -40,6 +40,8 @@ public class ProductoSalidaDto {
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
         this.tipoEvento = tipoEvento;
+        this.fechaEvento = fechaEvento;
+        this.diasDisponible = diasDisponible;
         this.categorias = categorias;
         this.imagenesSalidaDto = imagenesSalidaDto;
     }
@@ -130,5 +132,21 @@ public class ProductoSalidaDto {
 
     public void setImagenesSalidaDto(List<ImagenSalidaDto> imagenesSalidaDto) {
         this.imagenesSalidaDto = imagenesSalidaDto;
+    }
+
+    public LocalDate getFechaEvento() {
+        return fechaEvento;
+    }
+
+    public void setFechaEvento(LocalDate fechaEvento) {
+        this.fechaEvento = fechaEvento;
+    }
+
+    public List<DiaSemana> getDiasDisponible() {
+        return diasDisponible;
+    }
+
+    public void setDiasDisponible(List<DiaSemana> diasDisponible) {
+        this.diasDisponible = diasDisponible;
     }
 }

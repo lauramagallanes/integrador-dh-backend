@@ -20,7 +20,7 @@ public class Imagen {
         this.rutaImagen = rutaImagen;
         this.producto = producto;
     }
-
+    public Imagen(){};
     public Long getId() {
         return id;
     }
@@ -44,4 +44,5 @@ public class Imagen {
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
+
 }

@@ -48,13 +48,13 @@ public class ProductoEntradaDto {
     @NotEmpty(message = "Debe seleccionar al menos una categoría")
     private Set<String> categoriasNombres;
 
-    private List<Imagen> imagenes;
+    private List<ImagenEntradaDto> imagenes;
 
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<String> categoriasNombres, List<Imagen> imagenes) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<String> categoriasNombres, List<ImagenEntradaDto> imagenes) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -157,11 +157,11 @@ public class ProductoEntradaDto {
         this.categoriasNombres = categoriasNombres;
     }
 
-    public List<Imagen> getImagenes() {
+    public List<ImagenEntradaDto> getImagenes() {
         return imagenes;
     }
 
-    public void setImagenes(List<Imagen> imagenes) {
+    public void setImagenes(List<ImagenEntradaDto> imagenes) {
         this.imagenes = imagenes;
     }
 }
