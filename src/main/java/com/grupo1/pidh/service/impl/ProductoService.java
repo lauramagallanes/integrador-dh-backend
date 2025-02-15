@@ -2,7 +2,6 @@ package com.grupo1.pidh.service.impl;
 
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
-import com.grupo1.pidh.dto.salida.ImagenSalidaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.entity.Imagen;
 import com.grupo1.pidh.entity.Producto;
@@ -15,7 +14,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductoService implements IProductoService {
@@ -77,6 +75,14 @@ public class ProductoService implements IProductoService {
         } catch (Exception e){
             throw new RuntimeException("No se lograron listar los productos en forma aleatoria");
         }
+    }
+
+    @Override
+    public ProductoSalidaDto buscarProductoPorId(Long id) {
+
+        return productoRepository.findById(id)
+                .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
+                .orElse(null);
     }
 
 }
