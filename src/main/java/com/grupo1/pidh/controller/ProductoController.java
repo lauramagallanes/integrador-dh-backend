@@ -31,4 +31,9 @@ public class ProductoController {
     public ResponseEntity<List<ProductoSalidaDto>> listarProductos() {
         return ResponseEntity.ok(productoService.listarProductos());
     }
+
+    @GetMapping("/listaAleatoria")
+    public ResponseEntity<List<ProductoSalidaDto>> listarProductosAleatorio() {
+        return ResponseEntity.ok((productoService.listarProductosAleatorio()));
+    }
 }

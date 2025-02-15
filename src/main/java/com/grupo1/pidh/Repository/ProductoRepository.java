@@ -1,4 +1,4 @@
-package com.grupo1.pidh.Repository;
+package com.grupo1.pidh.repository;
 
 import com.grupo1.pidh.entity.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -8,6 +8,6 @@ import java.util.List;
 public interface IProductoService {
     ProductoSalidaDto registrarProducto(ProductoEntradaDto dto);
     List<ProductoSalidaDto> listarProductos();
-//    List<ProductoSalidaDto> listarProductosAleatorios();
+    List<ProductoSalidaDto> listarProductosAleatorio();
 //    ProductoSalidaDto buscarProductoPorId(Long id);
 }

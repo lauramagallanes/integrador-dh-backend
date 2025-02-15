@@ -45,7 +45,7 @@ public class ProductoEntradaDto {
     private LocalDate fechaEvento;
 
 
-    @NotEmpty(message = "Debe seleccionar al menos una categoría")
+    //@NotEmpty(message = "Debe seleccionar al menos una categoría")
     private Set<String> categoriasNombres;
 
     private List<ImagenEntradaDto> imagenes;

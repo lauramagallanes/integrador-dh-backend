@@ -45,7 +45,7 @@ public class Producto {
     private TipoEvento tipoEvento;
 
 
-    @Column(name = "fecha_evento", nullable = false)
+    @Column(name = "fecha_evento")
     private LocalDate fechaEvento;
 
     @Convert(converter = DiaSemanaConverter.class) //uso el converter que creé

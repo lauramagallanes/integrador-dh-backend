@@ -1,6 +1,6 @@
 package com.grupo1.pidh.service.impl;
 
-import com.grupo1.pidh.Repository.ProductoRepository;
+import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ImagenSalidaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
@@ -8,10 +8,12 @@ import com.grupo1.pidh.entity.Imagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.service.IProductoService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.ILoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,26 @@ public class ProductoService implements IProductoService {
 
         modelMapper.typeMap(Producto.class, ProductoSalidaDto.class)
                 .addMappings(mapper -> mapper.map(Producto::getImagenes, ProductoSalidaDto::setImagenesSalidaDto));
+    }
+
+    @Override
+    public List<ProductoSalidaDto> listarProductosAleatorio(){
+
+        try{
+            List<Producto> productos = productoRepository.findAll();
+            if (productos.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            //Mezcla aleatoriamente la lista de productos
+
+            Collections.shuffle(productos);
+            return productos.stream()
+                    .map(producto ->  modelMapper.map(producto, ProductoSalidaDto.class))
+                    .toList();
+        } catch (Exception e){
+            throw new RuntimeException("No se lograron listar los productos en forma aleatoria");
+        }
     }
 
 }
