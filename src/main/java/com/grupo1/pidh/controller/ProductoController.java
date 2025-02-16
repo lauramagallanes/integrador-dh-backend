@@ -36,4 +36,8 @@ public class ProductoController {
     public ResponseEntity<List<ProductoSalidaDto>> listarProductosAleatorio() {
         return ResponseEntity.ok((productoService.listarProductosAleatorio()));
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductoSalidaDto> buscarProductoPorId(@PathVariable Long id){
+        return new ResponseEntity<>(productoService.buscarProductoPorId(id), HttpStatus.OK);
+    }
 }

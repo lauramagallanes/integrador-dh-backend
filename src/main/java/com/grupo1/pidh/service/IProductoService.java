@@ -9,5 +9,5 @@ public interface IProductoService {
     ProductoSalidaDto registrarProducto(ProductoEntradaDto dto);
     List<ProductoSalidaDto> listarProductos();
     List<ProductoSalidaDto> listarProductosAleatorio();
-//    ProductoSalidaDto buscarProductoPorId(Long id);
+    ProductoSalidaDto buscarProductoPorId(Long id);
 }

@@ -132,4 +132,12 @@ public class ProductoService implements IProductoService {
 
     }
 
+    @Override
+    public ProductoSalidaDto buscarProductoPorId(Long id) {
+
+        return productoRepository.findById(id)
+                .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
+                .orElse(null);
+    }
+
 }
