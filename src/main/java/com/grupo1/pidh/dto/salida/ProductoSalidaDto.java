@@ -1,5 +1,7 @@
 package com.grupo1.pidh.dto.salida;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.utils.enums.DiaSemana;
 import com.grupo1.pidh.utils.enums.TipoEvento;
@@ -10,6 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
+@JsonIgnoreProperties({"categorias", "imagenesSalidaDto"})
 public class ProductoSalidaDto {
 
     private Long id;
@@ -18,9 +21,15 @@ public class ProductoSalidaDto {
     private Double valorTarifa;
     private TipoTarifa tipoTarifa;
     private String idioma;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaInicio;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaFin;
     private TipoEvento tipoEvento;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
     private List<DiaSemana> diasDisponible;
     private Set<CategoriaSalidaDto> categorias;

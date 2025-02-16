@@ -1,5 +1,6 @@
 package com.grupo1.pidh.dto.entrada;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.grupo1.pidh.entity.Imagen;
 import com.grupo1.pidh.utils.enums.DiaSemana;
 import com.grupo1.pidh.utils.enums.TipoEvento;
@@ -31,9 +32,11 @@ public class ProductoEntradaDto {
     @NotBlank(message = "Debe elegir un idioma")
     private String idioma;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     @NotNull(message = "Debe seleccionar una hora de inicio")
     private LocalTime horaInicio;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     @NotNull(message = "Debe seleccionar una hora de finalización")
     private LocalTime horaFin;
 
@@ -42,6 +45,7 @@ public class ProductoEntradaDto {
 
     private List<DiaSemana> diasDisponible;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
 
 
