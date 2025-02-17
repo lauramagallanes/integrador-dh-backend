@@ -11,7 +11,10 @@ import com.grupo1.pidh.utils.JacksonConfig;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,33 +47,41 @@ public class ProductoService implements IProductoService {
             LOGGER.error("Error serializando Producto", e);
         }
 
-        producto = productoRepository.save(producto);
         try{
+            producto = productoRepository.save(producto);
             LOGGER.info("ProductoRegistrado: {}", objectMapper.writeValueAsString(producto));
-        }catch (Exception e) {
+        }  catch (DataIntegrityViolationException exception) {
+            LOGGER.error("Error al guardar el producto en la base de datos", exception);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya exixte un producto con este nombre");
+        } catch (Exception e) {
             LOGGER.error("Error serializando ProductoRegistrado", e);
-        }
-        List<Imagen> imagenes = new ArrayList<>();
-        for (int i = 0; i < dto.getImagenes().size(); i++){
-           imagenes.add(new Imagen(null, dto.getImagenes().get(i).getRutaImagen(), producto));
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al registrar el producto");
         }
 
-        producto.setImagenes(imagenes);
-        producto = productoRepository.save(producto);
 
         try{
+            List<Imagen> imagenes = new ArrayList<>();
+            for (int i = 0; i < dto.getImagenes().size(); i++){
+                imagenes.add(new Imagen(null, dto.getImagenes().get(i).getRutaImagen(), producto));
+            }
+
+            producto.setImagenes(imagenes);
+            producto = productoRepository.save(producto);
             LOGGER.info("ProductoRegistradoConImagenes: {}", objectMapper.writeValueAsString(producto));
         }catch (Exception e) {
             LOGGER.error("Error serializando ProductoRegistradoConImagenes", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al asociar las imagenes al producto");
         }
 
-        System.out.println(producto.getImagenes().get(0).getRutaImagen());
-        ProductoSalidaDto productoSalidaDto = modelMapper.map(producto, ProductoSalidaDto.class);
+        //System.out.println(producto.getImagenes().get(0).getRutaImagen());
 
+        ProductoSalidaDto productoSalidaDto;
         try{
+            productoSalidaDto = modelMapper.map(producto, ProductoSalidaDto.class);
             LOGGER.info("ProductoSalidaDto: {}", objectMapper.writeValueAsString(productoSalidaDto));
         }catch (Exception e) {
             LOGGER.error("Error serializando ProductoSalidaDto", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al mapear ProductoSalidaDto");
         }
 
         return productoSalidaDto;
