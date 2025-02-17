@@ -1,6 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
@@ -73,8 +74,6 @@ public class ProductoService implements IProductoService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al asociar las imagenes al producto");
         }
 
-        //System.out.println(producto.getImagenes().get(0).getRutaImagen());
-
         ProductoSalidaDto productoSalidaDto;
         try{
             productoSalidaDto = modelMapper.map(producto, ProductoSalidaDto.class);
@@ -99,15 +98,6 @@ public class ProductoService implements IProductoService {
         }
 
         return productoSalidaDtos;
-    }
-
-    private void configureMapping() {
-        modelMapper.typeMap(ProductoEntradaDto.class, Producto.class)
-                .addMappings(mapper -> mapper.skip(Producto::setImagenes))
-                .addMappings(mapper -> mapper.skip(Producto::setCategorias)); //sin crud de categorias
-
-        modelMapper.typeMap(Producto.class, ProductoSalidaDto.class)
-                .addMappings(mapper -> mapper.map(Producto::getImagenes, ProductoSalidaDto::setImagenesSalidaDto));
     }
 
     @Override
@@ -136,20 +126,28 @@ public class ProductoService implements IProductoService {
             throw new RuntimeException("Ocurrió un error al obtener la lista de productos aleatoria");
 
         }
-
-
-
-
-
-
     }
 
     @Override
-    public ProductoSalidaDto buscarProductoPorId(Long id) {
-
-        return productoRepository.findById(id)
+    public ProductoSalidaDto buscarProductoPorId(Long id) throws ResourceNotFoundException {
+        ProductoSalidaDto productoSalidaDto = productoRepository.findById(id)
                 .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
                 .orElse(null);
+        if (productoSalidaDto == null){
+            throw new ResourceNotFoundException("El producto solicitado no existe");
+        }
+
+
+        return productoSalidaDto;
     }
 
+
+    private void configureMapping() {
+        modelMapper.typeMap(ProductoEntradaDto.class, Producto.class)
+                .addMappings(mapper -> mapper.skip(Producto::setImagenes))
+                .addMappings(mapper -> mapper.skip(Producto::setCategorias)); //sin crud de categorias
+
+        modelMapper.typeMap(Producto.class, ProductoSalidaDto.class)
+                .addMappings(mapper -> mapper.map(Producto::getImagenes, ProductoSalidaDto::setImagenesSalidaDto));
+    }
 }

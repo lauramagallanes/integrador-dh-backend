@@ -2,12 +2,14 @@ package com.grupo1.pidh.controller;
 
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.module.ResolutionException;
 import java.util.List;
 @CrossOrigin
 @RestController
@@ -37,7 +39,7 @@ public class ProductoController {
         return ResponseEntity.ok((productoService.listarProductosAleatorio()));
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoSalidaDto> buscarProductoPorId(@PathVariable Long id){
+    public ResponseEntity<ProductoSalidaDto> buscarProductoPorId(@PathVariable Long id) throws ResourceNotFoundException {
         return new ResponseEntity<>(productoService.buscarProductoPorId(id), HttpStatus.OK);
     }
 }
