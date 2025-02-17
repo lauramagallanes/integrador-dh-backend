@@ -12,7 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-@JsonIgnoreProperties({"categorias", "imagenesSalidaDto"})
+@JsonIgnoreProperties({"categorias"})
 public class ProductoSalidaDto {
 
     private Long id;
