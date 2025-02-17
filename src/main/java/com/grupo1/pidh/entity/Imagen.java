@@ -1,5 +1,7 @@
 package com.grupo1.pidh.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -13,6 +15,7 @@ public class Imagen {
 
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
+    @JsonBackReference
     private Producto producto;
 
     public Imagen(Long id, String rutaImagen, Producto producto) {

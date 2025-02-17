@@ -1,5 +1,6 @@
 package com.grupo1.pidh.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.grupo1.pidh.utils.converter.DiaSemanaConverter;
 import com.grupo1.pidh.utils.enums.DiaSemana;
 import com.grupo1.pidh.utils.enums.TipoEvento;
@@ -62,6 +63,7 @@ public class Producto {
 
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Imagen> imagenes;
 
     public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, List<Imagen> imagenes) {
@@ -177,6 +179,7 @@ public class Producto {
     public void setCategorias(Set<Categoria> categorias) {
         this.categorias = categorias;
     }
+
 
     public List<Imagen> getImagenes() {
         return imagenes;
