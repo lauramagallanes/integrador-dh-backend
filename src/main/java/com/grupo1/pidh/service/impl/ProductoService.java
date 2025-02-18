@@ -136,8 +136,6 @@ public class ProductoService implements IProductoService {
         if (productoSalidaDto == null){
             throw new ResourceNotFoundException("El producto solicitado no existe");
         }
-
-
         return productoSalidaDto;
     }
 

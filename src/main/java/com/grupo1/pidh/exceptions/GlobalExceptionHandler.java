@@ -3,6 +3,8 @@ package com.grupo1.pidh.exceptions;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -43,5 +45,18 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> manejarValidationException(MethodArgumentNotValidException methodArgumentNotValidException) {
 
+        Map<String, String> mensaje = new HashMap<>();
+
+        methodArgumentNotValidException.getBindingResult().getAllErrors().forEach(e -> {
+            String nombreCampo = ((FieldError) e).getField();
+            String mensajeError = e.getDefaultMessage();
+            mensaje.put(nombreCampo, mensajeError);
+        });
+
+        return mensaje;
+    }
 }

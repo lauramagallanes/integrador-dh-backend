@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.lang.module.ResolutionException;
 import java.util.List;
 @CrossOrigin
@@ -23,7 +24,7 @@ public class ProductoController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<ProductoSalidaDto> crearProducto(@RequestBody ProductoEntradaDto dto) {
+    public ResponseEntity<ProductoSalidaDto> crearProducto(@Valid @RequestBody ProductoEntradaDto dto) {
         ProductoSalidaDto productoSalidaDto = productoService.registrarProducto(dto);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.CREATED);
 

@@ -26,7 +26,7 @@ public class ProductoEntradaDto {
     @Positive(message = "El valor de la tarifa debe ser mayor a 0")
     private Double valorTarifa;
 
-    @NotBlank(message = "Debe seleccionar un tipo de tarifa")
+    @NotNull(message = "Debe seleccionar un tipo de tarifa")
     private TipoTarifa tipoTarifa;
 
     @NotBlank(message = "Debe elegir un idioma")
@@ -40,7 +40,7 @@ public class ProductoEntradaDto {
     @NotNull(message = "Debe seleccionar una hora de finalización")
     private LocalTime horaFin;
 
-    @NotBlank(message = "Debe seleccionar un tipo de evento")
+    @NotNull(message = "Debe seleccionar un tipo de evento")
     private TipoEvento tipoEvento;
 
     private List<DiaSemana> diasDisponible;
