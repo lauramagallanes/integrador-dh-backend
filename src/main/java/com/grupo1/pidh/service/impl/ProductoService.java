@@ -1,6 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
@@ -148,10 +149,19 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public void eliminarProducto(Long id) throws ResourceNotFoundException {
+    public void eliminarProducto(Long id) throws ResourceNotFoundException, ConflictException {
         LOGGER.info("id del prodcuto a eliminar {}", id);
         if (buscarProductoPorId(id) != null) {
-            productoRepository.deleteById(id);
+            try {
+                productoRepository.deleteById(id);
+            }catch (DataIntegrityViolationException e){
+                LOGGER.error("Producto con informacion relacionada");
+                throw new ConflictException("El producto seleccionado no puede ser eliminado ya que tiene información relacionada");
+            }catch (Exception e){
+                LOGGER.error("Error eliminando el producto", e);
+                throw new RuntimeException("Error eliminando el producto");
+            }
+
             LOGGER.warn("Se ha eliminado el prodcuto con id {}", id);
         }
 

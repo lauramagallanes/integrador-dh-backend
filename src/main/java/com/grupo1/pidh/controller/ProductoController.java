@@ -2,6 +2,7 @@ package com.grupo1.pidh.controller;
 
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class ProductoController {
         return new ResponseEntity<>(productoService.buscarProductoPorId(id), HttpStatus.OK);
     }
     @DeleteMapping("/eliminar")
-    public ResponseEntity<String> eliminarProducto(@RequestParam Long id) throws ResourceNotFoundException {
+    public ResponseEntity<String> eliminarProducto(@RequestParam Long id) throws ResourceNotFoundException, ConflictException {
         productoService.eliminarProducto(id);
         return new ResponseEntity<>("Producto eliminado correctamente", HttpStatus.NO_CONTENT);
     }
