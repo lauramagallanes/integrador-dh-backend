@@ -43,4 +43,9 @@ public class ProductoController {
     public ResponseEntity<ProductoSalidaDto> buscarProductoPorId(@PathVariable Long id) throws ResourceNotFoundException {
         return new ResponseEntity<>(productoService.buscarProductoPorId(id), HttpStatus.OK);
     }
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<String> eliminarProducto(@RequestParam Long id) throws ResourceNotFoundException {
+        productoService.eliminarProducto(id);
+        return new ResponseEntity<>("Producto eliminado correctamente", HttpStatus.NO_CONTENT);
+    }
 }
