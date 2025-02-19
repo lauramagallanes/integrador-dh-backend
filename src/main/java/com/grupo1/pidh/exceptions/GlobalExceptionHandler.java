@@ -44,6 +44,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(mensaje, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({ConflictException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Map<String, String>> handleConflictException(ConflictException conflictException){
+        Map<String, String> mensaje = new HashMap<>();
+        mensaje.put("mensaje:", conflictException.getMessage());
+        return new ResponseEntity<>(mensaje, HttpStatus.CONFLICT);
+    }
+
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)

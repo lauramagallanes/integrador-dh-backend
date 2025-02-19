@@ -1,6 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
@@ -29,7 +30,6 @@ public class ProductoService implements IProductoService {
     private final ObjectMapper objectMapper;
 
 
-
     private final ModelMapper modelMapper;
 
     public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, ModelMapper modelMapper) {
@@ -38,20 +38,21 @@ public class ProductoService implements IProductoService {
         this.modelMapper = modelMapper;
         configureMapping();
     }
+
     @Override
     public ProductoSalidaDto registrarProducto(ProductoEntradaDto dto) {
 
         Producto producto = modelMapper.map(dto, Producto.class);
-        try{
+        try {
             LOGGER.info("Producto: {}", objectMapper.writeValueAsString(producto));
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Error serializando Producto", e);
         }
 
-        try{
+        try {
             producto = productoRepository.save(producto);
             LOGGER.info("ProductoRegistrado: {}", objectMapper.writeValueAsString(producto));
-        }  catch (DataIntegrityViolationException exception) {
+        } catch (DataIntegrityViolationException exception) {
             LOGGER.error("Error al guardar el producto en la base de datos", exception);
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya exixte un producto con este nombre");
         } catch (Exception e) {
@@ -60,40 +61,41 @@ public class ProductoService implements IProductoService {
         }
 
 
-        try{
+        try {
             List<Imagen> imagenes = new ArrayList<>();
-            for (int i = 0; i < dto.getImagenes().size(); i++){
+            for (int i = 0; i < dto.getImagenes().size(); i++) {
                 imagenes.add(new Imagen(null, dto.getImagenes().get(i).getRutaImagen(), producto));
             }
 
             producto.setImagenes(imagenes);
             producto = productoRepository.save(producto);
             LOGGER.info("ProductoRegistradoConImagenes: {}", objectMapper.writeValueAsString(producto));
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Error serializando ProductoRegistradoConImagenes", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al asociar las imagenes al producto");
         }
 
         ProductoSalidaDto productoSalidaDto;
-        try{
+        try {
             productoSalidaDto = modelMapper.map(producto, ProductoSalidaDto.class);
             LOGGER.info("ProductoSalidaDto: {}", objectMapper.writeValueAsString(productoSalidaDto));
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Error serializando ProductoSalidaDto", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al mapear ProductoSalidaDto");
         }
 
         return productoSalidaDto;
     }
+
     @Override
     public List<ProductoSalidaDto> listarProductos() {
         List<ProductoSalidaDto> productoSalidaDtos = productoRepository.findAll()
                 .stream()
                 .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
                 .toList();
-        try{
+        try {
             LOGGER.info("Listado de productos: {}", objectMapper.writeValueAsString(productoSalidaDtos));
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Error serializando el listado de Productos", e);
         }
 
@@ -101,11 +103,11 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public List<ProductoSalidaDto> listarProductosAleatorio(){
+    public List<ProductoSalidaDto> listarProductosAleatorio() {
 
-        try{
+        try {
             List<Producto> productos = productoRepository.findAll();
-            if (productos.isEmpty()){
+            if (productos.isEmpty()) {
                 LOGGER.warn("No se encontraron productos en la base de datos.");
                 return Collections.emptyList();
             }
@@ -115,13 +117,13 @@ public class ProductoService implements IProductoService {
                     .toList();
 
 
-            try{
+            try {
                 LOGGER.info("Listado de productos aleatorio: {}", objectMapper.writeValueAsString(productoSalidaDtosAleatorio));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOGGER.error("Error serializando el listado de productos aleatorio", e);
             }
             return productoSalidaDtosAleatorio;
-        } catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("Error al listar los productos en forma aleatoria", e);
             throw new RuntimeException("Ocurrió un error al obtener la lista de productos aleatoria");
 
@@ -130,14 +132,42 @@ public class ProductoService implements IProductoService {
 
     @Override
     public ProductoSalidaDto buscarProductoPorId(Long id) throws ResourceNotFoundException {
+        LOGGER.info("Id del producto a buscar {}", id);
         ProductoSalidaDto productoSalidaDto = productoRepository.findById(id)
                 .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
                 .orElse(null);
-        if (productoSalidaDto == null){
+        if (productoSalidaDto == null) {
+            LOGGER.error("Producto no encontrado");
             throw new ResourceNotFoundException("El producto solicitado no existe");
+        }
+        try {
+            LOGGER.info("Producto encontrado: {}", objectMapper.writeValueAsString(productoSalidaDto));
+        } catch (Exception e) {
+            LOGGER.error("Error serializando el producto", e);
         }
         return productoSalidaDto;
     }
+
+    @Override
+    public void eliminarProducto(Long id) throws ResourceNotFoundException, ConflictException {
+        LOGGER.info("id del prodcuto a eliminar {}", id);
+        if (buscarProductoPorId(id) != null) {
+            try {
+                productoRepository.deleteById(id);
+            }catch (DataIntegrityViolationException e){
+                LOGGER.error("Producto con informacion relacionada");
+                throw new ConflictException("El producto seleccionado no puede ser eliminado ya que tiene información relacionada");
+            }catch (Exception e){
+                LOGGER.error("Error eliminando el producto", e);
+                throw new RuntimeException("Error eliminando el producto");
+            }
+
+            LOGGER.warn("Se ha eliminado el prodcuto con id {}", id);
+        }
+
+
+    }
+
 
 
     private void configureMapping() {
