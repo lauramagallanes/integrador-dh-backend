@@ -120,7 +120,7 @@ jobs:
 
             TIMEOUT=120
             ELAPSED=0
-            until curl -f http://localhost:8080 || [ $ELAPSED -eq $TIMEOUT ]; do
+            until curl -f http://localhost:8080/producto/listar || [ $ELAPSED -eq $TIMEOUT ]; do
               echo "Waiting for application to start... ($ELAPSED seconds)"
               sudo docker logs spring-api-dev --tail 50
               sleep 10
