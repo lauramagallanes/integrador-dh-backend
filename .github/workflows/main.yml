@@ -118,15 +118,18 @@ jobs:
             echo "Waiting for application to start..."
             sleep 20
 
-            TIMEOUT=60
+            TIMEOUT=120
             ELAPSED=0
             until curl -f http://localhost:8080 || [ $ELAPSED -eq $TIMEOUT ]; do
               echo "Waiting for application to start... ($ELAPSED seconds)"
-              sleep 5
-              ELAPSED=$((ELAPSED+5))
+              sudo docker logs spring-api-dev --tail 50
+              sleep 10
+              ELAPSED=$((ELAPSED+10))
             done
             
-            if [ $ELAPSED -eq $TIMEOUT ]; then
-              echo "Application failed to start within $TIMEOUT seconds"
-              exit 1
-            fi
+          if [ $ELAPSED -eq $TIMEOUT ]; then
+            echo "Application failed to start within $TIMEOUT seconds"
+            echo "Last container logs:"
+            sudo docker logs spring-api-dev --tail 100
+            exit 1
+          fi
