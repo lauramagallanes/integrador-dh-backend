@@ -107,7 +107,7 @@ jobs:
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE="${{ steps.get-env.outputs.env_name }}" \
               -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets[format('{0}_RDS_ENDPOINT', steps.get-env.outputs.env_prefix)] }}/springapidev?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
-              -e SPRING_DATASOURCE_USERNAME="dbadmin" \
+              -e SPRING_DATASOURCE_USERNAME="admin" \
               -e SPRING_DATASOURCE_PASSWORD="${{ secrets[format('{0}_DB_PASSWORD', steps.get-env.outputs.env_prefix)] }}" \
               -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT="org.hibernate.dialect.MySQL8Dialect" \
               -e AWS_ACCESS_KEY_ID="${{ secrets[format('{0}_AWS_ACCESS_KEY_ID', steps.get-env.outputs.env_prefix)] }}" \
