@@ -71,7 +71,7 @@ jobs:
           context: .
           push: true
           tags: |
-            418295719584dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:latest
+            418295719584.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:latest
             418295719584.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
