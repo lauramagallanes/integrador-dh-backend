@@ -127,9 +127,9 @@ jobs:
               ELAPSED=$((ELAPSED+10))
             done
             
-          if [ $ELAPSED -eq $TIMEOUT ]; then
-            echo "Application failed to start within $TIMEOUT seconds"
-            echo "Last container logs:"
-            sudo docker logs spring-api-dev --tail 100
-            exit 1
-          fi
+            if [ $ELAPSED -eq $TIMEOUT ]; then
+              echo "Application failed to start within $TIMEOUT seconds"
+              echo "Last container logs:"
+              sudo docker logs spring-api-dev --tail 100
+              exit 1
+            fi
