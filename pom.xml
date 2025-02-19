@@ -52,7 +52,7 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>2.2.224</version>
-			<scope>runtime</scope>
+			<scope>local</scope>
 		</dependency>
 
 		<!--Para Logs-->
@@ -84,7 +84,11 @@
 			<artifactId>modelmapper</artifactId>
 			<version>2.4.4</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <scope>runtime</scope>
+		</dependency>
 		<!--Bean Validations-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
