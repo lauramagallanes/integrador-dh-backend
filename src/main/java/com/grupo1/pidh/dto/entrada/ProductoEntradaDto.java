@@ -51,7 +51,7 @@ public class ProductoEntradaDto {
 
     //@NotEmpty(message = "Debe seleccionar al menos una categoría")
     private Set<String> categoriasNombres;
-
+    @NotEmpty(message = "Debe incluir al menos una imagen")
     private List<ImagenEntradaDto> imagenes;
 
     public ProductoEntradaDto(){
