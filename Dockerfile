@@ -1,5 +1,18 @@
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-slim as builder
 WORKDIR /app
-COPY target/*.jar app.jar
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw && ./mvnw dependency:go-offline
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
+FROM eclipse-temurin:17-jre-slim
+WORKDIR /app
+RUN addgroup --system spring && adduser --system spring --ingroup spring
+USER spring:spring
+COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+            "-XX:+UseContainerSupport", \
+            "-XX:MaxRAMPercentage=90", \
+            "-jar", \
+            "app.jar"]
