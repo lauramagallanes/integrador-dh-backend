@@ -125,7 +125,15 @@ resource "aws_instance" "api_server" {
     Environment = var.environment
   }
 }
+resource "aws_eip" "ec2_eip" {
+  instance = aws_instance.api_server.id
+  domain   = "vpc"
 
+  tags = {
+    Name        = "eip-${var.environment}"
+    Environment = var.environment
+  }
+}
 # Data sources
 data "aws_ami" "amazon_linux_2" {
   most_recent = true
