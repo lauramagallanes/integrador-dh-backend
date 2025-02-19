@@ -21,3 +21,7 @@ output "rds_endpoint" {
 output "s3_bucket_name" {
   value = module.storage.bucket_name
 }
+output "instance_elastic_ip" {
+  description = "Elastic IP of the EC2 instance"
+  value       = module.compute.elastic_ip
+}
