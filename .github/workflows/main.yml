@@ -16,10 +16,6 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ENV_NAME: ${{ steps.get-env.outputs.env_name }}
-  ENV_PREFIX: ${{ steps.get-env.outputs.env_prefix }}
-  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-  ECR_REPOSITORY: spring-api-${{ steps.get-env.outputs.env_name }} 
 
 jobs:
   build-and-deploy:
@@ -75,23 +71,21 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:latest
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:${{ github.sha }}
+            418295719584.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:latest
+            418295719584.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
         env:
-          ENV_NAME: ${{ steps.get-env.outputs.env_name }}
-          ENV_PREFIX: ${{ steps.get-env.outputs.env_prefix }}
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-          ECR_REPOSITORY: ${{ secrets[format('{0}_ECR_REPOSITORY', steps.get-env.outputs.env_prefix)] }}
+          ECR_REGISTRY: 418295719584.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          ECR_REPOSITORY: spring-api-${{ steps.get-env.outputs.env_name }}
         with:
           host: ${{ secrets[format('{0}_EC2_IP', steps.get-env.outputs.env_prefix)] }}
           username: ec2-user
           key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', steps.get-env.outputs.env_prefix)] }}
-          envs: AWS_REGION,ECR_REGISTRY,ECR_REPOSITORY,ENV_NAME
+          envs: AWS_REGION,ECR_REGISTRY,ECR_REPOSITORY
           script: |
             echo "Starting Docker service..."
             sudo service docker start
@@ -103,17 +97,17 @@ jobs:
             sudo docker pull "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
 
             echo "Stopping and removing old container (if exists)..."
-            sudo docker stop spring-api-${ENV_NAME} || true
-            sudo docker rm spring-api-${ENV_NAME} || true
+            sudo docker stop spring-api-${{ steps.get-env.outputs.env_name }} || true
+            sudo docker rm spring-api-${{ steps.get-env.outputs.env_name }} || true
 
             echo "Running new container..."
             sudo docker run -d \
-              --name spring-api-${ENV_NAME} \
+              --name spring-api-${{ steps.get-env.outputs.env_name }} \
               --restart unless-stopped \
               -p 8080:8080 \
-              -e SPRING_PROFILES_ACTIVE="${ENV_NAME}" \
-              -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets[format('{0}_RDS_ENDPOINT', steps.get-env.outputs.env_prefix)] }}/nocountrydb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
-              -e SPRING_DATASOURCE_USERNAME="dbadmin" \
+              -e SPRING_PROFILES_ACTIVE="${{ steps.get-env.outputs.env_name }}" \
+              -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets[format('{0}_RDS_ENDPOINT', steps.get-env.outputs.env_prefix)] }}/springapidev?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
+              -e SPRING_DATASOURCE_USERNAME="admin" \
               -e SPRING_DATASOURCE_PASSWORD="${{ secrets[format('{0}_DB_PASSWORD', steps.get-env.outputs.env_prefix)] }}" \
               -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT="org.hibernate.dialect.MySQL8Dialect" \
               -e AWS_ACCESS_KEY_ID="${{ secrets[format('{0}_AWS_ACCESS_KEY_ID', steps.get-env.outputs.env_prefix)] }}" \
@@ -124,17 +118,18 @@ jobs:
             echo "Waiting for application to start..."
             sleep 20
 
-            echo "Checking application health..."    
-            TIMEOUT=60
+            TIMEOUT=120
             ELAPSED=0
-            until
-            if curl -f http://localhost:8080 || [ $ELAPSED -eq $TIMEOUT ]; do
-               echo "Waiting for application to start... ($ELAPSED seconds)"
-              sleep 5
-              ELAPSED=$((ELAPSED+5))
+            until curl -f http://localhost:8080/producto/listar || [ $ELAPSED -eq $TIMEOUT ]; do
+              echo "Waiting for application to start... ($ELAPSED seconds)"
+              sudo docker logs spring-api-dev --tail 50
+              sleep 10
+              ELAPSED=$((ELAPSED+10))
             done
             
             if [ $ELAPSED -eq $TIMEOUT ]; then
               echo "Application failed to start within $TIMEOUT seconds"
+              echo "Last container logs:"
+              sudo docker logs spring-api-dev --tail 100
               exit 1
             fi
