@@ -16,6 +16,10 @@ on:
 
 env:
   AWS_REGION: us-east-1
+  ENV_NAME: ${{ steps.get-env.outputs.env_name }}
+  ENV_PREFIX: ${{ steps.get-env.outputs.env_prefix }}
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+  ECR_REPOSITORY: spring-api-${{ steps.get-env.outputs.env_name }} 
 
 jobs:
   build-and-deploy:
@@ -67,15 +71,12 @@ jobs:
 
       - name: Build and Push to ECR
         uses: docker/build-push-action@v5
-        env:
-          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-          ECR_REPO: ${{ secrets[format('{0}_ECR_REPOSITORY', steps.get-env.outputs.env_prefix)] }}
         with:
           context: .
           push: true
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest
-            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPO }}:${{ github.sha }}
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
