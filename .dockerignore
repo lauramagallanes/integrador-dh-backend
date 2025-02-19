@@ -1,0 +1,13 @@
+terraform/
+.git/
+.gitignore
+.gitattributes
+.idea/
+*.iml
+.vscode/
+target/
+*.log
+.env
+*.local
+LICENSE
+README.md
