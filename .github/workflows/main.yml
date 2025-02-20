@@ -1,0 +1,140 @@
+name: Deploy Spring Boot to Multiple Environments
+
+on:
+  push:
+    branches: [main, test, dev]
+    paths-ignore:
+      - 'terraform/**'
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    branches: [main, test, dev]
+    paths-ignore:
+      - 'terraform/**'
+      - '**.md'
+      - '.gitignore'
+
+env:
+  AWS_REGION: us-east-1
+  ENV_NAME: ${{ steps.get-env.outputs.env_name }}
+  ENV_PREFIX: ${{ steps.get-env.outputs.env_prefix }}
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+  ECR_REPOSITORY: spring-api-${{ steps.get-env.outputs.env_name }} 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get environment from branch
+        id: get-env
+        run: |
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
+            echo "env_name=prod" >> $GITHUB_OUTPUT
+            echo "env_prefix=PROD" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.ref }} == 'refs/heads/test' ]]; then
+            echo "env_name=test" >> $GITHUB_OUTPUT
+            echo "env_prefix=TEST" >> $GITHUB_OUTPUT
+          else
+            echo "env_name=dev" >> $GITHUB_OUTPUT
+            echo "env_prefix=DEV" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: |
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push to ECR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/spring-api-${{ steps.get-env.outputs.env_name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        env:
+          ENV_NAME: ${{ steps.get-env.outputs.env_name }}
+          ENV_PREFIX: ${{ steps.get-env.outputs.env_prefix }}
+          ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          ECR_REPOSITORY: ${{ secrets[format('{0}_ECR_REPOSITORY', steps.get-env.outputs.env_prefix)] }}
+        with:
+          host: ${{ secrets[format('{0}_EC2_IP', steps.get-env.outputs.env_prefix)] }}
+          username: ec2-user
+          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', steps.get-env.outputs.env_prefix)] }}
+          envs: AWS_REGION,ECR_REGISTRY,ECR_REPOSITORY,ENV_NAME
+          script: |
+            echo "Starting Docker service..."
+            sudo service docker start
+
+            echo "Logging in to ECR..."
+            aws ecr get-login-password --region "${AWS_REGION}" | sudo docker login --username AWS --password-stdin "${ECR_REGISTRY}"
+
+            echo "Pulling latest image..."
+            sudo docker pull "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+
+            echo "Stopping and removing old container (if exists)..."
+            sudo docker stop spring-api-${ENV_NAME} || true
+            sudo docker rm spring-api-${ENV_NAME} || true
+
+            echo "Running new container..."
+            sudo docker run -d \
+              --name spring-api-${ENV_NAME} \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE="${ENV_NAME}" \
+              -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets[format('{0}_RDS_ENDPOINT', steps.get-env.outputs.env_prefix)] }}/nocountrydb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
+              -e SPRING_DATASOURCE_USERNAME="dbadmin" \
+              -e SPRING_DATASOURCE_PASSWORD="${{ secrets[format('{0}_DB_PASSWORD', steps.get-env.outputs.env_prefix)] }}" \
+              -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT="org.hibernate.dialect.MySQL8Dialect" \
+              -e AWS_ACCESS_KEY_ID="${{ secrets[format('{0}_AWS_ACCESS_KEY_ID', steps.get-env.outputs.env_prefix)] }}" \
+              -e AWS_SECRET_ACCESS_KEY="${{ secrets[format('{0}_AWS_SECRET_ACCESS_KEY', steps.get-env.outputs.env_prefix)] }}" \
+              -e AWS_S3_BUCKET="${{ secrets[format('{0}_S3_BUCKET', steps.get-env.outputs.env_prefix)] }}" \
+              "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+
+            echo "Waiting for application to start..."
+            sleep 20
+
+            echo "Checking application health..."    
+            TIMEOUT=60
+            ELAPSED=0
+            until
+            if curl -f http://localhost:8080 || [ $ELAPSED -eq $TIMEOUT ]; do
+               echo "Waiting for application to start... ($ELAPSED seconds)"
+              sleep 5
+              ELAPSED=$((ELAPSED+5))
+            done
+            
+            if [ $ELAPSED -eq $TIMEOUT ]; then
+              echo "Application failed to start within $TIMEOUT seconds"
+              exit 1
+            fi
