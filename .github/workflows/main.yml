@@ -115,7 +115,7 @@ jobs:
               -e SPRING_DATASOURCE_PASSWORD="${{ secrets[format('{0}_DB_PASSWORD', steps.get-env.outputs.env_prefix)] }}" \
               -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT="org.hibernate.dialect.MySQL8Dialect" \
               -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-              -e AWS_SECRET_ACCESS_KEY="${{secrets.AWS_SECRET_ACCESS_KEY_ID}}" \
+              -e AWS_SECRET_ACCESS_KEY="${{secrets.AWS_SECRET_ACCESS_KEY}}" \
               -e AWS_S3_BUCKET="${{ secrets[format('{0}_S3_BUCKET', steps.get-env.outputs.env_prefix)] }}" \
               "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
 
