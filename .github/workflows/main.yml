@@ -28,12 +28,16 @@ jobs:
           if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
             echo "env_name=prod" >> $GITHUB_OUTPUT
             echo "env_prefix=PROD" >> $GITHUB_OUTPUT
+            echo "db_name=springapiprod" >> $GITHUB_OUTPUT
           elif [[ ${{ github.ref }} == 'refs/heads/test' ]]; then
             echo "env_name=test" >> $GITHUB_OUTPUT
             echo "env_prefix=TEST" >> $GITHUB_OUTPUT
+            echo "db_name=springapitest" >> $GITHUB_OUTPUT
           else
             echo "env_name=dev" >> $GITHUB_OUTPUT
             echo "env_prefix=DEV" >> $GITHUB_OUTPUT
+            echo "db_name=springapidev" >> $GITHUB_OUTPUT
+
           fi
 
       - name: Checkout code
@@ -106,7 +110,7 @@ jobs:
               --restart unless-stopped \
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE="${{ steps.get-env.outputs.env_name }}" \
-              -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets[format('{0}_RDS_ENDPOINT', steps.get-env.outputs.env_prefix)] }}/springapidev?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
+              -e SPRING_DATASOURCE_URL="jdbc:mysql://${{ secrets[format('{0}_RDS_ENDPOINT', steps.get-env.outputs.env_prefix)] }}/${{ steps.get-env.outputs.db_name }}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
               -e SPRING_DATASOURCE_USERNAME="admin" \
               -e SPRING_DATASOURCE_PASSWORD="${{ secrets[format('{0}_DB_PASSWORD', steps.get-env.outputs.env_prefix)] }}" \
               -e SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT="org.hibernate.dialect.MySQL8Dialect" \
@@ -122,14 +126,14 @@ jobs:
             ELAPSED=0
             until curl -f http://localhost:8080/producto/listar || [ $ELAPSED -eq $TIMEOUT ]; do
               echo "Waiting for application to start... ($ELAPSED seconds)"
-              sudo docker logs spring-api-dev --tail 50
+              sudo docker logs spring-api-${{ steps.get-env.outputs.env_name }} --tail 50
               sleep 10
               ELAPSED=$((ELAPSED+10))
             done
-            
+
             if [ $ELAPSED -eq $TIMEOUT ]; then
               echo "Application failed to start within $TIMEOUT seconds"
               echo "Last container logs:"
-              sudo docker logs spring-api-dev --tail 100
+              sudo docker logs spring-api-${{ steps.get-env.outputs.env_name }} --tail 100
               exit 1
             fi
