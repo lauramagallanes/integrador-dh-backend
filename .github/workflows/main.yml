@@ -84,7 +84,7 @@ jobs:
         with:
           host: ${{ secrets[format('{0}_EC2_IP', steps.get-env.outputs.env_prefix)] }}
           username: ec2-user
-          key: ${{ secrets[format('{0}_SSH_PRIVATE_KEY', steps.get-env.outputs.env_prefix)] }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}          
           envs: AWS_REGION,ECR_REGISTRY,ECR_REPOSITORY
           script: |
             echo "Starting Docker service..."
