@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.grupo1.pidh.PidhApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.128 s - in com.grupo1.pidh.PidhApplicationTests
