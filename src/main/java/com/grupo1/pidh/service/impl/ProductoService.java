@@ -9,6 +9,7 @@ import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.entity.Imagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.service.IProductoService;
+import com.grupo1.pidh.service.IS3Service;
 import com.grupo1.pidh.utils.JacksonConfig;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -29,18 +31,20 @@ public class ProductoService implements IProductoService {
     private final Logger LOGGER = LoggerFactory.getLogger(ProductoService.class);
     private final ObjectMapper objectMapper;
 
+    private final IS3Service s3Service;
 
     private final ModelMapper modelMapper;
 
-    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, ModelMapper modelMapper) {
+    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, ModelMapper modelMapper, IS3Service s3Service ) {
         this.productoRepository = productoRepository;
         this.objectMapper = objectMapper;
         this.modelMapper = modelMapper;
+        this.s3Service = s3Service;
         configureMapping();
     }
 
     @Override
-    public ProductoSalidaDto registrarProducto(ProductoEntradaDto dto) {
+    public ProductoSalidaDto registrarProducto(ProductoEntradaDto dto,List<MultipartFile> imagenes) {
 
         Producto producto = modelMapper.map(dto, Producto.class);
         try {
@@ -62,17 +66,18 @@ public class ProductoService implements IProductoService {
 
 
         try {
-            List<Imagen> imagenes = new ArrayList<>();
-            for (int i = 0; i < dto.getImagenes().size(); i++) {
-                imagenes.add(new Imagen(null, dto.getImagenes().get(i).getRutaImagen(), producto));
+            List<Imagen> imagenesEntidad = new ArrayList<>();
+            for (MultipartFile imagen : imagenes) {
+                String imageUrl = s3Service.uploadFile(imagen);
+                imagenesEntidad.add(new Imagen(null, imageUrl, producto));
             }
 
-            producto.setImagenes(imagenes);
+            producto.setImagenes(imagenesEntidad);
             producto = productoRepository.save(producto);
             LOGGER.info("ProductoRegistradoConImagenes: {}", objectMapper.writeValueAsString(producto));
         } catch (Exception e) {
-            LOGGER.error("Error serializando ProductoRegistradoConImagenes", e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al asociar las imagenes al producto");
+            LOGGER.error("Error al procesar las imágenes", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al procesar las imágenes del producto");
         }
 
         ProductoSalidaDto productoSalidaDto;
