@@ -8,7 +8,7 @@ on:
       - '**.md'
       - '.gitignore'
   pull_request:
-    branches: [main]
+    branches: [dev]
     paths-ignore:
       - 'terraform/**'
       - '**.md'
