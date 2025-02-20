@@ -6,6 +6,7 @@ import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.entity.Imagen;
 import com.grupo1.pidh.entity.Producto;
+import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.ProductoRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -84,5 +88,37 @@ class ProductoServiceTest {
 
         List<ProductoSalidaDto> listadoProductos = productoService.listarProductos();
         assertFalse(listadoProductos.isEmpty());
+    }
+
+    @Test
+    void deberiaLanzarExcepcionCuandoProductoDuplicado() {
+        when(productoRepositoryMock.save(any(Producto.class))).thenThrow(new DataIntegrityViolationException("Duplicado"));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            productoService.registrarProducto(productoEntradaDto);
+        });
+
+        assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    }
+
+    @Test
+    void deberiaEliminarProductoSiExiste() {
+        when(productoRepositoryMock.findById(1L)).thenReturn(java.util.Optional.of(producto));
+
+        assertDoesNotThrow(() -> productoService.eliminarProducto(1L));
+        verify(productoRepositoryMock, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void deberiaLanzarExcepcionCuandoProductoAEliminarNoExiste() {
+        when(productoRepositoryMock.findById(99L)).thenReturn(java.util.Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            productoService.eliminarProducto(99L);
+        });
+
+        assertEquals("El producto solicitado no existe", exception.getMessage());
+
+        verify(productoRepositoryMock, never()).deleteById(anyLong());
     }
 }

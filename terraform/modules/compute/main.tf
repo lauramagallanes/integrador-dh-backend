@@ -76,7 +76,9 @@ resource "aws_iam_role_policy" "ecr_policy" {
         Action = [
           "ecr:GetAuthorizationToken",
           "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer"
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchDeleteImage",  
+          "ecr:ListImages"       
         ]
         Resource = "*"
       },
@@ -113,10 +115,22 @@ resource "aws_instance" "api_server" {
   user_data = <<-EOF
               #!/bin/bash
               yum update -y
-              yum install -y docker
+              yum install -y docker amazon-cloudwatch-agent
               systemctl start docker
               systemctl enable docker
               usermod -a -G docker ec2-user
+
+              # cleanup script
+              cat <<'SCRIPT' > /usr/local/bin/cleanup-docker.sh
+              #!/bin/bash
+              docker container prune -f
+              docker image prune -a -f --filter "until=24h" --filter "label!=latest"
+              SCRIPT
+              chmod +x /usr/local/bin/cleanup-docker.sh
+              # cleanup cron job
+              echo "0 0 * * * root /usr/local/bin/cleanup-docker.sh" > /etc/cron.d/docker-cleanup
+
+              # Configure ECR login
               aws ecr get-login-password --region ${data.aws_region.current.name} | docker login --username AWS --password-stdin ${aws_ecr_repository.api.repository_url}
               EOF
 
@@ -144,5 +158,26 @@ data "aws_ami" "amazon_linux_2" {
     values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
 }
+resource "aws_ecr_lifecycle_policy" "api" {
+  repository = aws_ecr_repository.api.name
+
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep only last 2 images"
+        selection = {
+          tagStatus   = "any"
+          countType   = "imageCountMoreThan"
+          countNumber = 2
+        }
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+}
+
 
 data "aws_region" "current" {}
