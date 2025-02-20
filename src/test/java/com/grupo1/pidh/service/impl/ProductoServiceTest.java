@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.awt.*;
@@ -25,6 +27,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.grupo1.pidh.service.IS3Service;
 
 import static com.grupo1.pidh.utils.enums.TipoEvento.FECHA_UNICA;
 import static com.grupo1.pidh.utils.enums.TipoTarifa.POR_PERSONA;
@@ -33,10 +36,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-local.properties")
 class ProductoServiceTest {
     private final ProductoRepository productoRepositoryMock = mock(ProductoRepository.class);
     private final ModelMapper modelMapper = new ModelMapper();
+    private final IS3Service s3ServiceMock = mock(IS3Service.class);
 
     @Autowired //inyecto el ObjectMapper configurado en JacksonConfig
     private ObjectMapper objectMapper;
@@ -48,6 +52,7 @@ class ProductoServiceTest {
     private static LocalDate diaEvento = LocalDate.of(2025, 6, 21);
     private static List<Imagen> imagenes;
     private static List<ImagenEntradaDto> imagenEntradaDtos;
+    private static List<MultipartFile> multipartFiles;
 
     @BeforeAll
     static void setUp(){
@@ -56,7 +61,10 @@ class ProductoServiceTest {
                 new Imagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
                 new Imagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto)
         );
-
+        multipartFiles = List.of(
+                mock(MultipartFile.class),
+                mock(MultipartFile.class)
+        );
         imagenEntradaDtos = List.of(
                 new ImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG"),
                 new ImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG"));
@@ -67,18 +75,24 @@ class ProductoServiceTest {
 
     @BeforeEach
     void initService(){
-        productoService = new ProductoService(productoRepositoryMock, objectMapper, modelMapper);
+        productoService = new ProductoService(productoRepositoryMock, objectMapper, modelMapper, s3ServiceMock);
+        when(s3ServiceMock.uploadFile(any(MultipartFile.class)))
+                .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG")
+                .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG");
     }
+
 
     @Test
     void deberiaMandarAlRepositoryUnProductoDeNombreObservacionDeCieloNocturno_yRetornarUnaSalidaDtoConSuId(){
         when(productoRepositoryMock.save(any(Producto.class))).thenReturn(producto);
-        ProductoSalidaDto productoSalidaDto = productoService.registrarProducto(productoEntradaDto);
+        ProductoSalidaDto productoSalidaDto = productoService.registrarProducto(productoEntradaDto,multipartFiles);
 
         assertNotNull(productoSalidaDto);
         assertNotNull(productoSalidaDto.getId());
         assertEquals("Observacion de cielo nocturno", productoSalidaDto.getNombre());
         verify(productoRepositoryMock, times(2)).save(any(Producto.class));
+        verify(s3ServiceMock, times(2)).uploadFile(any(MultipartFile.class));
+
     }
 
     @Test
@@ -95,7 +109,7 @@ class ProductoServiceTest {
         when(productoRepositoryMock.save(any(Producto.class))).thenThrow(new DataIntegrityViolationException("Duplicado"));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            productoService.registrarProducto(productoEntradaDto);
+            productoService.registrarProducto(productoEntradaDto, multipartFiles);
         });
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatus());
