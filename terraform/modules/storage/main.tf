@@ -40,10 +40,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "storage" {
 resource "aws_s3_bucket_public_access_block" "storage" {
   bucket = aws_s3_bucket.storage.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
 resource "aws_s3_bucket_cors_configuration" "storage" {
@@ -56,6 +56,24 @@ resource "aws_s3_bucket_cors_configuration" "storage" {
     expose_headers  = ["ETag"]
     max_age_seconds = 3000
   }
+}
+resource "aws_s3_bucket_policy" "public_read" {
+  bucket = aws_s3_bucket.storage.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.storage.arn}/*"
+      }
+    ]
+  })
+
+  # This ensures the public access block settings are applied first
+  depends_on = [aws_s3_bucket_public_access_block.storage]
 }
 
 resource "random_id" "suffix" {
