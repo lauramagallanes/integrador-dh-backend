@@ -5,6 +5,8 @@ import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ProductoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("producto")
+@Tag(name= "GoBook API", description = "Endpoints para CRUD de Productos")
 public class ProductoController {
     private final ProductoService productoService;
 
@@ -25,6 +28,7 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
+    @Operation(summary = "Registrar un nuevo producto", description = "Crea un nuevo producto en la BD")
     @PostMapping("/registrar")
     public ResponseEntity<ProductoSalidaDto> crearProducto(
             @RequestPart("producto") @Valid ProductoEntradaDto dto,
@@ -33,19 +37,25 @@ public class ProductoController {
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Listar productos", description = "Lista todos los productos registrados en la BD")
     @GetMapping("/listar")
     public ResponseEntity<List<ProductoSalidaDto>> listarProductos() {
         return ResponseEntity.ok(productoService.listarProductos());
     }
 
+    @Operation(summary = "Listado aleatorio de productos", description = "Lista todos los productos registrados en la BD en forma aleatoria")
     @GetMapping("/listaAleatoria")
     public ResponseEntity<List<ProductoSalidaDto>> listarProductosAleatorio() {
         return ResponseEntity.ok((productoService.listarProductosAleatorio()));
     }
+
+    @Operation(summary = "Buscar producto por ID", description = "Devuelve un producto registrado en la BD segun su ID")
     @GetMapping("/{id}")
     public ResponseEntity<ProductoSalidaDto> buscarProductoPorId(@PathVariable Long id) throws ResourceNotFoundException {
         return new ResponseEntity<>(productoService.buscarProductoPorId(id), HttpStatus.OK);
     }
+
+    @Operation(summary = "Eliminar producto", description = "Elimina un producto de la BD por su ID")
     @DeleteMapping("/eliminar")
     public ResponseEntity<String> eliminarProducto(@RequestParam Long id) throws ResourceNotFoundException, ConflictException {
         productoService.eliminarProducto(id);
