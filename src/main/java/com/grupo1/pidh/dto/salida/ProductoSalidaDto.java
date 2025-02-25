@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.grupo1.pidh.utils.enums.DiaSemana;
 import com.grupo1.pidh.utils.enums.TipoEvento;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,13 +22,16 @@ public class ProductoSalidaDto {
     private TipoTarifa tipoTarifa;
     private String idioma;
 
+    @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaInicio;
 
+    @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaFin;
     private TipoEvento tipoEvento;
 
+    @Schema(type = "string", format = "date", example = "2025-02-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
     private List<DiaSemana> diasDisponible;

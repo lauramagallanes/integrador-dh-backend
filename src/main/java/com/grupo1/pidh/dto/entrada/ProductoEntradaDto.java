@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.grupo1.pidh.utils.enums.DiaSemana;
 import com.grupo1.pidh.utils.enums.TipoEvento;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -31,10 +32,12 @@ public class ProductoEntradaDto {
     @NotBlank(message = "Debe elegir un idioma")
     private String idioma;
 
+    @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     @NotNull(message = "Debe seleccionar una hora de inicio")
     private LocalTime horaInicio;
 
+    @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     @NotNull(message = "Debe seleccionar una hora de finalización")
     private LocalTime horaFin;
@@ -44,6 +47,7 @@ public class ProductoEntradaDto {
 
     private List<DiaSemana> diasDisponible;
 
+    @Schema(type = "string", format = "date", example = "2025-02-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
 
