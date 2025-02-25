@@ -1,17 +1,15 @@
 package com.grupo1.pidh.dto.salida;
 
-import com.grupo1.pidh.entity.Producto;
-
-public class ImagenSalidaDto {
+public class ProductoImagenSalidaDto {
 
     private Long id;
     private String rutaImagen;
 
-    public ImagenSalidaDto(){
+    public ProductoImagenSalidaDto(){
 
     }
 
-    public ImagenSalidaDto(Long id, String rutaImagen) {
+    public ProductoImagenSalidaDto(Long id, String rutaImagen) {
         this.id = id;
         this.rutaImagen = rutaImagen;
     }

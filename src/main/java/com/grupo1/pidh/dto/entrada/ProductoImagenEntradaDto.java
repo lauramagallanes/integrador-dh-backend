@@ -4,15 +4,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 
-public class ImagenEntradaDto {
+public class ProductoImagenEntradaDto {
 
     @NotBlank(message = "El link a la imagen no puede estar vacío")
     private String rutaImagen;
     private MultipartFile file;
-    public ImagenEntradaDto(){
+    public ProductoImagenEntradaDto(){
 
     }
-    public ImagenEntradaDto(String rutaImagen) {
+    public ProductoImagenEntradaDto(String rutaImagen) {
         this.rutaImagen = rutaImagen;
     }
 

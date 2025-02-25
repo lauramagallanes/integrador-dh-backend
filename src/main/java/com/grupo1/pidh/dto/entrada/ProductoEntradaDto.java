@@ -1,7 +1,6 @@
 package com.grupo1.pidh.dto.entrada;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.grupo1.pidh.entity.Imagen;
 import com.grupo1.pidh.utils.enums.DiaSemana;
 import com.grupo1.pidh.utils.enums.TipoEvento;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
@@ -52,13 +51,13 @@ public class ProductoEntradaDto {
     //@NotEmpty(message = "Debe seleccionar al menos una categoría")
     private Set<String> categoriasNombres;
 
-    private List<ImagenEntradaDto> imagenes;
+    private List<ProductoImagenEntradaDto> productoImagenes;
 
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<String> categoriasNombres, List<ImagenEntradaDto> imagenes) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<String> categoriasNombres, List<ProductoImagenEntradaDto> productoImagenes) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -70,7 +69,7 @@ public class ProductoEntradaDto {
         this.diasDisponible = diasDisponible;
         this.fechaEvento = fechaEvento;
         this.categoriasNombres = categoriasNombres;
-        this.imagenes = imagenes;
+        this.productoImagenes = productoImagenes;
     }
 
     public String getNombre() {
@@ -161,11 +160,11 @@ public class ProductoEntradaDto {
         this.categoriasNombres = categoriasNombres;
     }
 
-    public List<ImagenEntradaDto> getImagenes() {
-        return imagenes;
+    public List<ProductoImagenEntradaDto> getProductoImagenes() {
+        return productoImagenes;
     }
 
-    public void setImagenes(List<ImagenEntradaDto> imagenes) {
-        this.imagenes = imagenes;
+    public void setProductoImagenes(List<ProductoImagenEntradaDto> productoImagenes) {
+        this.productoImagenes = productoImagenes;
     }
 }

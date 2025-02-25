@@ -1,10 +1,10 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grupo1.pidh.dto.entrada.ImagenEntradaDto;
+import com.grupo1.pidh.dto.entrada.ProductoImagenEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
-import com.grupo1.pidh.entity.Imagen;
+import com.grupo1.pidh.entity.ProductoImagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.ProductoRepository;
@@ -16,12 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -50,27 +48,27 @@ class ProductoServiceTest {
     private static LocalTime horaInicio = LocalTime.of(18, 30, 0);
     private static LocalTime horaFin = LocalTime.of(21, 30, 0);
     private static LocalDate diaEvento = LocalDate.of(2025, 6, 21);
-    private static List<Imagen> imagenes;
-    private static List<ImagenEntradaDto> imagenEntradaDtos;
+    private static List<ProductoImagen> productoImagenes;
+    private static List<ProductoImagenEntradaDto> productoImagenEntradaDtos;
     private static List<MultipartFile> multipartFiles;
 
     @BeforeAll
     static void setUp(){
         producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
-        imagenes = List.of(
-                new Imagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
-                new Imagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto)
+        productoImagenes = List.of(
+                new ProductoImagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
+                new ProductoImagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto)
         );
         multipartFiles = List.of(
                 mock(MultipartFile.class),
                 mock(MultipartFile.class)
         );
-        imagenEntradaDtos = List.of(
-                new ImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG"),
-                new ImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG"));
+        productoImagenEntradaDtos = List.of(
+                new ProductoImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG"),
+                new ProductoImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG"));
 
-        producto.setImagenes(imagenes);
-        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, Collections.emptySet(), imagenEntradaDtos );
+        producto.setProductoImagenes(productoImagenes);
+        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, Collections.emptySet(), productoImagenEntradaDtos);
     }
 
     @BeforeEach

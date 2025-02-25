@@ -64,9 +64,9 @@ public class Producto {
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Imagen> imagenes;
+    private List<ProductoImagen> productoImagenes;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, List<Imagen> imagenes) {
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, List<ProductoImagen> productoImagenes) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -79,7 +79,7 @@ public class Producto {
         this.fechaEvento = fechaEvento;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
-        this.imagenes = imagenes;
+        this.productoImagenes = productoImagenes;
     }
 
     public Producto(){}
@@ -181,12 +181,12 @@ public class Producto {
     }
 
 
-    public List<Imagen> getImagenes() {
-        return imagenes;
+    public List<ProductoImagen> getProductoImagenes() {
+        return productoImagenes;
     }
 
-    public void setImagenes(List<Imagen> imagenes) {
-        this.imagenes = imagenes;
+    public void setProductoImagenes(List<ProductoImagen> productoImagenes) {
+        this.productoImagenes = productoImagenes;
     }
 
 

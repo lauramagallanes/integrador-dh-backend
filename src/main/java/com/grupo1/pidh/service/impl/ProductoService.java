@@ -6,11 +6,10 @@ import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
-import com.grupo1.pidh.entity.Imagen;
+import com.grupo1.pidh.entity.ProductoImagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.service.IProductoService;
 import com.grupo1.pidh.service.IS3Service;
-import com.grupo1.pidh.utils.JacksonConfig;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +65,13 @@ public class ProductoService implements IProductoService {
 
 
         try {
-            List<Imagen> imagenesEntidad = new ArrayList<>();
+            List<ProductoImagen> productoImagenesEntidad = new ArrayList<>();
             for (MultipartFile imagen : imagenes) {
                 String imageUrl = s3Service.uploadFile(imagen);
-                imagenesEntidad.add(new Imagen(null, imageUrl, producto));
+                productoImagenesEntidad.add(new ProductoImagen(null, imageUrl, producto));
             }
 
-            producto.setImagenes(imagenesEntidad);
+            producto.setProductoImagenes(productoImagenesEntidad);
             producto = productoRepository.save(producto);
             LOGGER.info("ProductoRegistradoConImagenes: {}", objectMapper.writeValueAsString(producto));
         } catch (Exception e) {
@@ -177,10 +176,10 @@ public class ProductoService implements IProductoService {
 
     private void configureMapping() {
         modelMapper.typeMap(ProductoEntradaDto.class, Producto.class)
-                .addMappings(mapper -> mapper.skip(Producto::setImagenes))
+                .addMappings(mapper -> mapper.skip(Producto::setProductoImagenes))
                 .addMappings(mapper -> mapper.skip(Producto::setCategorias)); //sin crud de categorias
 
         modelMapper.typeMap(Producto.class, ProductoSalidaDto.class)
-                .addMappings(mapper -> mapper.map(Producto::getImagenes, ProductoSalidaDto::setImagenesSalidaDto));
+                .addMappings(mapper -> mapper.map(Producto::getProductoImagenes, ProductoSalidaDto::setProductoImagenesSalidaDto));
     }
 }
