@@ -53,7 +53,7 @@ public class Producto {
     @Column(name = "dias_disponible")
     private List<DiaSemana> diasDisponible;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "producto_categorias",
             joinColumns = @JoinColumn(name = "producto_id"),

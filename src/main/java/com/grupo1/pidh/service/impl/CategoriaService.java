@@ -9,6 +9,7 @@ import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.service.ICategoriaService;
 
+import com.grupo1.pidh.service.IS3Service;
 import com.mysql.cj.log.Log;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -27,43 +29,38 @@ public class CategoriaService implements ICategoriaService {
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final Logger LOGGER = LoggerFactory.getLogger(CategoriaService.class);
+    private final IS3Service s3Service;
 
-    public CategoriaService(CategoriaRepository categoriaRepository, ModelMapper modelMapper, ObjectMapper objectMapper) {
+    public CategoriaService(CategoriaRepository categoriaRepository, ModelMapper modelMapper, ObjectMapper objectMapper, IS3Service s3Service) {
         this.categoriaRepository = categoriaRepository;
         this.modelMapper = modelMapper;
         this.objectMapper = objectMapper;
+        this.s3Service = s3Service;
     }
 
     @Override
-    public CategoriaSalidaDto registrarCategoria(CategoriaEntradaDto dto) throws ConflictException {
-        Categoria categoria = modelMapper.map(dto, Categoria.class);
+    public CategoriaSalidaDto registrarCategoria(CategoriaEntradaDto dto, MultipartFile imagenCategoria) throws ConflictException {
 
-        try{
-            LOGGER.info("Categoria: {}", objectMapper.writeValueAsString(categoria));
-        } catch (Exception e) {
-            LOGGER.error("Error serializando categoria", e);
+        String imagenUrl = null;
+
+        if (imagenCategoria != null && !imagenCategoria.isEmpty()){
+            imagenUrl = s3Service.uploadFile(imagenCategoria);
         }
 
+       Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl);
+
         try{
-            categoria = categoriaRepository.save(categoria);
+            categoria= categoriaRepository.save(categoria);
             LOGGER.info("Categoria Registrada: {}", objectMapper.writeValueAsString(categoria));
         }catch (DataIntegrityViolationException exception){
-            LOGGER.error("Error al guardar la categoria en la base de datos", exception);
+            LOGGER.error("Error al guardar la categoria en la BD", exception);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una categoria con este nombre");
         }catch (Exception e){
-            LOGGER.error("Error serializando la Categoria Registrada", e);
+            LOGGER.error("Error al guardar la categoria", e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al registrar la categoria");
         }
 
-        CategoriaSalidaDto categoriaSalidaDto;
-        try{
-            categoriaSalidaDto = modelMapper.map(categoria, CategoriaSalidaDto.class);
-            LOGGER.info("CategoriaSalidaDto: {}", objectMapper.writeValueAsString(categoriaSalidaDto));
-        }catch (Exception e){
-            LOGGER.error("Error serializando CategoriaSalidaDto", e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al mapear CategoriaSalidaDto");
-
-        }
-        return categoriaSalidaDto;
+        return modelMapper.map(categoria, CategoriaSalidaDto.class);
     }
 
     @Override

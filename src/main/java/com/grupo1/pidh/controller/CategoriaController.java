@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,8 +31,8 @@ public class CategoriaController {
 
     @Operation(summary = "Registrar nueva categoria", description = "Crea una nueva categoria dentro de la base de datos")
     @PostMapping("/registrar")
-    public ResponseEntity<CategoriaSalidaDto> crearCategoria(@RequestBody @Valid CategoriaEntradaDto dto) throws ConflictException {
-        CategoriaSalidaDto categoriaSalidaDto = categoriaService.registrarCategoria(dto);
+    public ResponseEntity<CategoriaSalidaDto> crearCategoria(@RequestPart("categoria") @Valid CategoriaEntradaDto dto, @RequestPart(value = "imagenCategoria", required = false)MultipartFile imagenCategoria) throws ConflictException {
+        CategoriaSalidaDto categoriaSalidaDto = categoriaService.registrarCategoria(dto, imagenCategoria);
         return new ResponseEntity<>(categoriaSalidaDto, HttpStatus.CREATED);
     }
 

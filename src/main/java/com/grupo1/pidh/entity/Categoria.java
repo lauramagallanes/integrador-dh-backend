@@ -16,12 +16,16 @@ public class Categoria {
     @Column(name = "descripcion", nullable = false)
     private String descripcion;
 
+    @Column(name = "imagen_url")
+    private String imagenCategoriaUrl;
+
     public Categoria(){}
 
-    public Categoria(Long id, String nombre, String descripcion) {
+    public Categoria(Long id, String nombre, String descripcion, String imagenCategoriaUrl) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.imagenCategoriaUrl = imagenCategoriaUrl;
     }
 
     public Long getId() {
@@ -46,5 +50,13 @@ public class Categoria {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public String getImagenCategoriaUrl() {
+        return imagenCategoriaUrl;
+    }
+
+    public void setImagenCategoriaUrl(String imagenCategoriaUrl) {
+        this.imagenCategoriaUrl = imagenCategoriaUrl;
     }
 }

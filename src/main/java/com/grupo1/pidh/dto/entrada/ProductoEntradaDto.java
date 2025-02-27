@@ -53,7 +53,7 @@ public class ProductoEntradaDto {
 
 
     //@NotEmpty(message = "Debe seleccionar al menos una categoría")
-    private Set<String> categoriasNombres;
+    private Set<Long> categoriasIds;
 
     private List<ProductoImagenEntradaDto> productoImagenes;
 
@@ -61,7 +61,7 @@ public class ProductoEntradaDto {
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<String> categoriasNombres, List<ProductoImagenEntradaDto> productoImagenes) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, List<ProductoImagenEntradaDto> productoImagenes) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -72,7 +72,7 @@ public class ProductoEntradaDto {
         this.tipoEvento = tipoEvento;
         this.diasDisponible = diasDisponible;
         this.fechaEvento = fechaEvento;
-        this.categoriasNombres = categoriasNombres;
+        this.categoriasIds = categoriasIds;
         this.productoImagenes = productoImagenes;
     }
 
@@ -156,12 +156,12 @@ public class ProductoEntradaDto {
         this.fechaEvento = fechaEvento;
     }
 
-    public Set<String> getCategoriasNombres() {
-        return categoriasNombres;
+    public Set<Long> getCategoriasIds() {
+        return categoriasIds;
     }
 
-    public void setCategoriasNombres(Set<String> categoriasNombres) {
-        this.categoriasNombres = categoriasNombres;
+    public void setCategoriasIds(Set<Long> categoriasIds) {
+        this.categoriasIds = categoriasIds;
     }
 
     public List<ProductoImagenEntradaDto> getProductoImagenes() {
