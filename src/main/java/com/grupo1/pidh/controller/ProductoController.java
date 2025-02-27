@@ -19,7 +19,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("producto")
-@Tag(name= "GoBook API", description = "Endpoints para CRUD de Productos")
+@Tag(name= "Producto", description = "Endpoints para CRUD de Productos")
 public class ProductoController {
     private final ProductoService productoService;
 
