@@ -187,6 +187,57 @@ public class ProductoService implements IProductoService {
 
     }
 
+    @Override
+    public ProductoSalidaDto editarProducto(Long id, ProductoEntradaDto dto, List<MultipartFile> imagenes) throws ResourceNotFoundException {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Producto no encontrado"));
+
+        producto.setNombre(dto.getNombre());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setValorTarifa(dto.getValorTarifa());
+        producto.setTipoTarifa(dto.getTipoTarifa());
+        producto.setIdioma(dto.getIdioma());
+        producto.setHoraInicio(dto.getHoraInicio());
+        producto.setHoraFin(dto.getHoraFin());
+        producto.setTipoEvento(dto.getTipoEvento());
+        producto.setFechaEvento(dto.getFechaEvento());
+        producto.setDiasDisponible(dto.getDiasDisponible());
+
+        Set<Categoria> categorias =  new HashSet<>();
+        if (dto.getCategoriasIds() != null && !dto.getCategoriasIds().isEmpty()){
+            for (Long categoriaId: dto.getCategoriasIds()){
+                Categoria categoria = categoriaRepository.findById(categoriaId)
+                        .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada"));
+            }
+        }
+        producto.setCategorias(categorias);
+
+        try{
+            producto = productoRepository.save(producto);
+
+        }catch (DataIntegrityViolationException e){
+            LOGGER.error("Error al actualizar el producto", e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un producto con este nombre");
+        }
+        try {
+            LOGGER.info("Producto actualizado: {}", objectMapper.writeValueAsString(producto));
+        } catch (Exception e) {
+            LOGGER.error("Error serializando el producto actualizado", e);
+        }
+
+        if (imagenes != null && !imagenes.isEmpty()) {
+            List<ProductoImagen> productoImagenesEntidad = new ArrayList<>();
+            for (MultipartFile imagen : imagenes) {
+                String imageUrl = s3Service.uploadFile(imagen);
+                productoImagenesEntidad.add(new ProductoImagen(null, imageUrl, producto));
+            }
+            producto.setProductoImagenes(productoImagenesEntidad);
+            productoRepository.save(producto);
+            LOGGER.info("Imágenes del producto actualizadas");
+        }
+
+        return modelMapper.map(producto, ProductoSalidaDto.class);
+    }
 
 
     private void configureMapping() {
