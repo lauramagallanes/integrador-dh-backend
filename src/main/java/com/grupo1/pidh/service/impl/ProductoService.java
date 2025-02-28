@@ -203,27 +203,30 @@ public class ProductoService implements IProductoService {
         producto.setFechaEvento(dto.getFechaEvento());
         producto.setDiasDisponible(dto.getDiasDisponible());
 
-        Set<Categoria> categorias =  new HashSet<>();
-        if (dto.getCategoriasIds() != null && !dto.getCategoriasIds().isEmpty()){
-            for (Long categoriaId: dto.getCategoriasIds()){
+        if (dto.getCategoriasIds() != null) { // Permite dejar el producto sin categorías si se envía vacío
+            Set<Categoria> nuevasCategorias = new HashSet<>();
+            for (Long categoriaId : dto.getCategoriasIds()) {
                 Categoria categoria = categoriaRepository.findById(categoriaId)
-                        .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada"));
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con ID: " + categoriaId));
+                nuevasCategorias.add(categoria);
             }
+            producto.setCategorias(nuevasCategorias);
         }
-        producto.setCategorias(categorias);
 
-        try{
+        try {
             producto = productoRepository.save(producto);
-
-        }catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             LOGGER.error("Error al actualizar el producto", e);
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un producto con este nombre");
         }
+
+
         try {
             LOGGER.info("Producto actualizado: {}", objectMapper.writeValueAsString(producto));
         } catch (Exception e) {
             LOGGER.error("Error serializando el producto actualizado", e);
         }
+
 
         if (imagenes != null && !imagenes.isEmpty()) {
             List<ProductoImagen> nuevasImagenes = new ArrayList<>();
