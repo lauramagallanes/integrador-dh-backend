@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,13 +56,16 @@ public class ProductoService implements IProductoService {
             LOGGER.error("Error serializando Producto", e);
         }
 
+        Set<Categoria> categorias = new HashSet<>();
+
         if (dto.getCategoriasIds() != null && !dto.getCategoriasIds().isEmpty()){
-            Set<Categoria> categorias = dto.getCategoriasIds().stream()
-                    .map(id -> categoriaRepository.findAllById(id)
-                            .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada")))
-                    .collect(Collectors.toSet());
-            producto.setCategorias(categorias);
+            for (Long categoriaId: dto.getCategoriasIds()){
+                Categoria categoria = categoriaRepository.findById(categoriaId)
+                        .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada"));
+                categorias.add(categoria);
+            }
         }
+        producto.setCategorias(categorias);
 
         try {
             producto = productoRepository.save(producto);
