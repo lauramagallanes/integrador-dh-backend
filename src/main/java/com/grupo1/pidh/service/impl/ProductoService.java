@@ -226,14 +226,14 @@ public class ProductoService implements IProductoService {
         }
 
         if (imagenes != null && !imagenes.isEmpty()) {
-            List<ProductoImagen> productoImagenesEntidad = new ArrayList<>();
+            List<ProductoImagen> nuevasImagenes = new ArrayList<>();
             for (MultipartFile imagen : imagenes) {
                 String imageUrl = s3Service.uploadFile(imagen);
-                productoImagenesEntidad.add(new ProductoImagen(null, imageUrl, producto));
+                nuevasImagenes.add(new ProductoImagen(null, imageUrl, producto));
             }
-            producto.setProductoImagenes(productoImagenesEntidad);
+            producto.getProductoImagenes().addAll(nuevasImagenes);
             productoRepository.save(producto);
-            LOGGER.info("Imágenes del producto actualizadas");
+            LOGGER.info("Nuevas imagenes agregadas al producto");
         }
 
         return modelMapper.map(producto, ProductoSalidaDto.class);
