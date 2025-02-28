@@ -1,8 +1,10 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
+import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
@@ -22,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductoService implements IProductoService {
@@ -34,11 +38,14 @@ public class ProductoService implements IProductoService {
 
     private final ModelMapper modelMapper;
 
-    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, ModelMapper modelMapper, IS3Service s3Service ) {
+    private final CategoriaRepository categoriaRepository;
+
+    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, IS3Service s3Service, ModelMapper modelMapper, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
         this.objectMapper = objectMapper;
-        this.modelMapper = modelMapper;
         this.s3Service = s3Service;
+        this.modelMapper = modelMapper;
+        this.categoriaRepository = categoriaRepository;
         configureMapping();
     }
 
@@ -50,6 +57,14 @@ public class ProductoService implements IProductoService {
             LOGGER.info("Producto: {}", objectMapper.writeValueAsString(producto));
         } catch (Exception e) {
             LOGGER.error("Error serializando Producto", e);
+        }
+
+        if (dto.getCategoriasIds() != null && !dto.getCategoriasIds().isEmpty()){
+            Set<Categoria> categorias = dto.getCategoriasIds().stream()
+                    .map(id -> categoriaRepository.findAllById(id)
+                            .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada")))
+                    .collect(Collectors.toSet());
+            producto.setCategorias(categorias);
         }
 
         try {
