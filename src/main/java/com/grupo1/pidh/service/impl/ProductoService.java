@@ -1,8 +1,10 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
+import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
@@ -19,9 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductoService implements IProductoService {
@@ -34,11 +35,14 @@ public class ProductoService implements IProductoService {
 
     private final ModelMapper modelMapper;
 
-    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, ModelMapper modelMapper, IS3Service s3Service ) {
+    private final CategoriaRepository categoriaRepository;
+
+    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, IS3Service s3Service, ModelMapper modelMapper, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
         this.objectMapper = objectMapper;
-        this.modelMapper = modelMapper;
         this.s3Service = s3Service;
+        this.modelMapper = modelMapper;
+        this.categoriaRepository = categoriaRepository;
         configureMapping();
     }
 
@@ -51,6 +55,17 @@ public class ProductoService implements IProductoService {
         } catch (Exception e) {
             LOGGER.error("Error serializando Producto", e);
         }
+
+        Set<Categoria> categorias = new HashSet<>();
+
+        if (dto.getCategoriasIds() != null && !dto.getCategoriasIds().isEmpty()){
+            for (Long categoriaId: dto.getCategoriasIds()){
+                Categoria categoria = categoriaRepository.findById(categoriaId)
+                        .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada"));
+                categorias.add(categoria);
+            }
+        }
+        producto.setCategorias(categorias);
 
         try {
             producto = productoRepository.save(producto);
