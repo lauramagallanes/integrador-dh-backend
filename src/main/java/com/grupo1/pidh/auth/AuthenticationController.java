@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name= "GoBook API", description = "Endpoints de autenteicación de Usuarios")
+@Tag(name= "Autenticación", description = "Endpoints de autenteicación de Usuarios")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/usuario")
-@Tag(name= "GoBook API", description = "Endpoints de usuarios")
+@Tag(name= "Usuarios", description = "Endpoints de usuarios")
 public class UsuarioController {
     private UsuarioService usuarioService;
     @Autowired
