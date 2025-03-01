@@ -72,9 +72,20 @@ public class ProductoController {
         System.out.println("⚡️ El controlador ha sido alcanzado");
         Logger LOGGER = LoggerFactory.getLogger(ProductoController.class);
 
-        LOGGER.info("URL de la solicitud recibida: {}", request.getRequestURL().toString());
-        request.getParameterMap().forEach((key, value) -> LOGGER.info("🛠 Param: {} -> {}", key, Arrays.toString(value)));
-        LOGGER.info("Datos recibidos de la solicitud {}", dto);
+        // Log del JSON si existe
+        if (dto != null) {
+            LOGGER.info("📦 Datos JSON recibidos: {}", dto);
+        } else {
+            LOGGER.warn("⚠️ No se pudo parsear 'producto'. Puede haber un error en el JSON.");
+        }
+
+        // Log de los archivos si existen
+        if (imagenes != null && !imagenes.isEmpty()) {
+            LOGGER.info("🖼️ {} imágenes recibidas.", imagenes.size());
+            imagenes.forEach(img -> LOGGER.info("🖼️ Archivo: {} ({} bytes)", img.getOriginalFilename(), img.getSize()));
+        } else {
+            LOGGER.info("📂 No se recibieron imágenes.");
+        }
         ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
     }
