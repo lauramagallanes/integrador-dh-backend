@@ -19,7 +19,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("producto")
-@Tag(name= "GoBook API", description = "Endpoints para CRUD de Productos")
+@Tag(name= "Producto", description = "Endpoints para CRUD de Productos")
 public class ProductoController {
     private final ProductoService productoService;
 
@@ -60,5 +60,12 @@ public class ProductoController {
     public ResponseEntity<String> eliminarProducto(@RequestParam Long id) throws ResourceNotFoundException, ConflictException {
         productoService.eliminarProducto(id);
         return new ResponseEntity<>("Producto eliminado correctamente", HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(summary = "Editar producto", description = "Edita o actualiza un producto ya existente en la BD")
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) throws ResourceNotFoundException{
+        ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
+        return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
     }
 }

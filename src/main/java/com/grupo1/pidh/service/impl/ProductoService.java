@@ -1,8 +1,10 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
+import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
@@ -19,9 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductoService implements IProductoService {
@@ -34,11 +35,14 @@ public class ProductoService implements IProductoService {
 
     private final ModelMapper modelMapper;
 
-    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, ModelMapper modelMapper, IS3Service s3Service ) {
+    private final CategoriaRepository categoriaRepository;
+
+    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, IS3Service s3Service, ModelMapper modelMapper, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
         this.objectMapper = objectMapper;
-        this.modelMapper = modelMapper;
         this.s3Service = s3Service;
+        this.modelMapper = modelMapper;
+        this.categoriaRepository = categoriaRepository;
         configureMapping();
     }
 
@@ -51,6 +55,17 @@ public class ProductoService implements IProductoService {
         } catch (Exception e) {
             LOGGER.error("Error serializando Producto", e);
         }
+
+        Set<Categoria> categorias = new HashSet<>();
+
+        if (dto.getCategoriasIds() != null && !dto.getCategoriasIds().isEmpty()){
+            for (Long categoriaId: dto.getCategoriasIds()){
+                Categoria categoria = categoriaRepository.findById(categoriaId)
+                        .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada"));
+                categorias.add(categoria);
+            }
+        }
+        producto.setCategorias(categorias);
 
         try {
             producto = productoRepository.save(producto);
@@ -172,6 +187,60 @@ public class ProductoService implements IProductoService {
 
     }
 
+    @Override
+    public ProductoSalidaDto editarProducto(Long id, ProductoEntradaDto dto, List<MultipartFile> imagenes) throws ResourceNotFoundException {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Producto no encontrado"));
+
+        producto.setNombre(dto.getNombre());
+        producto.setDescripcion(dto.getDescripcion());
+        producto.setValorTarifa(dto.getValorTarifa());
+        producto.setTipoTarifa(dto.getTipoTarifa());
+        producto.setIdioma(dto.getIdioma());
+        producto.setHoraInicio(dto.getHoraInicio());
+        producto.setHoraFin(dto.getHoraFin());
+        producto.setTipoEvento(dto.getTipoEvento());
+        producto.setFechaEvento(dto.getFechaEvento());
+        producto.setDiasDisponible(dto.getDiasDisponible());
+
+        if (dto.getCategoriasIds() != null) { // Permite dejar el producto sin categorías si se envía vacío
+            Set<Categoria> nuevasCategorias = new HashSet<>();
+            for (Long categoriaId : dto.getCategoriasIds()) {
+                Categoria categoria = categoriaRepository.findById(categoriaId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con ID: " + categoriaId));
+                nuevasCategorias.add(categoria);
+            }
+            producto.setCategorias(nuevasCategorias);
+        }
+
+        try {
+            producto = productoRepository.save(producto);
+        } catch (DataIntegrityViolationException e) {
+            LOGGER.error("Error al actualizar el producto", e);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un producto con este nombre");
+        }
+
+
+        try {
+            LOGGER.info("Producto actualizado: {}", objectMapper.writeValueAsString(producto));
+        } catch (Exception e) {
+            LOGGER.error("Error serializando el producto actualizado", e);
+        }
+
+
+        if (imagenes != null && !imagenes.isEmpty()) {
+            List<ProductoImagen> nuevasImagenes = new ArrayList<>();
+            for (MultipartFile imagen : imagenes) {
+                String imageUrl = s3Service.uploadFile(imagen);
+                nuevasImagenes.add(new ProductoImagen(null, imageUrl, producto));
+            }
+            producto.getProductoImagenes().addAll(nuevasImagenes);
+            productoRepository.save(producto);
+            LOGGER.info("Nuevas imagenes agregadas al producto");
+        }
+
+        return modelMapper.map(producto, ProductoSalidaDto.class);
+    }
 
 
     private void configureMapping() {
