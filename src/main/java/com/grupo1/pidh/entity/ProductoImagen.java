@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 
 @Entity
-@Table(name="IMAGENES")
-public class Imagen {
+@Table(name="PRODUCTO_IMAGENES")
+public class ProductoImagen {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,12 +18,12 @@ public class Imagen {
     @JsonBackReference
     private Producto producto;
 
-    public Imagen(Long id, String rutaImagen, Producto producto) {
+    public ProductoImagen(Long id, String rutaImagen, Producto producto) {
         this.id = id;
         this.rutaImagen = rutaImagen;
         this.producto = producto;
     }
-    public Imagen(){};
+    public ProductoImagen(){};
     public Long getId() {
         return id;
     }

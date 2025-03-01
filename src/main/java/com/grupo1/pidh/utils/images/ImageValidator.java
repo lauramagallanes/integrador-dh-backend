@@ -23,7 +23,23 @@ public class ImageValidator {
             return false;
         }
 
-        String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        String extension = "";
+        int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex > 0) {
+            extension = fileName.substring(lastDotIndex + 1).toLowerCase();
+        } else {
+            String contentType = file.getContentType();
+            if (contentType != null) {
+                if (contentType.contains("jpeg") || contentType.contains("jpg")) {
+                    extension = "jpg";
+                } else if (contentType.contains("png")) {
+                    extension = "png";
+                } else if (contentType.contains("webp")) {
+                    extension = "webp";
+                }
+            }
+        }
+
         return VALID_EXTENSIONS.contains(extension);
     }
 }

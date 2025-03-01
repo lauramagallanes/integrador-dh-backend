@@ -1,12 +1,14 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grupo1.pidh.dto.entrada.ImagenEntradaDto;
+import com.grupo1.pidh.dto.entrada.ProductoImagenEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
-import com.grupo1.pidh.entity.Imagen;
+import com.grupo1.pidh.entity.Categoria;
+import com.grupo1.pidh.entity.ProductoImagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
+import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,17 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 import com.grupo1.pidh.service.IS3Service;
 
 import static com.grupo1.pidh.utils.enums.TipoEvento.FECHA_UNICA;
@@ -39,6 +38,7 @@ import static org.mockito.Mockito.*;
 @TestPropertySource(locations = "classpath:application-local.properties")
 class ProductoServiceTest {
     private final ProductoRepository productoRepositoryMock = mock(ProductoRepository.class);
+    private final CategoriaRepository categoriaRepositoryMock = mock(CategoriaRepository.class);
     private final ModelMapper modelMapper = new ModelMapper();
     private final IS3Service s3ServiceMock = mock(IS3Service.class);
 
@@ -50,35 +50,49 @@ class ProductoServiceTest {
     private static LocalTime horaInicio = LocalTime.of(18, 30, 0);
     private static LocalTime horaFin = LocalTime.of(21, 30, 0);
     private static LocalDate diaEvento = LocalDate.of(2025, 6, 21);
-    private static List<Imagen> imagenes;
-    private static List<ImagenEntradaDto> imagenEntradaDtos;
+    private static List<ProductoImagen> productoImagenes;
+    private static List<ProductoImagenEntradaDto> productoImagenEntradaDtos;
     private static List<MultipartFile> multipartFiles;
+    private static Set<Long> categoriasIds;
+    private static Set<Categoria> categorias;
 
     @BeforeAll
     static void setUp(){
-        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), Collections.emptySet(), Collections.emptyList());
-        imagenes = List.of(
-                new Imagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
-                new Imagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto)
+        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), Collections.emptyList());
+        productoImagenes = List.of(
+                new ProductoImagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
+                new ProductoImagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto)
         );
         multipartFiles = List.of(
                 mock(MultipartFile.class),
                 mock(MultipartFile.class)
         );
-        imagenEntradaDtos = List.of(
-                new ImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG"),
-                new ImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG"));
+        productoImagenEntradaDtos = List.of(
+                new ProductoImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG"),
+                new ProductoImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG"));
+        producto.setProductoImagenes(productoImagenes);
 
-        producto.setImagenes(imagenes);
-        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, Collections.emptySet(), imagenEntradaDtos );
+        categoriasIds = new HashSet<>(Arrays.asList(1L,2L));
+
+        categorias = new HashSet<>(Arrays.asList(
+                new Categoria(1L, "Astroturismo", "Experiencia nocturna", null),
+                new Categoria(2L, "Naturaleza", "Observación de flora y fauna", null)
+        ));
+
+
+        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, categoriasIds, productoImagenEntradaDtos);
     }
 
     @BeforeEach
     void initService(){
-        productoService = new ProductoService(productoRepositoryMock, objectMapper, modelMapper, s3ServiceMock);
+        productoService = new ProductoService(productoRepositoryMock, objectMapper, s3ServiceMock, modelMapper, categoriaRepositoryMock);
         when(s3ServiceMock.uploadFile(any(MultipartFile.class)))
                 .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG")
                 .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG");
+        when(categoriaRepositoryMock.findById(anyLong()))
+                .thenAnswer(invocation -> categorias.stream()
+                        .filter(c -> c.getId().equals(invocation.getArgument(0)))
+                        .findFirst());
     }
 
 
@@ -92,6 +106,7 @@ class ProductoServiceTest {
         assertEquals("Observacion de cielo nocturno", productoSalidaDto.getNombre());
         verify(productoRepositoryMock, times(2)).save(any(Producto.class));
         verify(s3ServiceMock, times(2)).uploadFile(any(MultipartFile.class));
+        //verify(categoriaRepositoryMock, times(2)).findById(anyLong());
 
     }
 

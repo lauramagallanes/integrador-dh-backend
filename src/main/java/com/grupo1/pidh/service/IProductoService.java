@@ -15,4 +15,5 @@ public interface IProductoService {
     List<ProductoSalidaDto> listarProductosAleatorio();
     ProductoSalidaDto buscarProductoPorId(Long id) throws ResourceNotFoundException;
     void eliminarProducto(Long id) throws ResourceNotFoundException, ConflictException;
+    ProductoSalidaDto editarProducto(Long id, ProductoEntradaDto dto, List<MultipartFile> imagenes) throws ResourceNotFoundException;
 }
