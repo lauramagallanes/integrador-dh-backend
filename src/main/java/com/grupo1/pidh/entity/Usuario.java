@@ -22,7 +22,7 @@ public class Usuario implements UserDetails {
     private String apellido;
     @Column(length = 320, nullable = false, name = "email")
     private String email;
-    @Column(length = 20, nullable = false, name = "password")
+    @Column(length = 60, nullable = false, name = "password")
     private String password;
     @Enumerated(EnumType.STRING)
     private UsuarioRoles usuarioRoles;
@@ -90,7 +90,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return email;
     }
 
     @Override
