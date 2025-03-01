@@ -7,12 +7,15 @@ import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.lang.module.ResolutionException;
 import java.util.List;
@@ -64,7 +67,11 @@ public class ProductoController {
 
     @Operation(summary = "Editar producto", description = "Edita o actualiza un producto ya existente en la BD")
     @PutMapping("/editar/{id}")
-    public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) throws ResourceNotFoundException{
+    public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes, HttpServletRequest request) throws ResourceNotFoundException{
+        Logger LOGGER = LoggerFactory.getLogger(ProductoController.class);
+
+        LOGGER.info("URL de la solicitud recibida: {}", request.getRequestURL().toString());
+        LOGGER.info("Datos recibidos de la solicitud {}", dto);
         ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
     }
