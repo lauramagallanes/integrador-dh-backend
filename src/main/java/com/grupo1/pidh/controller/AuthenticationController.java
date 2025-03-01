@@ -1,5 +1,7 @@
-package com.grupo1.pidh.auth;
+package com.grupo1.pidh.controller;
 
+import com.grupo1.pidh.auth.AuthenticationResponse;
+import com.grupo1.pidh.service.impl.AuthenticationService;
 import com.grupo1.pidh.dto.entrada.LoginRequestEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegisterRequestEntradaDto;
 import io.swagger.v3.oas.annotations.Operation;

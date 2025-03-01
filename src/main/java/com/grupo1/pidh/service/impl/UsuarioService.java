@@ -8,6 +8,7 @@ import com.grupo1.pidh.dto.salida.UsuarioSalidaDto;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.entity.Usuario;
 import com.grupo1.pidh.exceptions.ConflictException;
+import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.UsuarioRepository;
 import com.grupo1.pidh.service.IUsuarioService;
 import com.grupo1.pidh.utils.enums.UsuarioRoles;
@@ -55,12 +56,14 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     }
 
     @Override
-    public UserDetails buscarUsuarioPorMail(String email) throws UsernameNotFoundException {
-        return loadUserByUsername(email);
+    public UsuarioSalidaDto buscarUsuarioPorMail(String email) throws ResourceNotFoundException {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        return modelMapper.map(usuario, UsuarioSalidaDto.class);
     }
 
     @Override
-    public void eliminatUsuario(String email) throws UsernameNotFoundException, ConflictException {
+    public void eliminarUsuario(String email) throws UsernameNotFoundException, ConflictException {
 
     }
 

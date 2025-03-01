@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,5 +30,11 @@ public class UsuarioController {
     @GetMapping("/listar")
     public ResponseEntity<List<UsuarioSalidaDto>> listarProductos() {
         return ResponseEntity.ok(usuarioService.listarUsuarios());
+    }
+
+    @Operation(summary = "Buscar usuario por mail", description = "brinda los datos detallados del usuario solicitado")
+    @GetMapping("/{email}")
+    public ResponseEntity<UsuarioSalidaDto> buscarUsuarioPorMail(@PathVariable String email) {
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorMail(email));
     }
 }
