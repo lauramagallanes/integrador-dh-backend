@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grupo1.pidh.dto.entrada.ProductoImagenEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.entity.Caracteristica;
 import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.entity.ProductoImagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
+import com.grupo1.pidh.repository.CaracteristicaRepository;
 import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +43,7 @@ class ProductoServiceTest {
     private final CategoriaRepository categoriaRepositoryMock = mock(CategoriaRepository.class);
     private final ModelMapper modelMapper = new ModelMapper();
     private final IS3Service s3ServiceMock = mock(IS3Service.class);
+    private final CaracteristicaRepository caracteristicaRepositoryMock = mock(CaracteristicaRepository.class);
 
     @Autowired //inyecto el ObjectMapper configurado en JacksonConfig
     private ObjectMapper objectMapper;
@@ -55,10 +58,12 @@ class ProductoServiceTest {
     private static List<MultipartFile> multipartFiles;
     private static Set<Long> categoriasIds;
     private static Set<Categoria> categorias;
+    private static Set<Long> caracteristicasIds;
+    private static Set<Caracteristica> caracteristicas;
 
     @BeforeAll
     static void setUp(){
-        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), Collections.emptyList());
+        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList());
         productoImagenes = List.of(
                 new ProductoImagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
                 new ProductoImagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto)
@@ -79,18 +84,28 @@ class ProductoServiceTest {
                 new Categoria(2L, "Naturaleza", "Observación de flora y fauna", null)
         ));
 
+        caracteristicasIds = new HashSet<>(Arrays.asList(1L, 3L));
+        caracteristicas = new HashSet<>(Arrays.asList(
+                new Caracteristica(1L, "Binoculares", "icono1.png"),
+                new Caracteristica(3L, "Guia especializado", "icono3.png")
+        ));
 
-        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, categoriasIds, productoImagenEntradaDtos);
+
+        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, categoriasIds, caracteristicasIds, productoImagenEntradaDtos);
     }
 
     @BeforeEach
     void initService(){
-        productoService = new ProductoService(productoRepositoryMock, objectMapper, s3ServiceMock, modelMapper, categoriaRepositoryMock);
+        productoService = new ProductoService(productoRepositoryMock, objectMapper, s3ServiceMock, modelMapper, categoriaRepositoryMock, caracteristicaRepositoryMock);
         when(s3ServiceMock.uploadFile(any(MultipartFile.class)))
                 .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG")
                 .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG");
         when(categoriaRepositoryMock.findById(anyLong()))
                 .thenAnswer(invocation -> categorias.stream()
+                        .filter(c -> c.getId().equals(invocation.getArgument(0)))
+                        .findFirst());
+        when(caracteristicaRepositoryMock.findById(anyLong()))
+                .thenAnswer(invocation -> caracteristicas.stream()
                         .filter(c -> c.getId().equals(invocation.getArgument(0)))
                         .findFirst());
     }

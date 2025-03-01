@@ -61,12 +61,20 @@ public class Producto {
     )
     private Set<Categoria> categorias;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "producto_caracteristicas",
+            joinColumns = @JoinColumn(name = "producto_id"),
+            inverseJoinColumns = @JoinColumn(name = "caracteristica_id")
+    )
+    private Set<Caracteristica> caracteristicas;
+
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ProductoImagen> productoImagenes;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, List<ProductoImagen> productoImagenes) {
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -79,6 +87,7 @@ public class Producto {
         this.fechaEvento = fechaEvento;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
+        this.caracteristicas = caracteristicas;
         this.productoImagenes = productoImagenes;
     }
 
@@ -189,5 +198,11 @@ public class Producto {
         this.productoImagenes = productoImagenes;
     }
 
+    public Set<Caracteristica> getCaracteristicas() {
+        return caracteristicas;
+    }
 
+    public void setCaracteristicas(Set<Caracteristica> caracteristicas) {
+        this.caracteristicas = caracteristicas;
+    }
 }

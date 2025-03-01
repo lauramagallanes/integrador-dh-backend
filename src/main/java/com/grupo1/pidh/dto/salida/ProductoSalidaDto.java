@@ -36,13 +36,14 @@ public class ProductoSalidaDto {
     private LocalDate fechaEvento;
     private List<DiaSemana> diasDisponible;
     private Set<CategoriaSalidaDto> categorias;
+    private Set<CaracteristicaSalidaDto> caracteristicas;
     private List<ProductoImagenSalidaDto> productoImagenesSalidaDto;
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, List<ProductoImagenSalidaDto> productoImagenesSalidaDto) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -55,6 +56,7 @@ public class ProductoSalidaDto {
         this.fechaEvento = fechaEvento;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
+        this.caracteristicas = caracteristicas;
         this.productoImagenesSalidaDto = productoImagenesSalidaDto;
     }
 
@@ -160,5 +162,13 @@ public class ProductoSalidaDto {
 
     public void setDiasDisponible(List<DiaSemana> diasDisponible) {
         this.diasDisponible = diasDisponible;
+    }
+
+    public Set<CaracteristicaSalidaDto> getCaracteristicas() {
+        return caracteristicas;
+    }
+
+    public void setCaracteristicas(Set<CaracteristicaSalidaDto> caracteristicas) {
+        this.caracteristicas = caracteristicas;
     }
 }

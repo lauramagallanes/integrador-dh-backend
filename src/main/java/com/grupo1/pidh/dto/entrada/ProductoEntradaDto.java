@@ -55,13 +55,15 @@ public class ProductoEntradaDto {
     //@NotEmpty(message = "Debe seleccionar al menos una categoría")
     private Set<Long> categoriasIds;
 
+    private Set<Long> caracteristicasIds;
+
     private List<ProductoImagenEntradaDto> productoImagenes;
 
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, List<ProductoImagenEntradaDto> productoImagenes) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -73,6 +75,7 @@ public class ProductoEntradaDto {
         this.diasDisponible = diasDisponible;
         this.fechaEvento = fechaEvento;
         this.categoriasIds = categoriasIds;
+        this.caracteristicasIds = caracteristicasIds;
         this.productoImagenes = productoImagenes;
     }
 
@@ -170,5 +173,13 @@ public class ProductoEntradaDto {
 
     public void setProductoImagenes(List<ProductoImagenEntradaDto> productoImagenes) {
         this.productoImagenes = productoImagenes;
+    }
+
+    public Set<Long> getCaracteristicasIds() {
+        return caracteristicasIds;
+    }
+
+    public void setCaracteristicasIds(Set<Long> caracteristicasIds) {
+        this.caracteristicasIds = caracteristicasIds;
     }
 }

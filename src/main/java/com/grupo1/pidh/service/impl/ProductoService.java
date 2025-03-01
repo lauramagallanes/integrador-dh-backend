@@ -1,9 +1,11 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.entity.Caracteristica;
 import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
+import com.grupo1.pidh.repository.CaracteristicaRepository;
 import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
@@ -12,6 +14,7 @@ import com.grupo1.pidh.entity.ProductoImagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.service.IProductoService;
 import com.grupo1.pidh.service.IS3Service;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +39,15 @@ public class ProductoService implements IProductoService {
     private final ModelMapper modelMapper;
 
     private final CategoriaRepository categoriaRepository;
+    private final CaracteristicaRepository caracteristicaRepository;
 
-    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, IS3Service s3Service, ModelMapper modelMapper, CategoriaRepository categoriaRepository) {
+    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, IS3Service s3Service, ModelMapper modelMapper, CategoriaRepository categoriaRepository, CaracteristicaRepository caracteristicaRepository) {
         this.productoRepository = productoRepository;
         this.objectMapper = objectMapper;
         this.s3Service = s3Service;
         this.modelMapper = modelMapper;
         this.categoriaRepository = categoriaRepository;
+        this.caracteristicaRepository = caracteristicaRepository;
         configureMapping();
     }
 
@@ -66,6 +71,16 @@ public class ProductoService implements IProductoService {
             }
         }
         producto.setCategorias(categorias);
+
+        Set<Caracteristica> caracteristicas = new HashSet<>();
+        if (dto.getCaracteristicasIds() != null && !dto.getCaracteristicasIds().isEmpty()){
+            for (Long caracteristicaId: dto.getCaracteristicasIds()){
+                Caracteristica caracteristica = caracteristicaRepository.findById(caracteristicaId)
+                        .orElseThrow(()-> new ResourceNotFoundException("Caracteristica no encontrada"));
+                caracteristicas.add(caracteristica);
+            }
+        }
+        producto.setCaracteristicas(caracteristicas);
 
         try {
             producto = productoRepository.save(producto);
@@ -192,6 +207,10 @@ public class ProductoService implements IProductoService {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Producto no encontrado"));
 
+        Hibernate.initialize(producto.getCategorias());
+        Hibernate.initialize(producto.getCaracteristicas());
+        Hibernate.initialize((producto.getProductoImagenes()));
+
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
         producto.setValorTarifa(dto.getValorTarifa());
@@ -210,7 +229,22 @@ public class ProductoService implements IProductoService {
                         .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con ID: " + categoriaId));
                 nuevasCategorias.add(categoria);
             }
-            producto.setCategorias(nuevasCategorias);
+            if (!nuevasCategorias.isEmpty()){
+                producto.setCategorias(nuevasCategorias);
+            }
+
+        }
+
+        if (dto.getCaracteristicasIds() != null){
+            Set<Caracteristica> nuevasCaracteristicas = new HashSet<>();
+            for (Long caracteristicaId: dto.getCaracteristicasIds()){
+                Caracteristica caracteristica = caracteristicaRepository.findById(caracteristicaId)
+                        .orElseThrow(()-> new ResourceNotFoundException("Caracteristica no encontrada con ID: " + caracteristicaId));
+                nuevasCaracteristicas.add(caracteristica);
+            }
+            if (!nuevasCaracteristicas.isEmpty()){
+                producto.setCaracteristicas(nuevasCaracteristicas);
+            }
         }
 
         try {

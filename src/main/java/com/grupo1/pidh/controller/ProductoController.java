@@ -7,14 +7,18 @@ import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.lang.module.ResolutionException;
+import java.util.Arrays;
 import java.util.List;
 @CrossOrigin
 @RestController
@@ -64,7 +68,24 @@ public class ProductoController {
 
     @Operation(summary = "Editar producto", description = "Edita o actualiza un producto ya existente en la BD")
     @PutMapping("/editar/{id}")
-    public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes) throws ResourceNotFoundException{
+    public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes, HttpServletRequest request) throws ResourceNotFoundException{
+        System.out.println("⚡️ El controlador ha sido alcanzado");
+        Logger LOGGER = LoggerFactory.getLogger(ProductoController.class);
+
+        // Log del JSON si existe
+        if (dto != null) {
+            LOGGER.info("📦 Datos JSON recibidos: {}", dto);
+        } else {
+            LOGGER.warn("⚠️ No se pudo parsear 'producto'. Puede haber un error en el JSON.");
+        }
+
+        // Log de los archivos si existen
+        if (imagenes != null && !imagenes.isEmpty()) {
+            LOGGER.info("🖼️ {} imágenes recibidas.", imagenes.size());
+            imagenes.forEach(img -> LOGGER.info("🖼️ Archivo: {} ({} bytes)", img.getOriginalFilename(), img.getSize()));
+        } else {
+            LOGGER.info("📂 No se recibieron imágenes.");
+        }
         ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
     }
