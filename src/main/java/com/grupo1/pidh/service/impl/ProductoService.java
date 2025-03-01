@@ -14,6 +14,7 @@ import com.grupo1.pidh.entity.ProductoImagen;
 import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.service.IProductoService;
 import com.grupo1.pidh.service.IS3Service;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +207,10 @@ public class ProductoService implements IProductoService {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Producto no encontrado"));
 
+        Hibernate.initialize(producto.getCategorias());
+        Hibernate.initialize(producto.getCaracteristicas());
+        Hibernate.initialize((producto.getProductoImagenes()));
+
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
         producto.setValorTarifa(dto.getValorTarifa());
@@ -224,7 +229,10 @@ public class ProductoService implements IProductoService {
                         .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con ID: " + categoriaId));
                 nuevasCategorias.add(categoria);
             }
-            producto.setCategorias(nuevasCategorias);
+            if (!nuevasCategorias.isEmpty()){
+                producto.setCategorias(nuevasCategorias);
+            }
+
         }
 
         if (dto.getCaracteristicasIds() != null){
@@ -234,7 +242,9 @@ public class ProductoService implements IProductoService {
                         .orElseThrow(()-> new ResourceNotFoundException("Caracteristica no encontrada con ID: " + caracteristicaId));
                 nuevasCaracteristicas.add(caracteristica);
             }
-            producto.setCaracteristicas(nuevasCaracteristicas);
+            if (!nuevasCaracteristicas.isEmpty()){
+                producto.setCaracteristicas(nuevasCaracteristicas);
+            }
         }
 
         try {
