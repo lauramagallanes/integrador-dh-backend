@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.lang.module.ResolutionException;
+import java.util.Arrays;
 import java.util.List;
 @CrossOrigin
 @RestController
@@ -68,9 +69,11 @@ public class ProductoController {
     @Operation(summary = "Editar producto", description = "Edita o actualiza un producto ya existente en la BD")
     @PutMapping("/editar/{id}")
     public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes, HttpServletRequest request) throws ResourceNotFoundException{
+        System.out.println("⚡️ El controlador ha sido alcanzado");
         Logger LOGGER = LoggerFactory.getLogger(ProductoController.class);
 
         LOGGER.info("URL de la solicitud recibida: {}", request.getRequestURL().toString());
+        request.getParameterMap().forEach((key, value) -> LOGGER.info("🛠 Param: {} -> {}", key, Arrays.toString(value)));
         LOGGER.info("Datos recibidos de la solicitud {}", dto);
         ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
