@@ -3,6 +3,7 @@ package com.grupo1.pidh.service.impl;
 import com.grupo1.pidh.auth.AuthenticationResponse;
 import com.grupo1.pidh.dto.entrada.LoginRequestEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegisterRequestEntradaDto;
+import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.service.IAuthenticationService;
 import com.grupo1.pidh.service.impl.JwtService;
 import com.grupo1.pidh.service.impl.UsuarioService;
@@ -24,7 +25,7 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     @Override
-    public AuthenticationResponse register (RegisterRequestEntradaDto request){
+    public AuthenticationResponse register (RegisterRequestEntradaDto request) throws ConflictException {
         UserDetails usuario = usuarioService.registrarUsuario(request);
         String token = jwtService.generateToken(usuario);
         return (new AuthenticationResponse(token));

@@ -20,22 +20,25 @@ public class Usuario implements UserDetails {
     private String nombre;
     @Column(length = 20, nullable = false, name = "apellido")
     private String apellido;
-    @Column(length = 320, nullable = false, name = "email")
+    @Column(length = 320, nullable = false, unique = true, name = "email")
     private String email;
     @Column(length = 60, nullable = false, name = "password")
     private String password;
     @Enumerated(EnumType.STRING)
     private UsuarioRoles usuarioRoles;
+    @Column(nullable = false, name = "EsSuperAdmin")
+    private boolean esSuperAdmin;
 
     public Usuario() {
     }
 
-    public Usuario(String nombre, String apellido, String email, String password, UsuarioRoles usuarioRoles) {
+    public Usuario(String nombre, String apellido, String email, String password, UsuarioRoles usuarioRoles, boolean esSuperAdmin) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.password = password;
         this.usuarioRoles = usuarioRoles;
+        this.esSuperAdmin = esSuperAdmin;
     }
 
     public Long getId() {
@@ -82,6 +85,9 @@ public class Usuario implements UserDetails {
         this.usuarioRoles = usuarioRoles;
     }
 
+    public boolean getEsSuperAdmin(){
+        return esSuperAdmin;
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(usuarioRoles.name());

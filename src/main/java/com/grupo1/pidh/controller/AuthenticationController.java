@@ -1,6 +1,7 @@
 package com.grupo1.pidh.controller;
 
 import com.grupo1.pidh.auth.AuthenticationResponse;
+import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.service.impl.AuthenticationService;
 import com.grupo1.pidh.dto.entrada.LoginRequestEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegisterRequestEntradaDto;
@@ -27,7 +28,7 @@ public class AuthenticationController {
     }
     @Operation(summary = "Registrar un nuevo usuario", description = "Crea un nuevo usuario en la BD y devuelve un token")
     @PostMapping("/register")
-    ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequestEntradaDto request){
+    ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequestEntradaDto request) throws ConflictException {
         return ResponseEntity.ok(authenticationService.register(request));
     }
     @Operation(summary = "Iniciar sesion con un usuario", description = "inicia sesion con un usuario en la BD y devuelve un token")

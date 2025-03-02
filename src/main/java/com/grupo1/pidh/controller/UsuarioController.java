@@ -1,18 +1,16 @@
 package com.grupo1.pidh.controller;
 
-import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.dto.entrada.ModificarUsuarioRoleEntradaDto;
 import com.grupo1.pidh.dto.salida.UsuarioSalidaDto;
-import com.grupo1.pidh.service.impl.ProductoService;
+import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.service.impl.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -36,5 +34,11 @@ public class UsuarioController {
     @GetMapping("/{email}")
     public ResponseEntity<UsuarioSalidaDto> buscarUsuarioPorMail(@PathVariable String email) {
         return ResponseEntity.ok(usuarioService.buscarUsuarioPorMail(email));
+    }
+
+    @Operation(summary = "Modificar rol de otro usuario", description = "Modifica el rol de un usuario")
+    @PostMapping("/modificarusuariorole")
+    public ResponseEntity<UsuarioSalidaDto> modificarUsuarioRole(@Valid @RequestBody ModificarUsuarioRoleEntradaDto modificarUsuarioRoleEntradaDto) throws ConflictException {
+        return ResponseEntity.ok(usuarioService.modificarUsuarioRole(modificarUsuarioRoleEntradaDto));
     }
 }

@@ -1,11 +1,9 @@
 package com.grupo1.pidh.service.impl;
 
 import com.grupo1.pidh.config.PasswordEncoderConfiguration;
-import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
+import com.grupo1.pidh.dto.entrada.ModificarUsuarioRoleEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegisterRequestEntradaDto;
-import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.UsuarioSalidaDto;
-import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.entity.Usuario;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
@@ -14,6 +12,7 @@ import com.grupo1.pidh.service.IUsuarioService;
 import com.grupo1.pidh.utils.enums.UsuarioRoles;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,9 +39,15 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     }
 
     @Override
-    public UserDetails registrarUsuario(RegisterRequestEntradaDto request) {
-        Usuario usuario = new Usuario(request.getNombre(), request.getApellido(), request.getEmail(), passwordEncoderConfiguration.passwordEncoder().encode(request.getPassword()), UsuarioRoles.USER);
-        return usuarioRepository.save(usuario);
+    public UserDetails registrarUsuario(RegisterRequestEntradaDto request) throws ConflictException {
+        Usuario usuarioRegistrado = null;
+        try {
+            Usuario usuario = new Usuario(request.getNombre(), request.getApellido(), request.getEmail(), passwordEncoderConfiguration.passwordEncoder().encode(request.getPassword()), UsuarioRoles.USER, false);
+            usuarioRegistrado = usuarioRepository.save(usuario);
+        }catch (DataIntegrityViolationException e){
+            throw new ConflictException("El email ingresado ya está registrado");
+        }
+        return usuarioRegistrado;
     }
 
     @Override
@@ -65,6 +70,18 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     @Override
     public void eliminarUsuario(String email) throws UsernameNotFoundException, ConflictException {
 
+    }
+
+    @Override
+    public UsuarioSalidaDto modificarUsuarioRole(ModificarUsuarioRoleEntradaDto modificarUsuarioRoleEntradaDto) throws ResourceNotFoundException, ConflictException {
+        Usuario usuario = usuarioRepository.findByEmail(modificarUsuarioRoleEntradaDto.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        if (usuario.getEsSuperAdmin()){
+            throw new ConflictException("No se puede cambiar el rol a un super admin");
+        }else {
+            usuario.setUsuarioRoles(modificarUsuarioRoleEntradaDto.getRol());
+        }
+        return modelMapper.map(usuarioRepository.save(usuario), UsuarioSalidaDto.class);
     }
 
     private void configureMapping() {

@@ -28,7 +28,6 @@ public class SecurityConfiguration {
         return http.authorizeHttpRequests(
                 auth -> {
                     auth.anyRequest().permitAll();
-
                 })
                 .csrf(config -> config.disable())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

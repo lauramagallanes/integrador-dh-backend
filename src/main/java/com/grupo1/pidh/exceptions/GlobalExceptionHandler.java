@@ -19,12 +19,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException exception){
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Ya existe un producto con ese nombre. Por favor, use un nombre diferente");
-    }
-
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<String> handleResponseStatusException(ResponseStatusException exception){
         return ResponseEntity.status(exception.getStatus())

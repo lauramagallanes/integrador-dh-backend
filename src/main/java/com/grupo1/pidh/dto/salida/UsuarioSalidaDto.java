@@ -9,16 +9,18 @@ public class UsuarioSalidaDto {
     private String apellido;
     private String email;
     private UsuarioRoles usuarioRoles;
+    private boolean esSuperAdmin;
 
     public UsuarioSalidaDto() {
     }
 
-    public UsuarioSalidaDto(Long id, String nombre, String apellido, String email, UsuarioRoles usuarioRoles) {
+    public UsuarioSalidaDto(Long id, String nombre, String apellido, String email, UsuarioRoles usuarioRoles, boolean esSuperAdmin) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
         this.usuarioRoles = usuarioRoles;
+        this.esSuperAdmin = esSuperAdmin;
     }
 
     public Long getId() {
@@ -59,5 +61,13 @@ public class UsuarioSalidaDto {
 
     public void setUsuarioRoles(UsuarioRoles usuarioRoles) {
         this.usuarioRoles = usuarioRoles;
+    }
+
+    public boolean isEsSuperAdmin() {
+        return esSuperAdmin;
+    }
+
+    public void setEsSuperAdmin(boolean esSuperAdmin) {
+        this.esSuperAdmin = esSuperAdmin;
     }
 }
