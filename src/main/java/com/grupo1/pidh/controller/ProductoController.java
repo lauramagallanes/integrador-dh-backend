@@ -69,23 +69,6 @@ public class ProductoController {
     @Operation(summary = "Editar producto", description = "Edita o actualiza un producto ya existente en la BD")
     @PutMapping("/editar/{id}")
     public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes, HttpServletRequest request) throws ResourceNotFoundException{
-        System.out.println("⚡️ El controlador ha sido alcanzado");
-        Logger LOGGER = LoggerFactory.getLogger(ProductoController.class);
-
-        // Log del JSON si existe
-        if (dto != null) {
-            LOGGER.info("📦 Datos JSON recibidos: {}", dto);
-        } else {
-            LOGGER.warn("⚠️ No se pudo parsear 'producto'. Puede haber un error en el JSON.");
-        }
-
-        // Log de los archivos si existen
-        if (imagenes != null && !imagenes.isEmpty()) {
-            LOGGER.info("🖼️ {} imágenes recibidas.", imagenes.size());
-            imagenes.forEach(img -> LOGGER.info("🖼️ Archivo: {} ({} bytes)", img.getOriginalFilename(), img.getSize()));
-        } else {
-            LOGGER.info("📂 No se recibieron imágenes.");
-        }
         ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
     }
