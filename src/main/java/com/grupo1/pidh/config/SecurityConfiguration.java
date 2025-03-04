@@ -1,5 +1,6 @@
 package com.grupo1.pidh.config;
 
+import org.apache.http.auth.AUTH;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,7 +28,31 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(
                 auth -> {
-                    auth.anyRequest().permitAll();
+                    //AuthenticationController
+                    auth.antMatchers("/auth/**").permitAll();
+
+                    //CaracteristicaController
+                    auth.antMatchers(HttpMethod.POST, "/caracteristica/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.DELETE, "/caracteristica/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.GET, "/caracteristica/**").permitAll();
+
+                    //CategoriaController
+                    auth.antMatchers(HttpMethod.POST, "/categoria/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.DELETE, "/categoria/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.GET, "/categoria/**").permitAll();
+
+                    //ProductoController
+                    auth.antMatchers(HttpMethod.POST, "/producto/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.PUT, "/producto/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.DELETE, "/producto/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.GET, "/producto/**").permitAll();
+
+                    //UsuarioController
+                    auth.antMatchers(HttpMethod.POST, "/usuario/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.GET, "/usuario/listar").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.GET, "/usuario/**").authenticated();
+
+                    auth.anyRequest().hasAuthority("ADMIN");
                 })
                 .csrf(config -> config.disable())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
