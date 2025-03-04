@@ -8,6 +8,7 @@ import com.grupo1.pidh.entity.Caracteristica;
 import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.entity.ProductoImagen;
 import com.grupo1.pidh.entity.Producto;
+import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.CaracteristicaRepository;
 import com.grupo1.pidh.repository.CategoriaRepository;
@@ -66,16 +67,18 @@ class ProductoServiceTest {
         producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList());
         productoImagenes = List.of(
                 new ProductoImagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
-                new ProductoImagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto)
+                new ProductoImagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto),
+                new ProductoImagen(3L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0711.JPG", producto),
+                new ProductoImagen(4L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0712.JPG", producto),
+                new ProductoImagen(5L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0713.JPG", producto)
         );
         multipartFiles = List.of(
                 mock(MultipartFile.class),
+                mock(MultipartFile.class),
+                mock(MultipartFile.class),
+                mock(MultipartFile.class),
                 mock(MultipartFile.class)
         );
-        productoImagenEntradaDtos = List.of(
-                new ProductoImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG"),
-                new ProductoImagenEntradaDto("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG"));
-        producto.setProductoImagenes(productoImagenes);
 
         categoriasIds = new HashSet<>(Arrays.asList(1L,2L));
 
@@ -99,7 +102,10 @@ class ProductoServiceTest {
         productoService = new ProductoService(productoRepositoryMock, objectMapper, s3ServiceMock, modelMapper, categoriaRepositoryMock, caracteristicaRepositoryMock);
         when(s3ServiceMock.uploadFile(any(MultipartFile.class)))
                 .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG")
-                .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG");
+                .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG")
+                .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0711.JPG")
+                .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0712.JPG")
+                .thenReturn("https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0713.JPG");
         when(categoriaRepositoryMock.findById(anyLong()))
                 .thenAnswer(invocation -> categorias.stream()
                         .filter(c -> c.getId().equals(invocation.getArgument(0)))
@@ -112,7 +118,7 @@ class ProductoServiceTest {
 
 
     @Test
-    void deberiaMandarAlRepositoryUnProductoDeNombreObservacionDeCieloNocturno_yRetornarUnaSalidaDtoConSuId(){
+    void deberiaMandarAlRepositoryUnProductoDeNombreObservacionDeCieloNocturno_yRetornarUnaSalidaDtoConSuId() throws BadRequestException {
         when(productoRepositoryMock.save(any(Producto.class))).thenReturn(producto);
         ProductoSalidaDto productoSalidaDto = productoService.registrarProducto(productoEntradaDto,multipartFiles);
 
@@ -120,7 +126,7 @@ class ProductoServiceTest {
         assertNotNull(productoSalidaDto.getId());
         assertEquals("Observacion de cielo nocturno", productoSalidaDto.getNombre());
         verify(productoRepositoryMock, times(2)).save(any(Producto.class));
-        verify(s3ServiceMock, times(2)).uploadFile(any(MultipartFile.class));
+        verify(s3ServiceMock, times(5)).uploadFile(any(MultipartFile.class));
         //verify(categoriaRepositoryMock, times(2)).findById(anyLong());
 
     }

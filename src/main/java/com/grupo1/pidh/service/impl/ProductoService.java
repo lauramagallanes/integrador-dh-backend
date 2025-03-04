@@ -3,6 +3,7 @@ package com.grupo1.pidh.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grupo1.pidh.entity.Caracteristica;
 import com.grupo1.pidh.entity.Categoria;
+import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.CaracteristicaRepository;
@@ -52,7 +53,13 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public ProductoSalidaDto registrarProducto(ProductoEntradaDto dto,List<MultipartFile> imagenes) {
+    public ProductoSalidaDto registrarProducto(ProductoEntradaDto dto,List<MultipartFile> imagenes) throws BadRequestException {
+
+        if (imagenes.size() < 5) {
+            LOGGER.error("Error: hay menos de 5 imagenes para el producto");
+            throw new BadRequestException("Debe ingresar al menos 5 imagenes.");
+        }
+
 
         Producto producto = modelMapper.map(dto, Producto.class);
         try {

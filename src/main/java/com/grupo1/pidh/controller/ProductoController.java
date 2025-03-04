@@ -2,6 +2,7 @@ package com.grupo1.pidh.controller;
 
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ProductoService;
@@ -36,7 +37,7 @@ public class ProductoController {
     @PostMapping("/registrar")
     public ResponseEntity<ProductoSalidaDto> crearProducto(
             @RequestPart("producto") @Valid ProductoEntradaDto dto,
-            @RequestPart("imagenes") List<MultipartFile> imagenes) {
+            @RequestPart("imagenes") List<MultipartFile> imagenes) throws BadRequestException {
         ProductoSalidaDto productoSalidaDto = productoService.registrarProducto(dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.CREATED);
     }
