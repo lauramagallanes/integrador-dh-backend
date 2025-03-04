@@ -1,5 +1,6 @@
 package com.grupo1.pidh.controller;
 
+import com.grupo1.pidh.dto.entrada.ModificarUsuarioEntradaDto;
 import com.grupo1.pidh.dto.entrada.ModificarUsuarioRoleEntradaDto;
 import com.grupo1.pidh.dto.salida.UsuarioSalidaDto;
 import com.grupo1.pidh.exceptions.ConflictException;
@@ -37,8 +38,14 @@ public class UsuarioController {
     }
 
     @Operation(summary = "Modificar rol de otro usuario", description = "Modifica el rol de un usuario")
-    @PostMapping("/modificarusuariorole")
+    @PutMapping("/modificarusuariorole")
     public ResponseEntity<UsuarioSalidaDto> modificarUsuarioRole(@Valid @RequestBody ModificarUsuarioRoleEntradaDto modificarUsuarioRoleEntradaDto) throws ConflictException {
         return ResponseEntity.ok(usuarioService.modificarUsuarioRole(modificarUsuarioRoleEntradaDto));
+    }
+
+    @Operation(summary = "Modificar usuario", description = "Modifica los datos de un usuario")
+    @PutMapping("/modificarusuario")
+    public ResponseEntity<UsuarioSalidaDto> modificarUsuario(@Valid @RequestBody ModificarUsuarioEntradaDto modificarUsuarioEntradaDto) throws ConflictException {
+        return ResponseEntity.ok(usuarioService.modificarUsuario(modificarUsuarioEntradaDto));
     }
 }
