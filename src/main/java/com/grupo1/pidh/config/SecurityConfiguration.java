@@ -52,6 +52,9 @@ public class SecurityConfiguration {
                     auth.antMatchers(HttpMethod.GET, "/usuario/listar").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.GET, "/usuario/**").authenticated();
 
+                    auth.antMatchers("/swagger-ui/**").permitAll();
+                    auth.antMatchers("/v3/api-docs/**").permitAll();
+
                     auth.anyRequest().hasAuthority("ADMIN");
                 })
                 .csrf(config -> config.disable())
