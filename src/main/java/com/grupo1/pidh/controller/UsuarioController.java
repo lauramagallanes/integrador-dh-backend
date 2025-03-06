@@ -8,6 +8,7 @@ import com.grupo1.pidh.service.impl.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,5 +48,12 @@ public class UsuarioController {
     @PutMapping("/modificarusuario")
     public ResponseEntity<UsuarioSalidaDto> modificarUsuario(@Valid @RequestBody ModificarUsuarioEntradaDto modificarUsuarioEntradaDto) throws ConflictException {
         return ResponseEntity.ok(usuarioService.modificarUsuario(modificarUsuarioEntradaDto));
+    }
+
+    @Operation(summary = "Eliminar usuario", description = "elimina los datos de un usuario")
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<String> eliminarUsuario(@RequestParam String email) throws ConflictException {
+        usuarioService.eliminarUsuario(email);
+        return new ResponseEntity<>("Usuario eliminado correctamente", HttpStatus.NO_CONTENT);
     }
 }

@@ -70,7 +70,16 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 
     @Override
     public void eliminarUsuario(String email) throws UsernameNotFoundException, ConflictException {
-
+        UsuarioSalidaDto usuarioSalidaDto = buscarUsuarioPorMail(email);
+        if (usuarioSalidaDto != null) {
+            try {
+                usuarioRepository.deleteById(usuarioSalidaDto.getId());
+            }catch (DataIntegrityViolationException e){
+                throw new ConflictException("El usuario seleccionado no puede ser eliminado ya que tiene información relacionada");
+            }catch (Exception e){
+                throw new RuntimeException("Error eliminando el usuario");
+            }
+        }
     }
 
     @Override
