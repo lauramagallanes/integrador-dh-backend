@@ -3,6 +3,9 @@ package com.grupo1.pidh.exceptions;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,12 +18,6 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException exception){
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Ya existe un producto con ese nombre. Por favor, use un nombre diferente");
-    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<String> handleResponseStatusException(ResponseStatusException exception){
@@ -66,5 +63,19 @@ public class GlobalExceptionHandler {
         });
 
         return mensaje;
+    }
+
+    @ExceptionHandler({UsernameNotFoundException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, String> handleUsernameNotFoundException(UsernameNotFoundException usernameNotFoundException){
+        Map<String, String> mensaje = new HashMap<>();
+        mensaje.put("mensaje: ", usernameNotFoundException.getMessage());
+        return mensaje;
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> handleBadCredentialsException(BadCredentialsException badCredentialsException) {
+        return Map.of("error", "Usuario o contraseña incorrectos");
     }
 }
