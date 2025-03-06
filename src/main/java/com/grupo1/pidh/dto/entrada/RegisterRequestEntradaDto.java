@@ -26,8 +26,8 @@ public class RegisterRequestEntradaDto {
     @NotBlank(message = "La contraseña no puede estar vacia")
     @Size(min = 8, max = 60, message = "La contraseña debe tener entre 8 y 60 caracteres")
     @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.,;])[A-Za-z\\d@$!%*?&.,;]{8,60}$",
-            message = "La contraseña debe incluir una mayúscula, una minúscula, un número y un carácter especial"
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).*$",
+            message = "La contraseña debe incluir al menos una minúscula, una mayúscula, un número y un carácter especial"
     )
     private String password;
 
