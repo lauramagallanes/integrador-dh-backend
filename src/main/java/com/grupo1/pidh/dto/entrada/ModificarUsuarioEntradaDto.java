@@ -1,8 +1,6 @@
 package com.grupo1.pidh.dto.entrada;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class ModificarUsuarioEntradaDto {
@@ -15,12 +13,6 @@ public class ModificarUsuarioEntradaDto {
     private String apellido;
 
     @NotBlank(message = "El email no puede estar vacio")
-    @Size(max = 320, message = "El mail debe tener hasta 320 caracteres")
-    @Email(message = "Debe ser un email válido")
-    @Pattern(
-            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
-            message = "El email no cumple con el formato válido"
-    )
     private String email;
 
     public ModificarUsuarioEntradaDto(){}
