@@ -48,9 +48,11 @@ public class SecurityConfiguration {
                     auth.antMatchers(HttpMethod.GET, "/producto/**").permitAll();
 
                     //UsuarioController
-                    auth.antMatchers(HttpMethod.POST, "/usuario/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.PUT, "/usuario/modificarusuariorole").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.PUT, "/usuario/modificarusuario").authenticated();
                     auth.antMatchers(HttpMethod.GET, "/usuario/listar").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.GET, "/usuario/**").authenticated();
+                    auth.antMatchers(HttpMethod.DELETE, "/usuario/**").authenticated();
 
                     auth.antMatchers("/swagger-ui/**").permitAll();
                     auth.antMatchers("/v3/api-docs/**").permitAll();

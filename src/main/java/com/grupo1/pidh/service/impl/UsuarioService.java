@@ -1,6 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.grupo1.pidh.config.PasswordEncoderConfiguration;
+import com.grupo1.pidh.dto.entrada.ModificarUsuarioEntradaDto;
 import com.grupo1.pidh.dto.entrada.ModificarUsuarioRoleEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegisterRequestEntradaDto;
 import com.grupo1.pidh.dto.salida.UsuarioSalidaDto;
@@ -69,7 +70,16 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 
     @Override
     public void eliminarUsuario(String email) throws UsernameNotFoundException, ConflictException {
-
+        UsuarioSalidaDto usuarioSalidaDto = buscarUsuarioPorMail(email);
+        if (usuarioSalidaDto != null) {
+            try {
+                usuarioRepository.deleteById(usuarioSalidaDto.getId());
+            }catch (DataIntegrityViolationException e){
+                throw new ConflictException("El usuario seleccionado no puede ser eliminado ya que tiene información relacionada");
+            }catch (Exception e){
+                throw new RuntimeException("Error eliminando el usuario");
+            }
+        }
     }
 
     @Override
@@ -81,6 +91,16 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
         }else {
             usuario.setUsuarioRoles(modificarUsuarioRoleEntradaDto.getRol());
         }
+        return modelMapper.map(usuarioRepository.save(usuario), UsuarioSalidaDto.class);
+    }
+
+    @Override
+    public UsuarioSalidaDto modificarUsuario(ModificarUsuarioEntradaDto modificarUsuarioEntradaDto) {
+        Usuario usuario = usuarioRepository.findByEmail(modificarUsuarioEntradaDto.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        usuario.setNombre(modificarUsuarioEntradaDto.getNombre());
+        usuario.setApellido(modificarUsuarioEntradaDto.getApellido());
+
         return modelMapper.map(usuarioRepository.save(usuario), UsuarioSalidaDto.class);
     }
 
