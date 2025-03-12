@@ -2,17 +2,17 @@ package com.grupo1.pidh.dto.salida;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.grupo1.pidh.entity.Categoria;
 import com.grupo1.pidh.utils.enums.DiaSemana;
 import com.grupo1.pidh.utils.enums.TipoEvento;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-@JsonIgnoreProperties({"categorias"})
+
 public class ProductoSalidaDto {
 
     private Long id;
@@ -22,24 +22,28 @@ public class ProductoSalidaDto {
     private TipoTarifa tipoTarifa;
     private String idioma;
 
+    @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaInicio;
 
+    @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaFin;
     private TipoEvento tipoEvento;
 
+    @Schema(type = "string", format = "date", example = "2025-02-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
     private List<DiaSemana> diasDisponible;
     private Set<CategoriaSalidaDto> categorias;
-    private List<ImagenSalidaDto> imagenesSalidaDto;
+    private Set<CaracteristicaSalidaDto> caracteristicas;
+    private List<ProductoImagenSalidaDto> productoImagenesSalidaDto;
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, List<ImagenSalidaDto> imagenesSalidaDto) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -52,7 +56,8 @@ public class ProductoSalidaDto {
         this.fechaEvento = fechaEvento;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
-        this.imagenesSalidaDto = imagenesSalidaDto;
+        this.caracteristicas = caracteristicas;
+        this.productoImagenesSalidaDto = productoImagenesSalidaDto;
     }
 
     public Long getId() {
@@ -79,8 +84,8 @@ public class ProductoSalidaDto {
         this.descripcion = descripcion;
     }
 
-    public List<ImagenSalidaDto> getImagenesSalidaDto() {
-        return imagenesSalidaDto;
+    public List<ProductoImagenSalidaDto> getProductoImagenesSalidaDto() {
+        return productoImagenesSalidaDto;
     }
 
     public Double getValorTarifa() {
@@ -139,8 +144,8 @@ public class ProductoSalidaDto {
         this.categorias = categorias;
     }
 
-    public void setImagenesSalidaDto(List<ImagenSalidaDto> imagenesSalidaDto) {
-        this.imagenesSalidaDto = imagenesSalidaDto;
+    public void setProductoImagenesSalidaDto(List<ProductoImagenSalidaDto> productoImagenesSalidaDto) {
+        this.productoImagenesSalidaDto = productoImagenesSalidaDto;
     }
 
     public LocalDate getFechaEvento() {
@@ -157,5 +162,13 @@ public class ProductoSalidaDto {
 
     public void setDiasDisponible(List<DiaSemana> diasDisponible) {
         this.diasDisponible = diasDisponible;
+    }
+
+    public Set<CaracteristicaSalidaDto> getCaracteristicas() {
+        return caracteristicas;
+    }
+
+    public void setCaracteristicas(Set<CaracteristicaSalidaDto> caracteristicas) {
+        this.caracteristicas = caracteristicas;
     }
 }
