@@ -74,7 +74,16 @@ public class Producto {
     @JsonManagedReference
     private List<ProductoImagen> productoImagenes;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes) {
+    @Column(name = "pais")
+    private String pais;
+
+    @Column(name = "ciudad")
+    private String ciudad;
+
+    @Column(name = "direccion")
+    private String direccion;
+
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -89,6 +98,9 @@ public class Producto {
         this.categorias = categorias;
         this.caracteristicas = caracteristicas;
         this.productoImagenes = productoImagenes;
+        this.pais = pais;
+        this.ciudad = ciudad;
+        this.direccion = direccion;
     }
 
     public Producto(){}
@@ -204,5 +216,29 @@ public class Producto {
 
     public void setCaracteristicas(Set<Caracteristica> caracteristicas) {
         this.caracteristicas = caracteristicas;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 }

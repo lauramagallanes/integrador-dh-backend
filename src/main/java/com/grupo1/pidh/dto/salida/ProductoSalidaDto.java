@@ -38,12 +38,15 @@ public class ProductoSalidaDto {
     private Set<CategoriaSalidaDto> categorias;
     private Set<CaracteristicaSalidaDto> caracteristicas;
     private List<ProductoImagenSalidaDto> productoImagenesSalidaDto;
+    private String pais;
+    private String ciudad;
+    private String direccion;
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -58,6 +61,9 @@ public class ProductoSalidaDto {
         this.categorias = categorias;
         this.caracteristicas = caracteristicas;
         this.productoImagenesSalidaDto = productoImagenesSalidaDto;
+        this.pais = pais;
+        this.ciudad = ciudad;
+        this.direccion = direccion;
     }
 
     public Long getId() {
@@ -170,5 +176,29 @@ public class ProductoSalidaDto {
 
     public void setCaracteristicas(Set<CaracteristicaSalidaDto> caracteristicas) {
         this.caracteristicas = caracteristicas;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 }

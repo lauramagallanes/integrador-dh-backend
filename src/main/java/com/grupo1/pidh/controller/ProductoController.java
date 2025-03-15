@@ -73,4 +73,10 @@ public class ProductoController {
         ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "Filtrar productos por nombre", description = "Filtra productos por nombre letra por letra")
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<ProductoSalidaDto>> filtrarProductosPorNombre(@RequestParam String query){
+        return ResponseEntity.ok(productoService.filtrarProductosPorNombre(query));
+    }
 }
