@@ -1,5 +1,7 @@
 package com.grupo1.pidh.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -13,6 +15,7 @@ public class DisponibilidadProducto {
 
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = false)
+    @JsonBackReference
     private Producto producto;
 
     @Column(name = "fecha_evento", nullable = false)

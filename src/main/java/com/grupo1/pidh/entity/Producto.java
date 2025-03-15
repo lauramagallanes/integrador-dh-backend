@@ -44,9 +44,6 @@ public class Producto {
     private TipoEvento tipoEvento;
 
 
-    //@Column(name = "fecha_evento")
-    //private LocalDate fechaEvento;
-
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<DisponibilidadProducto> disponibilidad;
