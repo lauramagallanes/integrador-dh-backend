@@ -47,13 +47,13 @@ public class ProductoSalidaDto {
     private String direccion;
     private PoliticaCancelacion politicaCancelacion;
     private PoliticaPagos politicaPagos;
-    private int cuposTotales;
+
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -72,7 +72,7 @@ public class ProductoSalidaDto {
         this.direccion = direccion;
         this.politicaCancelacion = politicaCancelacion;
         this.politicaPagos = politicaPagos;
-        this.cuposTotales = cuposTotales;
+
     }
 
     public Long getId() {
@@ -231,11 +231,4 @@ public class ProductoSalidaDto {
     }
 
 
-    public int getCuposTotales() {
-        return cuposTotales;
-    }
-
-    public void setCuposTotales(int cuposTotales) {
-        this.cuposTotales = cuposTotales;
-    }
 }
