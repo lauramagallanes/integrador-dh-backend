@@ -54,6 +54,10 @@ public class SecurityConfiguration {
                     auth.antMatchers(HttpMethod.GET, "/usuario/**").authenticated();
                     auth.antMatchers(HttpMethod.DELETE, "/usuario/**").authenticated();
 
+                    //DisponibilidadProductoController
+                    auth.antMatchers(HttpMethod.GET, "/disponibilidad/**").permitAll();
+
+
                     auth.antMatchers("/swagger-ui/**").permitAll();
                     auth.antMatchers("/v3/api-docs/**").permitAll();
 

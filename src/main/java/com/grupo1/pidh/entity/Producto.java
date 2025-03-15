@@ -44,8 +44,9 @@ public class Producto {
     private TipoEvento tipoEvento;
 
 
-    @Column(name = "fecha_evento")
-    private LocalDate fechaEvento;
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<DisponibilidadProducto> disponibilidad;
 
     @Convert(converter = DiaSemanaConverter.class) //uso el converter que creé
     @Column(name = "dias_disponible")
@@ -89,7 +90,7 @@ public class Producto {
     @Column(name = "politica_pagos")
     private PoliticaPagos politicaPagos;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DisponibilidadProducto> disponibilidad, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -99,7 +100,7 @@ public class Producto {
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
         this.tipoEvento = tipoEvento;
-        this.fechaEvento = fechaEvento;
+        this.disponibilidad = disponibilidad;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
         this.caracteristicas = caracteristicas;
@@ -185,12 +186,12 @@ public class Producto {
         this.tipoEvento = tipoEvento;
     }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
+    public List<DisponibilidadProducto> getDisponibilidad() {
+        return disponibilidad;
     }
 
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
+    public void setDisponibilidad(List<DisponibilidadProducto> disponibilidad) {
+        this.disponibilidad = disponibilidad;
     }
 
     public List<DiaSemana> getDiasDisponible() {
