@@ -27,11 +27,16 @@ public class ProductoSalidaDto {
     @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaFin;
+
     private TipoEvento tipoEvento;
 
     @Schema(type = "string", format = "date", example = "2025-02-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
+
+    @Schema(type = "string", format = "date", example = "2025-03-25")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate fechaFinEvento;
     private List<DiaSemana> diasDisponible;
     private Set<CategoriaSalidaDto> categorias;
     private Set<CaracteristicaSalidaDto> caracteristicas;
@@ -41,12 +46,13 @@ public class ProductoSalidaDto {
     private String direccion;
     private PoliticaCancelacion politicaCancelacion;
     private PoliticaPagos politicaPagos;
+    private int cuposTotales;
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, LocalDate fechaFinEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -57,6 +63,7 @@ public class ProductoSalidaDto {
         this.horaFin = horaFin;
         this.tipoEvento = tipoEvento;
         this.fechaEvento = fechaEvento;
+        this.fechaFinEvento = fechaFinEvento;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
         this.caracteristicas = caracteristicas;
@@ -66,6 +73,7 @@ public class ProductoSalidaDto {
         this.direccion = direccion;
         this.politicaCancelacion = politicaCancelacion;
         this.politicaPagos = politicaPagos;
+        this.cuposTotales = cuposTotales;
     }
 
     public Long getId() {
@@ -207,9 +215,7 @@ public class ProductoSalidaDto {
     public PoliticaCancelacion getPoliticaCancelacion() {
         return politicaCancelacion;
     }
-    public String getPoliticaCancelacionNombre() {
-        return politicaCancelacion != null ? politicaCancelacion.name() : null;
-    }
+
 
     public String getPoliticaCancelacionDescripcion() {
         return politicaCancelacion != null ? politicaCancelacion.getDescripcion() : null;
@@ -222,9 +228,7 @@ public class ProductoSalidaDto {
     public PoliticaPagos getPoliticaPagos() {
         return politicaPagos;
     }
-    public String getPoliticaPagosNombre() {
-        return politicaPagos != null ? politicaPagos.name() : null;
-    }
+
 
     public String getPoliticaPagosDescripcion() {
         return politicaPagos != null ? politicaPagos.getDescripcion() : null;
@@ -232,5 +236,21 @@ public class ProductoSalidaDto {
 
     public void setPoliticaPagos(PoliticaPagos politicaPagos) {
         this.politicaPagos = politicaPagos;
+    }
+
+    public LocalDate getFechaFinEvento() {
+        return fechaFinEvento;
+    }
+
+    public void setFechaFinEvento(LocalDate fechaFinEvento) {
+        this.fechaFinEvento = fechaFinEvento;
+    }
+
+    public int getCuposTotales() {
+        return cuposTotales;
+    }
+
+    public void setCuposTotales(int cuposTotales) {
+        this.cuposTotales = cuposTotales;
     }
 }
