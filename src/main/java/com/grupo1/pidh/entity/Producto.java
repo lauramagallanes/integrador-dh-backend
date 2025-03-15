@@ -2,9 +2,7 @@ package com.grupo1.pidh.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.grupo1.pidh.utils.converter.DiaSemanaConverter;
-import com.grupo1.pidh.utils.enums.DiaSemana;
-import com.grupo1.pidh.utils.enums.TipoEvento;
-import com.grupo1.pidh.utils.enums.TipoTarifa;
+import com.grupo1.pidh.utils.enums.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -83,7 +81,15 @@ public class Producto {
     @Column(name = "direccion")
     private String direccion;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "politica_cancelacion")
+    private PoliticaCancelacion politicaCancelacion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "politica_pagos")
+    private PoliticaPagos politicaPagos;
+
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -101,6 +107,8 @@ public class Producto {
         this.pais = pais;
         this.ciudad = ciudad;
         this.direccion = direccion;
+        this.politicaCancelacion = politicaCancelacion;
+        this.politicaPagos = politicaPagos;
     }
 
     public Producto(){}
@@ -240,5 +248,21 @@ public class Producto {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public PoliticaPagos getPoliticaPagos() {
+        return politicaPagos;
+    }
+
+    public void setPoliticaPagos(PoliticaPagos politicaPagos) {
+        this.politicaPagos = politicaPagos;
     }
 }

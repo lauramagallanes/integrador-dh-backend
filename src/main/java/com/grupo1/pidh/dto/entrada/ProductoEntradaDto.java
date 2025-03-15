@@ -1,9 +1,7 @@
 package com.grupo1.pidh.dto.entrada;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.grupo1.pidh.utils.enums.DiaSemana;
-import com.grupo1.pidh.utils.enums.TipoEvento;
-import com.grupo1.pidh.utils.enums.TipoTarifa;
+import com.grupo1.pidh.utils.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.*;
@@ -68,11 +66,17 @@ public class ProductoEntradaDto {
     @NotBlank(message = "Debe ingresar una dirección")
     private String direccion;
 
+    @NotNull(message = "Debe seleccionar una politica de cancelacion")
+    private PoliticaCancelacion politicaCancelacion;
+
+    @NotNull(message = "Debe seleccionar una politica de pagos")
+    private PoliticaPagos politicaPagos;
+
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -89,6 +93,8 @@ public class ProductoEntradaDto {
         this.pais = pais;
         this.ciudad = ciudad;
         this.direccion = direccion;
+        this.politicaCancelacion = politicaCancelacion;
+        this.politicaPagos = politicaPagos;
     }
 
     public String getNombre() {
@@ -217,5 +223,21 @@ public class ProductoEntradaDto {
 
     public void setDireccion(@NotBlank(message = "Debe ingresar una dirección") String direccion) {
         this.direccion = direccion;
+    }
+
+    public @NotNull(message = "Debe seleccionar una politica de cancelacion") PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+    public void setPoliticaCancelacion(@NotNull(message = "Debe seleccionar una politica de cancelacion") PoliticaCancelacion politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public @NotNull(message = "Debe seleccionar una politica de pagos") PoliticaPagos getPoliticaPagos() {
+        return politicaPagos;
+    }
+
+    public void setPoliticaPagos(@NotNull(message = "Debe seleccionar una politica de pagos") PoliticaPagos politicaPagos) {
+        this.politicaPagos = politicaPagos;
     }
 }
