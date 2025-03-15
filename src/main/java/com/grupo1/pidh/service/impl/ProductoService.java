@@ -323,9 +323,10 @@ public class ProductoService implements IProductoService {
             disponibilidadList.add(new DisponibilidadProducto(producto, fechaInicio, cuposTotales));
         } else if (tipoevento == TipoEvento.RECURRENTE) {
             LocalDate fechaActual = fechaInicio;
-            while (!fechaActual.isAfter(fechaActual)){
-                DayOfWeek diaActual = fechaActual.getDayOfWeek();
-                if (diasDisponibles.contains(DiaSemana.valueOf(diaActual.name()))){
+            while (!fechaActual.isAfter(fechaFin)){
+                String diaEnEspanol = traducirDiaSemana(fechaActual.getDayOfWeek());
+
+                if (diasDisponibles.contains(DiaSemana.valueOf(diaEnEspanol))){
                     disponibilidadList.add(new DisponibilidadProducto(producto, fechaActual, cuposTotales));
                 }
                 fechaActual=fechaActual.plusDays(1);
@@ -333,6 +334,19 @@ public class ProductoService implements IProductoService {
         }
 
         return disponibilidadList;
+    }
+
+    private String traducirDiaSemana(DayOfWeek dayOfWeek){
+        switch (dayOfWeek){
+            case MONDAY: return "LUNES";
+            case TUESDAY: return "MARTES";
+            case WEDNESDAY: return "MIERCOLES";
+            case THURSDAY: return "JUEVES";
+            case FRIDAY: return "VIERNES";
+            case SATURDAY: return "SABADO";
+            case SUNDAY: return "DOMINGO";
+            default: throw new IllegalArgumentException("Día de la semana desconocido: " + dayOfWeek);
+        }
     }
 
     private void configureMapping() {
