@@ -2,9 +2,7 @@ package com.grupo1.pidh.dto.salida;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.grupo1.pidh.utils.enums.DiaSemana;
-import com.grupo1.pidh.utils.enums.TipoEvento;
-import com.grupo1.pidh.utils.enums.TipoTarifa;
+import com.grupo1.pidh.utils.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -41,12 +39,14 @@ public class ProductoSalidaDto {
     private String pais;
     private String ciudad;
     private String direccion;
+    private PoliticaCancelacion politicaCancelacion;
+    private PoliticaPagos politicaPagos;
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -64,6 +64,8 @@ public class ProductoSalidaDto {
         this.pais = pais;
         this.ciudad = ciudad;
         this.direccion = direccion;
+        this.politicaCancelacion = politicaCancelacion;
+        this.politicaPagos = politicaPagos;
     }
 
     public Long getId() {
@@ -200,5 +202,35 @@ public class ProductoSalidaDto {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+    }
+
+    public PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+    public String getPoliticaCancelacionNombre() {
+        return politicaCancelacion != null ? politicaCancelacion.name() : null;
+    }
+
+    public String getPoliticaCancelacionDescripcion() {
+        return politicaCancelacion != null ? politicaCancelacion.getDescripcion() : null;
+    }
+
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public PoliticaPagos getPoliticaPagos() {
+        return politicaPagos;
+    }
+    public String getPoliticaPagosNombre() {
+        return politicaPagos != null ? politicaPagos.name() : null;
+    }
+
+    public String getPoliticaPagosDescripcion() {
+        return politicaPagos != null ? politicaPagos.getDescripcion() : null;
+    }
+
+    public void setPoliticaPagos(PoliticaPagos politicaPagos) {
+        this.politicaPagos = politicaPagos;
     }
 }
