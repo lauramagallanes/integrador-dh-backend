@@ -1,8 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grupo1.pidh.entity.Caracteristica;
-import com.grupo1.pidh.entity.Categoria;
+import com.grupo1.pidh.entity.*;
 import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
@@ -11,10 +10,10 @@ import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
-import com.grupo1.pidh.entity.ProductoImagen;
-import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.service.IProductoService;
 import com.grupo1.pidh.service.IS3Service;
+import com.grupo1.pidh.utils.enums.DiaSemana;
+import com.grupo1.pidh.utils.enums.TipoEvento;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -25,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,10 @@ public class ProductoService implements IProductoService {
             }
         }
         producto.setCaracteristicas(caracteristicas);
+
+        List<DisponibilidadProducto> disponibilidad = generarDisponibilidad(producto, dto.getTipoEvento(), dto.getFechaEvento(), dto.getFechaFinEvento(), dto.getDiasDisponible(), dto.getCuposTotales());
+
+        producto.setDisponibilidad(disponibilidad);
 
         try {
             producto = productoRepository.save(producto);
@@ -217,6 +222,7 @@ public class ProductoService implements IProductoService {
         Hibernate.initialize(producto.getCategorias());
         Hibernate.initialize(producto.getCaracteristicas());
         Hibernate.initialize((producto.getProductoImagenes()));
+        Hibernate.initialize(producto.getDisponibilidad());
 
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
@@ -226,8 +232,7 @@ public class ProductoService implements IProductoService {
         producto.setHoraInicio(dto.getHoraInicio());
         producto.setHoraFin(dto.getHoraFin());
         producto.setTipoEvento(dto.getTipoEvento());
-        producto.setFechaEvento(dto.getFechaEvento());
-        producto.setDiasDisponible(dto.getDiasDisponible());
+        //producto.setDiasDisponible(dto.getDiasDisponible());
         producto.setPais(dto.getPais());
         producto.setCiudad(dto.getCiudad());
         producto.setDireccion(dto.getDireccion());
@@ -258,6 +263,22 @@ public class ProductoService implements IProductoService {
                 producto.setCaracteristicas(nuevasCaracteristicas);
             }
         }
+
+        List<DisponibilidadProducto> disponibilidadesConReservas = producto.getDisponibilidad().stream()
+                .filter(d -> d.getCuposReservados() >0)
+                .collect(Collectors.toList());
+
+        producto.getDisponibilidad().removeIf(d -> d.getCuposReservados() == 0);
+
+        List<DisponibilidadProducto> nuevasDisponibilidades = generarDisponibilidad(
+                producto,
+                dto.getTipoEvento(),
+                dto.getFechaEvento(),
+                dto.getFechaFinEvento(),
+                dto.getDiasDisponible(),
+                dto.getCuposTotales());
+        disponibilidadesConReservas.addAll(nuevasDisponibilidades);
+        producto.setDisponibilidad(disponibilidadesConReservas);
 
         try {
             producto = productoRepository.save(producto);
@@ -295,6 +316,24 @@ public class ProductoService implements IProductoService {
                 .collect(Collectors.toList());
     }
 
+    private List<DisponibilidadProducto> generarDisponibilidad(Producto producto, TipoEvento tipoevento, LocalDate fechaInicio, LocalDate fechaFin, List<DiaSemana> diasDisponibles, int cuposTotales) {
+        List<DisponibilidadProducto> disponibilidadList = new ArrayList<>();
+
+        if (tipoevento == TipoEvento.FECHA_UNICA){
+            disponibilidadList.add(new DisponibilidadProducto(producto, fechaInicio, cuposTotales));
+        } else if (tipoevento == TipoEvento.RECURRENTE) {
+            LocalDate fechaActual = fechaInicio;
+            while (!fechaActual.isAfter(fechaActual)){
+                DayOfWeek diaActual = fechaActual.getDayOfWeek();
+                if (diasDisponibles.contains(DiaSemana.valueOf(diaActual.name()))){
+                    disponibilidadList.add(new DisponibilidadProducto(producto, fechaActual, cuposTotales));
+                }
+                fechaActual=fechaActual.plusDays(1);
+            }
+        }
+
+        return disponibilidadList;
+    }
 
     private void configureMapping() {
         modelMapper.typeMap(ProductoEntradaDto.class, Producto.class)

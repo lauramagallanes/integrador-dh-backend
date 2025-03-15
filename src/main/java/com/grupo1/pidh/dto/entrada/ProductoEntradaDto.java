@@ -49,6 +49,10 @@ public class ProductoEntradaDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
 
+    @Schema(type = "string", format = "date", example = "2025-02-25")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate fechaFinEvento;
+
 
     //@NotEmpty(message = "Debe seleccionar al menos una categoría")
     private Set<Long> categoriasIds;
@@ -72,11 +76,14 @@ public class ProductoEntradaDto {
     @NotNull(message = "Debe seleccionar una politica de pagos")
     private PoliticaPagos politicaPagos;
 
+    @Positive(message = "Los cupos totales deben ser mayores a 0")
+    private int cuposTotales;
+
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, LocalDate fechaFinEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -87,6 +94,7 @@ public class ProductoEntradaDto {
         this.tipoEvento = tipoEvento;
         this.diasDisponible = diasDisponible;
         this.fechaEvento = fechaEvento;
+        this.fechaFinEvento = fechaFinEvento;
         this.categoriasIds = categoriasIds;
         this.caracteristicasIds = caracteristicasIds;
         this.productoImagenes = productoImagenes;
@@ -95,6 +103,7 @@ public class ProductoEntradaDto {
         this.direccion = direccion;
         this.politicaCancelacion = politicaCancelacion;
         this.politicaPagos = politicaPagos;
+        this.cuposTotales = cuposTotales;
     }
 
     public String getNombre() {
@@ -169,13 +178,6 @@ public class ProductoEntradaDto {
         this.diasDisponible = diasDisponible;
     }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
-    }
-
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
-    }
 
     public Set<Long> getCategoriasIds() {
         return categoriasIds;
@@ -213,31 +215,56 @@ public class ProductoEntradaDto {
         return ciudad;
     }
 
-    public void setCiudad(@NotBlank(message = "Debe ingresar una ciudad") String ciudad) {
+    public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
 
-    public @NotBlank(message = "Debe ingresar una dirección") String getDireccion() {
+    public String getDireccion() {
         return direccion;
     }
 
-    public void setDireccion(@NotBlank(message = "Debe ingresar una dirección") String direccion) {
+    public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
 
-    public @NotNull(message = "Debe seleccionar una politica de cancelacion") PoliticaCancelacion getPoliticaCancelacion() {
+    public PoliticaCancelacion getPoliticaCancelacion() {
         return politicaCancelacion;
     }
 
-    public void setPoliticaCancelacion(@NotNull(message = "Debe seleccionar una politica de cancelacion") PoliticaCancelacion politicaCancelacion) {
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
         this.politicaCancelacion = politicaCancelacion;
     }
 
-    public @NotNull(message = "Debe seleccionar una politica de pagos") PoliticaPagos getPoliticaPagos() {
+    public PoliticaPagos getPoliticaPagos() {
         return politicaPagos;
     }
 
-    public void setPoliticaPagos(@NotNull(message = "Debe seleccionar una politica de pagos") PoliticaPagos politicaPagos) {
+    public void setPoliticaPagos(PoliticaPagos politicaPagos) {
         this.politicaPagos = politicaPagos;
+    }
+
+    public LocalDate getFechaEvento() {
+        return fechaEvento;
+    }
+
+    public void setFechaEvento(LocalDate fechaEvento) {
+        this.fechaEvento = fechaEvento;
+    }
+
+    public LocalDate getFechaFinEvento() {
+        return fechaFinEvento;
+    }
+
+    public void setFechaFinEvento(LocalDate fechaFinEvento) {
+        this.fechaFinEvento = fechaFinEvento;
+    }
+
+    @Positive(message = "Los cupos totales deben ser mayores a 0")
+    public int getCuposTotales() {
+        return cuposTotales;
+    }
+
+    public void setCuposTotales(int cuposTotales) {
+        this.cuposTotales = cuposTotales;
     }
 }
