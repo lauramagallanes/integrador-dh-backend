@@ -228,6 +228,9 @@ public class ProductoService implements IProductoService {
         producto.setTipoEvento(dto.getTipoEvento());
         producto.setFechaEvento(dto.getFechaEvento());
         producto.setDiasDisponible(dto.getDiasDisponible());
+        producto.setPais(dto.getPais());
+        producto.setCiudad(dto.getCiudad());
+        producto.setDireccion(dto.getDireccion());
 
         if (dto.getCategoriasIds() != null) { // Permite dejar el producto sin categorías si se envía vacío
             Set<Categoria> nuevasCategorias = new HashSet<>();
@@ -281,6 +284,13 @@ public class ProductoService implements IProductoService {
         }
 
         return modelMapper.map(producto, ProductoSalidaDto.class);
+    }
+
+    public List<ProductoSalidaDto> filtrarProductosPorNombre(String query){
+        List<Producto> productosFiltrados = productoRepository.findByNombreContainingIgnoreCase(query);
+        return productosFiltrados.stream()
+                .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
+                .collect(Collectors.toList());
     }
 
 

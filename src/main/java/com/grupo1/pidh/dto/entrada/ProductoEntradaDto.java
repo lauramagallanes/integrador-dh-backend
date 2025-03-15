@@ -59,11 +59,20 @@ public class ProductoEntradaDto {
 
     private List<ProductoImagenEntradaDto> productoImagenes;
 
+    @NotBlank(message = "Debe ingresar un Pais")
+    private String pais;
+
+    @NotBlank(message = "Debe ingresar una ciudad")
+    private String ciudad;
+
+    @NotBlank(message = "Debe ingresar una dirección")
+    private String direccion;
+
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -77,6 +86,9 @@ public class ProductoEntradaDto {
         this.categoriasIds = categoriasIds;
         this.caracteristicasIds = caracteristicasIds;
         this.productoImagenes = productoImagenes;
+        this.pais = pais;
+        this.ciudad = ciudad;
+        this.direccion = direccion;
     }
 
     public String getNombre() {
@@ -181,5 +193,29 @@ public class ProductoEntradaDto {
 
     public void setCaracteristicasIds(Set<Long> caracteristicasIds) {
         this.caracteristicasIds = caracteristicasIds;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(@NotBlank(message = "Debe ingresar una ciudad") String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public @NotBlank(message = "Debe ingresar una dirección") String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(@NotBlank(message = "Debe ingresar una dirección") String direccion) {
+        this.direccion = direccion;
     }
 }

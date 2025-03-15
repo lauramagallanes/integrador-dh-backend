@@ -62,9 +62,10 @@ class ProductoServiceTest {
     private static Set<Long> caracteristicasIds;
     private static Set<Caracteristica> caracteristicas;
 
+
     @BeforeAll
     static void setUp(){
-        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList());
+        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList(), "Uruguay", "Montevideo", "Av. 18 de Julio 1234");
         productoImagenes = List.of(
                 new ProductoImagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
                 new ProductoImagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto),
@@ -94,7 +95,7 @@ class ProductoServiceTest {
         ));
 
 
-        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, categoriasIds, caracteristicasIds, productoImagenEntradaDtos);
+        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, categoriasIds, caracteristicasIds, productoImagenEntradaDtos, "Uruguay", "Montevideo", "Av. 18 de Julio 1234");
     }
 
     @BeforeEach
