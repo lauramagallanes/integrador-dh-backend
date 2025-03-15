@@ -67,7 +67,7 @@ class ProductoServiceTest {
 
     @BeforeAll
     static void setUp(){
-        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList(), "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO);
+        producto = new Producto(1L, "Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, diaEvento, Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList(), "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.REEMBOLSO_COMPLETO_SI_CANCELAS_7_DIAS_ANTES, PoliticaPagos.PAGO_INMEDIATO_Y_RESERVA_CONFIRMADA);
         productoImagenes = List.of(
                 new ProductoImagen(1L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN1434.JPG", producto),
                 new ProductoImagen(2L, "https://imagenespasocenturion.s3.us-east-1.amazonaws.com/DSCN0710.JPG", producto),
@@ -97,7 +97,7 @@ class ProductoServiceTest {
         ));
 
 
-        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, categoriasIds, caracteristicasIds, productoImagenEntradaDtos, "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO);
+        productoEntradaDto = new ProductoEntradaDto("Observacion de cielo nocturno", "Una noche para disfrutar", 500.00, POR_PERSONA, "Español", horaInicio, horaFin, FECHA_UNICA, Collections.emptyList(), diaEvento, categoriasIds, caracteristicasIds, productoImagenEntradaDtos, "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.REEMBOLSO_COMPLETO_SI_CANCELAS_7_DIAS_ANTES, PoliticaPagos.PAGO_INMEDIATO_Y_RESERVA_CONFIRMADA);
     }
 
     @BeforeEach
