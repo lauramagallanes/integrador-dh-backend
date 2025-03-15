@@ -30,13 +30,14 @@ public class ProductoSalidaDto {
 
     private TipoEvento tipoEvento;
 
-    @Schema(type = "string", format = "date", example = "2025-02-25")
+    /*@Schema(type = "string", format = "date", example = "2025-02-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate fechaEvento;
+    private LocalDate fechaEvento;*/
 
-    @Schema(type = "string", format = "date", example = "2025-03-25")
+    /*@Schema(type = "string", format = "date", example = "2025-03-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate fechaFinEvento;
+    private LocalDate fechaFinEvento;*/
+
     private List<DiaSemana> diasDisponible;
     private Set<CategoriaSalidaDto> categorias;
     private Set<CaracteristicaSalidaDto> caracteristicas;
@@ -52,7 +53,7 @@ public class ProductoSalidaDto {
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, LocalDate fechaFinEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -62,8 +63,6 @@ public class ProductoSalidaDto {
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
         this.tipoEvento = tipoEvento;
-        this.fechaEvento = fechaEvento;
-        this.fechaFinEvento = fechaFinEvento;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
         this.caracteristicas = caracteristicas;
@@ -164,13 +163,6 @@ public class ProductoSalidaDto {
         this.productoImagenesSalidaDto = productoImagenesSalidaDto;
     }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
-    }
-
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
-    }
 
     public List<DiaSemana> getDiasDisponible() {
         return diasDisponible;
@@ -238,13 +230,6 @@ public class ProductoSalidaDto {
         this.politicaPagos = politicaPagos;
     }
 
-    public LocalDate getFechaFinEvento() {
-        return fechaFinEvento;
-    }
-
-    public void setFechaFinEvento(LocalDate fechaFinEvento) {
-        this.fechaFinEvento = fechaFinEvento;
-    }
 
     public int getCuposTotales() {
         return cuposTotales;

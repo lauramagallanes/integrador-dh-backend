@@ -46,11 +46,11 @@ public class ProductoEntradaDto {
     private List<DiaSemana> diasDisponible;
 
     @Schema(type = "string", format = "date", example = "2025-02-25")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     private LocalDate fechaEvento;
 
     @Schema(type = "string", format = "date", example = "2025-02-25")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     private LocalDate fechaFinEvento;
 
 
