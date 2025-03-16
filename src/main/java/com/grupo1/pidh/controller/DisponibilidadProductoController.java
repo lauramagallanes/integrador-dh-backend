@@ -27,4 +27,10 @@ public class DisponibilidadProductoController {
     public ResponseEntity<List<DisponibilidadProductoSalidaDto>> obtenerDisponibilidad(@PathVariable Long productoId){
         return ResponseEntity.ok(disponibilidadProductoService.obtenerDisponibilidadPorProducto(productoId));
     }
+
+    @GetMapping("/listar")
+    @Operation(summary = "Ver todas las disponibilidades", description = "Devuelve un listado con todas las disponibilidades para todos los productos")
+    public ResponseEntity<List<DisponibilidadProductoSalidaDto>> listarDisponibilidades(){
+        return ResponseEntity.ok(disponibilidadProductoService.listadoDisponibilidadTodosLosProductos());
+    }
 }

@@ -10,13 +10,15 @@ public class DisponibilidadProductoSalidaDto {
 
     private int cuposTotales;
     private int cuposReservados;
+    private Long productoId;
 
     public DisponibilidadProductoSalidaDto(){}
 
-    public DisponibilidadProductoSalidaDto(LocalDate fechaEvento, int cuposTotales, int cuposReservados) {
+    public DisponibilidadProductoSalidaDto(LocalDate fechaEvento, int cuposTotales, int cuposReservados, Long productoId) {
         this.fechaEvento = fechaEvento;
         this.cuposTotales = cuposTotales;
         this.cuposReservados = cuposReservados;
+        this.productoId = productoId;
     }
 
     public LocalDate getFechaEvento() {
@@ -41,5 +43,13 @@ public class DisponibilidadProductoSalidaDto {
 
     public void setCuposReservados(int cuposReservados) {
         this.cuposReservados = cuposReservados;
+    }
+
+    public Long getProductoId() {
+        return productoId;
+    }
+
+    public void setProductoId(Long productoId) {
+        this.productoId = productoId;
     }
 }

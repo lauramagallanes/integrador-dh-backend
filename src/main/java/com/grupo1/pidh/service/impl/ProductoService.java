@@ -1,6 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.dto.salida.DisponibilidadProductoSalidaDto;
 import com.grupo1.pidh.entity.*;
 import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
@@ -356,5 +357,8 @@ public class ProductoService implements IProductoService {
 
         modelMapper.typeMap(Producto.class, ProductoSalidaDto.class)
                 .addMappings(mapper -> mapper.map(Producto::getProductoImagenes, ProductoSalidaDto::setProductoImagenesSalidaDto));
+
+        modelMapper.typeMap(DisponibilidadProducto.class, DisponibilidadProductoSalidaDto.class)
+                .addMappings(mapper -> mapper.map(src -> src.getProducto().getId(), DisponibilidadProductoSalidaDto::setProductoId));
     }
 }
