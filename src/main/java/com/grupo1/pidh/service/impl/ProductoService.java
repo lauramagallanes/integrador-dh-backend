@@ -1,8 +1,8 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grupo1.pidh.entity.Caracteristica;
-import com.grupo1.pidh.entity.Categoria;
+import com.grupo1.pidh.dto.salida.DisponibilidadProductoSalidaDto;
+import com.grupo1.pidh.entity.*;
 import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
@@ -11,10 +11,10 @@ import com.grupo1.pidh.repository.CategoriaRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
-import com.grupo1.pidh.entity.ProductoImagen;
-import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.service.IProductoService;
 import com.grupo1.pidh.service.IS3Service;
+import com.grupo1.pidh.utils.enums.DiaSemana;
+import com.grupo1.pidh.utils.enums.TipoEvento;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,6 +90,10 @@ public class ProductoService implements IProductoService {
             }
         }
         producto.setCaracteristicas(caracteristicas);
+
+        List<DisponibilidadProducto> disponibilidad = generarDisponibilidad(producto, dto.getTipoEvento(), dto.getFechaEvento(), dto.getFechaFinEvento(), dto.getDiasDisponible(), dto.getCuposTotales());
+
+        producto.setDisponibilidad(disponibilidad);
 
         try {
             producto = productoRepository.save(producto);
@@ -217,6 +223,7 @@ public class ProductoService implements IProductoService {
         Hibernate.initialize(producto.getCategorias());
         Hibernate.initialize(producto.getCaracteristicas());
         Hibernate.initialize((producto.getProductoImagenes()));
+        Hibernate.initialize(producto.getDisponibilidad());
 
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
@@ -226,8 +233,12 @@ public class ProductoService implements IProductoService {
         producto.setHoraInicio(dto.getHoraInicio());
         producto.setHoraFin(dto.getHoraFin());
         producto.setTipoEvento(dto.getTipoEvento());
-        producto.setFechaEvento(dto.getFechaEvento());
-        producto.setDiasDisponible(dto.getDiasDisponible());
+        //producto.setDiasDisponible(dto.getDiasDisponible());
+        producto.setPais(dto.getPais());
+        producto.setCiudad(dto.getCiudad());
+        producto.setDireccion(dto.getDireccion());
+        producto.setPoliticaCancelacion(dto.getPoliticaCancelacion());
+        producto.setPoliticaPagos(dto.getPoliticaPagos());
 
         if (dto.getCategoriasIds() != null) { // Permite dejar el producto sin categorías si se envía vacío
             Set<Categoria> nuevasCategorias = new HashSet<>();
@@ -253,6 +264,22 @@ public class ProductoService implements IProductoService {
                 producto.setCaracteristicas(nuevasCaracteristicas);
             }
         }
+
+        List<DisponibilidadProducto> disponibilidadesConReservas = producto.getDisponibilidad().stream()
+                .filter(d -> d.getCuposReservados() >0)
+                .collect(Collectors.toList());
+
+        producto.getDisponibilidad().removeIf(d -> d.getCuposReservados() == 0);
+
+        List<DisponibilidadProducto> nuevasDisponibilidades = generarDisponibilidad(
+                producto,
+                dto.getTipoEvento(),
+                dto.getFechaEvento(),
+                dto.getFechaFinEvento(),
+                dto.getDiasDisponible(),
+                dto.getCuposTotales());
+        disponibilidadesConReservas.addAll(nuevasDisponibilidades);
+        producto.setDisponibilidad(disponibilidadesConReservas);
 
         try {
             producto = productoRepository.save(producto);
@@ -283,6 +310,45 @@ public class ProductoService implements IProductoService {
         return modelMapper.map(producto, ProductoSalidaDto.class);
     }
 
+    public List<ProductoSalidaDto> filtrarProductosPorNombre(String query){
+        List<Producto> productosFiltrados = productoRepository.findByNombreContainingIgnoreCase(query);
+        return productosFiltrados.stream()
+                .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
+                .collect(Collectors.toList());
+    }
+
+    private List<DisponibilidadProducto> generarDisponibilidad(Producto producto, TipoEvento tipoevento, LocalDate fechaInicio, LocalDate fechaFin, List<DiaSemana> diasDisponibles, int cuposTotales) {
+        List<DisponibilidadProducto> disponibilidadList = new ArrayList<>();
+
+        if (tipoevento == TipoEvento.FECHA_UNICA){
+            disponibilidadList.add(new DisponibilidadProducto(producto, fechaInicio, cuposTotales));
+        } else if (tipoevento == TipoEvento.RECURRENTE) {
+            LocalDate fechaActual = fechaInicio;
+            while (!fechaActual.isAfter(fechaFin)){
+                String diaEnEspanol = traducirDiaSemana(fechaActual.getDayOfWeek());
+
+                if (diasDisponibles.contains(DiaSemana.valueOf(diaEnEspanol))){
+                    disponibilidadList.add(new DisponibilidadProducto(producto, fechaActual, cuposTotales));
+                }
+                fechaActual=fechaActual.plusDays(1);
+            }
+        }
+
+        return disponibilidadList;
+    }
+
+    private String traducirDiaSemana(DayOfWeek dayOfWeek){
+        switch (dayOfWeek){
+            case MONDAY: return "LUNES";
+            case TUESDAY: return "MARTES";
+            case WEDNESDAY: return "MIERCOLES";
+            case THURSDAY: return "JUEVES";
+            case FRIDAY: return "VIERNES";
+            case SATURDAY: return "SABADO";
+            case SUNDAY: return "DOMINGO";
+            default: throw new IllegalArgumentException("Día de la semana desconocido: " + dayOfWeek);
+        }
+    }
 
     private void configureMapping() {
         modelMapper.typeMap(ProductoEntradaDto.class, Producto.class)
@@ -291,5 +357,8 @@ public class ProductoService implements IProductoService {
 
         modelMapper.typeMap(Producto.class, ProductoSalidaDto.class)
                 .addMappings(mapper -> mapper.map(Producto::getProductoImagenes, ProductoSalidaDto::setProductoImagenesSalidaDto));
+
+        modelMapper.typeMap(DisponibilidadProducto.class, DisponibilidadProductoSalidaDto.class)
+                .addMappings(mapper -> mapper.map(src -> src.getProducto().getId(), DisponibilidadProductoSalidaDto::setProductoId));
     }
 }
