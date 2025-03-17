@@ -1,6 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.entity.*;
@@ -98,6 +99,8 @@ class ProductoServiceTest {
 
     @BeforeEach
     void initService() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
         productoService = new ProductoService(productoRepositoryMock, objectMapper, s3ServiceMock, modelMapper, categoriaRepositoryMock, caracteristicaRepositoryMock);
 
         when(categoriaRepositoryMock.findById(anyLong()))
