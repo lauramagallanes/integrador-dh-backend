@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface IDisponibilidadProductoService {
     List<DisponibilidadProductoSalidaDto> obtenerDisponibilidadPorProducto(Long productoId);
+    List <DisponibilidadProductoSalidaDto> listadoDisponibilidadTodosLosProductos();
 }
