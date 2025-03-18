@@ -17,6 +17,6 @@ public interface IReservaService {
     ReservaSalidaDTO buscarReservaPorId(Long id) throws ResourceNotFoundException;
     void eliminarReserva(Long id) throws ResourceNotFoundException, ConflictException;
     ReservaSalidaDTO editarProducto(Long id, RegistrarReservasEntradaDTO dto) throws ResourceNotFoundException;
-    ReservaSalidaDTO agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException;
+    ReservaSalidaDTO agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException;
 
 }
