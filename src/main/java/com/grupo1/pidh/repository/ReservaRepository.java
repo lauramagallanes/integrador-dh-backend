@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ReservaRepository  extends JpaRepository<Reserva, Long> {
     @Query("SELECT r FROM Reserva r WHERE r.usuario.email = :usuarioEmail ORDER BY r.id DESC")
-    Optional<Reserva> findFirstByUsuarioEmailOrderByIdDesc(String usuarioEmail);
+    Reserva findTopByUsuarioEmailOrderByIdDesc(String usuarioEmail);
 }

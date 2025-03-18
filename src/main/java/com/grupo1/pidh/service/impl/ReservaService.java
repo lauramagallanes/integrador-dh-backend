@@ -139,7 +139,11 @@ public class ReservaService implements IReservaService {
 
     @Override
     public ReservaSalidaDTO agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException {
-        Reserva reserva = reservaRepository.findFirstByUsuarioEmailOrderByIdDesc(usuarioEmail).orElseThrow(()->new ResourceNotFoundException("No se encontró ninguna reserva activa para el usuario"));
+        Reserva reserva = reservaRepository.findTopByUsuarioEmailOrderByIdDesc(usuarioEmail);
+
+        if (reserva == null){
+            throw new ResourceNotFoundException("No se encontró ninguna reserva activa para este usuario");
+        }
 
         if (reserva.getPuntuacion() != null){
             throw new ConflictException("Esta reserva ya ha sido calificada");
