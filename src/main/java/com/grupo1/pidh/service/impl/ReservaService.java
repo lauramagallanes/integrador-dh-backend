@@ -1,5 +1,6 @@
 package com.grupo1.pidh.service.impl;
 
+import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
@@ -19,6 +20,7 @@ import com.grupo1.pidh.utils.enums.TipoTarifa;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,5 +135,22 @@ public class ReservaService implements IReservaService {
     @Override
     public ReservaSalidaDTO editarProducto(Long id, RegistrarReservasEntradaDTO dto) throws ResourceNotFoundException {
         return null;
+    }
+
+    @Override
+    public ReservaSalidaDTO agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException {
+        Reserva reserva = reservaRepository.findFirstByUsuarioEmailOrderByIdDesc(usuarioEmail).orElseThrow(()->new ResourceNotFoundException("No se encontró ninguna reserva activa para el usuario"));
+
+        if (reserva.getPuntuacion() != null){
+            throw new ConflictException("Esta reserva ya ha sido calificada");
+        }
+
+        reserva.setPuntuacion(dto.getPuntuacion());
+        reserva.setResena(dto.getResena());
+        reserva.setFechaResena(LocalDate.now());
+
+        reservaRepository.save(reserva);
+
+        return modelMapper.map(reserva, ReservaSalidaDTO.class);
     }
 }
