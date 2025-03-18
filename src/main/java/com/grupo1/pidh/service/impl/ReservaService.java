@@ -3,6 +3,8 @@ package com.grupo1.pidh.service.impl;
 import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaDetalleSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
 import com.grupo1.pidh.entity.DisponibilidadProducto;
 import com.grupo1.pidh.entity.Producto;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservaService implements IReservaService {
@@ -157,5 +160,30 @@ public class ReservaService implements IReservaService {
         reservaRepository.save(reserva);
 
         return modelMapper.map(reserva, ReservaSalidaDTO.class);
+    }
+
+    @Override
+    public ResenaProductoSalidaDto obtenerResenasPorProducto(Long productoId) {
+        List<Reserva> reservas = reservaRepository.findResenasByProductoId(productoId);
+        if (reservas.isEmpty()){
+            return new ResenaProductoSalidaDto(productoId, 0, 0, new ArrayList<>());
+        }
+        List<ReservaSalidaDTO> reservasDto = reservas.stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .collect(Collectors.toList());
+
+        List<ResenaDetalleSalidaDto> listaResenas = reservasDto.stream()
+                .map(reservaDto -> new ResenaDetalleSalidaDto(
+                        reservaDto.getUsuarioSalidaDTO().getNombre(),
+                        reservaDto.getPuntuacion(),
+                        reservaDto.getResena(),
+                        reservaDto.getFechaResena()
+                )).collect(Collectors.toList());
+
+        double promedioPuntuacion = reservasDto.stream()
+                .mapToInt(ReservaSalidaDTO::getPuntuacion)
+                .average()
+                .orElse(0.0);
+        return new ResenaProductoSalidaDto(productoId, promedioPuntuacion, reservasDto.size(), listaResenas);
     }
 }

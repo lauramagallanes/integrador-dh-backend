@@ -13,4 +13,7 @@ import java.util.Optional;
 public interface ReservaRepository  extends JpaRepository<Reserva, Long> {
     @Query(value = "SELECT r FROM Reserva r WHERE r.usuario.email = :usuarioEmail ORDER BY r.id DESC")
     List<Reserva> findByUsuarioEmailOrderByIdDesc(String usuarioEmail);
+
+    @Query("SELECT r FROM Reserva r WHERE r.disponibilidadProducto.producto.id = :productoId AND r.puntuacion IS NOT NULL")
+    List<Reserva> findResenasByProductoId(@Param("productoId") Long productoId);
 }

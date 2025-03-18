@@ -4,6 +4,7 @@ import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
 import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
@@ -46,6 +47,14 @@ public class ReservaController {
         String usuarioEmail = authentication.getName();
         ReservaSalidaDTO reservaSalidaDTO = reservaService.agregarResena(dto, usuarioEmail);
         return new ResponseEntity<>(reservaSalidaDTO, HttpStatus.OK);
+
+    }
+
+    @Operation(summary = "Obtener reseñas de un producto", description = "Devuelve todas las reseñas de un producto, con el promedio de puntuaciones y el total de reseñas existentes")
+    @GetMapping("/resenas/{productoId}")
+    public ResponseEntity<ResenaProductoSalidaDto> obtenerResenasPorProducto(@PathVariable Long productoId){
+        ResenaProductoSalidaDto resenas = reservaService.obtenerResenasPorProducto(productoId);
+        return ResponseEntity.ok(resenas);
     }
 
 }
