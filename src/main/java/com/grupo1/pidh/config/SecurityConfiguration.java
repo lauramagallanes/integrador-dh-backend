@@ -59,6 +59,7 @@ public class SecurityConfiguration {
 
                     //ReservaController
                     auth.antMatchers(HttpMethod.POST, "/reserva/").authenticated();
+                    auth.antMatchers(HttpMethod.GET, "/reserva/resenas/**").permitAll();
 
                     auth.antMatchers("/swagger-ui/**").permitAll();
                     auth.antMatchers("/v3/api-docs/**").permitAll();
