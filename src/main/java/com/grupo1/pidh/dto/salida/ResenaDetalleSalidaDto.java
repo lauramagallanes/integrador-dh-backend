@@ -1,11 +1,17 @@
 package com.grupo1.pidh.dto.salida;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDate;
 
 public class ResenaDetalleSalidaDto {
     private String nombreUsuario;
     private int puntuacion;
     private String resena;
+
+    @Schema(type = "string", example = "2025-06-17")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaResena;
 
     public ResenaDetalleSalidaDto(String nombreUsuario, int puntuacion, String resena, LocalDate fechaResena) {
