@@ -4,6 +4,7 @@ import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaDetalleSalidaDto;
 import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
 import com.grupo1.pidh.exceptions.BadRequestException;
@@ -42,11 +43,11 @@ public class ReservaController {
 
     @Operation(summary = "Agregar reseña y puntuación", description = "Permite agregar una reseña a la ultima reserva realizada por el usuario")
     @PostMapping("/agregar-resena")
-    public ResponseEntity<ReservaSalidaDTO> agregarResena(@Valid @RequestBody AgregarResenaEntradaDto dto, Authentication authentication) throws ConflictException, ResourceNotFoundException{
-        System.out.println("Usuario autenticado" + authentication.getName());
+    public ResponseEntity<ResenaDetalleSalidaDto> agregarResena(@Valid @RequestBody AgregarResenaEntradaDto dto, Authentication authentication) throws ConflictException, ResourceNotFoundException{
+
         String usuarioEmail = authentication.getName();
-        ReservaSalidaDTO reservaSalidaDTO = reservaService.agregarResena(dto, usuarioEmail);
-        return new ResponseEntity<>(reservaSalidaDTO, HttpStatus.OK);
+        ResenaDetalleSalidaDto resenaDetalleSalidaDto = reservaService.agregarResena(dto, usuarioEmail);
+        return new ResponseEntity<>(resenaDetalleSalidaDto, HttpStatus.OK);
 
     }
 

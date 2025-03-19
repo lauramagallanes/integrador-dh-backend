@@ -141,7 +141,7 @@ public class ReservaService implements IReservaService {
     }
 
     @Override
-    public ReservaSalidaDTO agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException {
+    public ResenaDetalleSalidaDto agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException {
         List<Reserva> reservas = reservaRepository.findByUsuarioEmailOrderByIdDesc(usuarioEmail);
 
         if (reservas.isEmpty()){
@@ -159,7 +159,12 @@ public class ReservaService implements IReservaService {
 
         reservaRepository.save(reserva);
 
-        return modelMapper.map(reserva, ReservaSalidaDTO.class);
+        return new ResenaDetalleSalidaDto(
+                reserva.getUsuario().getNombre(),
+                reserva.getPuntuacion(),
+                reserva.getResena(),
+                reserva.getFechaResena()
+        );
     }
 
     @Override

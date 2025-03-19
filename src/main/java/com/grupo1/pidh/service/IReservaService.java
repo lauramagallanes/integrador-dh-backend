@@ -2,6 +2,7 @@ package com.grupo1.pidh.service;
 
 import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
+import com.grupo1.pidh.dto.salida.ResenaDetalleSalidaDto;
 import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
 import com.grupo1.pidh.exceptions.BadRequestException;
@@ -18,7 +19,7 @@ public interface IReservaService {
     ReservaSalidaDTO buscarReservaPorId(Long id) throws ResourceNotFoundException;
     void eliminarReserva(Long id) throws ResourceNotFoundException, ConflictException;
     ReservaSalidaDTO editarProducto(Long id, RegistrarReservasEntradaDTO dto) throws ResourceNotFoundException;
-    ReservaSalidaDTO agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException;
+    ResenaDetalleSalidaDto agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException;
     ResenaProductoSalidaDto obtenerResenasPorProducto(Long productoId);
 
 }
