@@ -1,5 +1,6 @@
 package com.grupo1.pidh.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.grupo1.pidh.utils.enums.UsuarioRoles;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name="USUARIOS")
@@ -28,6 +30,10 @@ public class Usuario implements UserDetails {
     private UsuarioRoles usuarioRoles;
     @Column(nullable = false, name = "EsSuperAdmin")
     private boolean esSuperAdmin;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Favorito> favoritos;
 
     public Usuario() {
     }
@@ -88,6 +94,15 @@ public class Usuario implements UserDetails {
     public boolean getEsSuperAdmin(){
         return esSuperAdmin;
     }
+
+    public List<Favorito> getFavoritos() {
+        return favoritos;
+    }
+
+    public void setFavoritos(List<Favorito> favoritos) {
+        this.favoritos = favoritos;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(usuarioRoles.name());

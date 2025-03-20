@@ -57,9 +57,15 @@ public class SecurityConfiguration {
                     //DisponibilidadProductoController
                     auth.antMatchers(HttpMethod.GET, "/disponibilidad/**").permitAll();
 
+                    //FavoritoController
+                    auth.antMatchers(HttpMethod.POST, "/favoritos/**").authenticated();
+                    auth.antMatchers(HttpMethod.DELETE, "/favoritos/**").authenticated();
+                    auth.antMatchers(HttpMethod.GET, "/favoritos/**").authenticated();
+
                     //ReservaController
                     auth.antMatchers(HttpMethod.POST, "/reserva/").authenticated();
                     auth.antMatchers(HttpMethod.GET, "/reserva/resenas/**").permitAll();
+
 
                     auth.antMatchers("/swagger-ui/**").permitAll();
                     auth.antMatchers("/v3/api-docs/**").permitAll();
