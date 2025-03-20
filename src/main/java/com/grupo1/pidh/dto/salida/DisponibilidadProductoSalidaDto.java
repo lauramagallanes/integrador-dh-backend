@@ -5,20 +5,32 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
 public class DisponibilidadProductoSalidaDto {
+    private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
 
     private int cuposTotales;
     private int cuposReservados;
     private Long productoId;
+    private int cuposDisponibles;
 
     public DisponibilidadProductoSalidaDto(){}
 
-    public DisponibilidadProductoSalidaDto(LocalDate fechaEvento, int cuposTotales, int cuposReservados, Long productoId) {
+    public DisponibilidadProductoSalidaDto(Long id, LocalDate fechaEvento, int cuposTotales, int cuposReservados, Long productoId, int cuposDisponibles) {
+        this.id = id;
         this.fechaEvento = fechaEvento;
         this.cuposTotales = cuposTotales;
         this.cuposReservados = cuposReservados;
         this.productoId = productoId;
+        this.cuposDisponibles = cuposDisponibles;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDate getFechaEvento() {
@@ -51,5 +63,13 @@ public class DisponibilidadProductoSalidaDto {
 
     public void setProductoId(Long productoId) {
         this.productoId = productoId;
+    }
+
+    public int getCuposDisponibles() {
+        return cuposDisponibles;
+    }
+
+    public void setCuposDisponibles(int cuposDisponibles) {
+        this.cuposDisponibles = cuposDisponibles;
     }
 }

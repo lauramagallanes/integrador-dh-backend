@@ -87,5 +87,7 @@ public class DisponibilidadProducto {
         this.cuposReservados = cuposReservados;
     }
 
-
+    public int getCuposDisponibles(){
+        return (cuposTotales - cuposReservados);
+    }
 }
