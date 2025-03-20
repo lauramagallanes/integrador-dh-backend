@@ -46,7 +46,7 @@ public class FavoritoService implements IFavoritoService {
         Producto producto = productoRepository.findById(favoritoEntradaDto.getProductoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
-        // Verificar si ya existe el favorito
+        // Verificar si ya existe el favorito.
         Optional<Favorito> existente = favoritoRepository.findByUsuarioIdAndProductoId(
                 usuario.getId(), producto.getId());
 
