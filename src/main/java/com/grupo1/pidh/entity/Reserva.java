@@ -18,6 +18,15 @@ public class Reserva {
     @Column(name = "cantidad_personas", nullable = false)
     private int cantidadPersonas;
 
+    @Column(name = "puntuacion")
+    private Integer puntuacion;
+
+    @Column(name = "reseña")
+    private String resena;
+
+    @Column(name="fecha_reseña")
+    private LocalDate fechaResena;
+
     public Reserva() {
     }
 
@@ -26,6 +35,16 @@ public class Reserva {
         this.disponibilidadProducto = disponibilidadProducto;
         this.usuario = usuario;
         this.cantidadPersonas = cantidadPersonas;
+    }
+
+    public Reserva(Long id, DisponibilidadProducto disponibilidadProducto, Usuario usuario, int cantidadPersonas, Integer puntuacion, String resena, LocalDate fechaResena) {
+        this.id = id;
+        this.disponibilidadProducto = disponibilidadProducto;
+        this.usuario = usuario;
+        this.cantidadPersonas = cantidadPersonas;
+        this.puntuacion = puntuacion;
+        this.resena = resena;
+        this.fechaResena = fechaResena;
     }
 
     public Long getId() {
@@ -58,5 +77,29 @@ public class Reserva {
 
     public void setCantidadPersonas(int cantidadPersonas) {
         this.cantidadPersonas = cantidadPersonas;
+    }
+
+    public Integer getPuntuacion() {
+        return puntuacion;
+    }
+
+    public void setPuntuacion(Integer puntuacion) {
+        this.puntuacion = puntuacion;
+    }
+
+    public String getResena() {
+        return resena;
+    }
+
+    public void setResena(String resena) {
+        this.resena = resena;
+    }
+
+    public LocalDate getFechaResena() {
+        return fechaResena;
+    }
+
+    public void setFechaResena(LocalDate fechaResena) {
+        this.fechaResena = fechaResena;
     }
 }

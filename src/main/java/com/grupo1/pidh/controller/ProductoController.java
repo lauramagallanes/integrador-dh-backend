@@ -2,6 +2,7 @@ package com.grupo1.pidh.controller;
 
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
@@ -79,4 +80,6 @@ public class ProductoController {
     public ResponseEntity<List<ProductoSalidaDto>> filtrarProductosPorNombre(@RequestParam String query){
         return ResponseEntity.ok(productoService.filtrarProductosPorNombre(query));
     }
+
+
 }

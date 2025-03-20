@@ -1,7 +1,10 @@
 package com.grupo1.pidh.service.impl;
 
+import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaDetalleSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
 import com.grupo1.pidh.entity.DisponibilidadProducto;
 import com.grupo1.pidh.entity.Producto;
@@ -19,8 +22,10 @@ import com.grupo1.pidh.utils.enums.TipoTarifa;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservaService implements IReservaService {
@@ -133,5 +138,57 @@ public class ReservaService implements IReservaService {
     @Override
     public ReservaSalidaDTO editarProducto(Long id, RegistrarReservasEntradaDTO dto) throws ResourceNotFoundException {
         return null;
+    }
+
+    @Override
+    public ResenaDetalleSalidaDto agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException {
+        List<Reserva> reservas = reservaRepository.findByUsuarioEmailOrderByIdDesc(usuarioEmail);
+
+        if (reservas.isEmpty()){
+            throw new ResourceNotFoundException("No se encontró ninguna reserva activa para este usuario");
+        }
+        Reserva reserva = reservas.get(0);
+
+        if (reserva.getPuntuacion() != null){
+            throw new ConflictException("Esta reserva ya ha sido calificada");
+        }
+
+        reserva.setPuntuacion(dto.getPuntuacion());
+        reserva.setResena(dto.getResena());
+        reserva.setFechaResena(LocalDate.now());
+
+        reservaRepository.save(reserva);
+
+        return new ResenaDetalleSalidaDto(
+                reserva.getUsuario().getNombre(),
+                reserva.getPuntuacion(),
+                reserva.getResena(),
+                reserva.getFechaResena()
+        );
+    }
+
+    @Override
+    public ResenaProductoSalidaDto obtenerResenasPorProducto(Long productoId) {
+        List<Reserva> reservas = reservaRepository.findResenasByProductoId(productoId);
+        if (reservas.isEmpty()){
+            return new ResenaProductoSalidaDto(productoId, 0, 0, new ArrayList<>());
+        }
+        List<ReservaSalidaDTO> reservasDto = reservas.stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .collect(Collectors.toList());
+
+        List<ResenaDetalleSalidaDto> listaResenas = reservasDto.stream()
+                .map(reservaDto -> new ResenaDetalleSalidaDto(
+                        reservaDto.getUsuarioSalidaDTO().getNombre(),
+                        reservaDto.getPuntuacion(),
+                        reservaDto.getResena(),
+                        reservaDto.getFechaResena()
+                )).collect(Collectors.toList());
+
+        double promedioPuntuacion = reservasDto.stream()
+                .mapToInt(ReservaSalidaDTO::getPuntuacion)
+                .average()
+                .orElse(0.0);
+        return new ResenaProductoSalidaDto(productoId, promedioPuntuacion, reservasDto.size(), listaResenas);
     }
 }
