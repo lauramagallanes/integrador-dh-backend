@@ -316,7 +316,7 @@ public class ProductoService implements IProductoService {
         List<Producto> productos = productoRepository.buscarPorFiltros(
                 filtros.getNombre(),
                 filtros.getFechaEvento(),
-                filtros.getCategoriaId()
+                filtros.getCategoriaNombre()
         );
         return productos.stream()
                 .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))

@@ -13,14 +13,14 @@ public class FiltroProductoEntradaDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaEvento;
 
-    private Long categoriaId;
+    private String categoriaNombre;
 
     public FiltroProductoEntradaDto(){}
 
-    public FiltroProductoEntradaDto(String nombre, LocalDate fechaEvento, Long categoriaId) {
+    public FiltroProductoEntradaDto(String nombre, LocalDate fechaEvento, String categoriaNombre) {
         this.nombre = nombre;
         this.fechaEvento = fechaEvento;
-        this.categoriaId = categoriaId;
+        this.categoriaNombre = categoriaNombre;
     }
 
     public String getNombre() {
@@ -39,11 +39,11 @@ public class FiltroProductoEntradaDto {
         this.fechaEvento = fechaEvento;
     }
 
-    public Long getCategoriaId() {
-        return categoriaId;
+    public String getCategoriaNombre() {
+        return categoriaNombre;
     }
 
-    public void setCategoriaId(Long categoriaId) {
-        this.categoriaId = categoriaId;
+    public void setCategoriaNombre(String categoriaNombre) {
+        this.categoriaNombre = categoriaNombre;
     }
 }

@@ -18,10 +18,10 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
             "LEFT JOIN p.categorias c " +
             "WHERE (:nombre IS NULL OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) " +
             "AND (:fechaEvento IS NULL OR d.fechaEvento >= :fechaEvento) " +
-            "AND (:categoriaId IS NULL OR c.id = :categoriaId)")
+            "AND (:categoriaNombre IS NULL OR LOWER(c.nombre) = LOWER(:categoriaNombre))")
     List<Producto> buscarPorFiltros(
             @Param("nombre") String nombre,
             @Param("fechaEvento")LocalDate fechaEvento,
-            @Param("categoriaId") Long categoriaId
+            @Param("categoriaNombre") String categoriaNombre
             );
 }
