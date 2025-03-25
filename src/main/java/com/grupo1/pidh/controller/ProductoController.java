@@ -1,5 +1,6 @@
 package com.grupo1.pidh.controller;
 
+import com.grupo1.pidh.dto.entrada.FiltroProductoEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
@@ -81,5 +82,10 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.filtrarProductosPorNombre(query));
     }
 
+    @Operation(summary = "Buscar productos con filtros", description = "Filtra productos por nombre, fecha de disponibilidad y categoria, siendo los filtros de busqueda opcionales")
+    @PostMapping("/buscar")
+    public ResponseEntity<List<ProductoSalidaDto>> buscarProductosPorFiltros(@RequestBody FiltroProductoEntradaDto dto){
+        return ResponseEntity.ok(productoService.buscarProductosPorFiltros(dto));
+    }
 
 }

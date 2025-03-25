@@ -1,6 +1,7 @@
 package com.grupo1.pidh.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo1.pidh.dto.entrada.FiltroProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.DisponibilidadProductoSalidaDto;
 import com.grupo1.pidh.entity.*;
 import com.grupo1.pidh.exceptions.BadRequestException;
@@ -308,6 +309,18 @@ public class ProductoService implements IProductoService {
         }
 
         return modelMapper.map(producto, ProductoSalidaDto.class);
+    }
+
+    @Override
+    public List<ProductoSalidaDto> buscarProductosPorFiltros(FiltroProductoEntradaDto filtros) {
+        List<Producto> productos = productoRepository.buscarPorFiltros(
+                filtros.getNombre(),
+                filtros.getFechaEvento(),
+                filtros.getCategoriaNombre()
+        );
+        return productos.stream()
+                .map(producto -> modelMapper.map(producto, ProductoSalidaDto.class))
+                .collect(Collectors.toList());
     }
 
     public List<ProductoSalidaDto> filtrarProductosPorNombre(String query){
