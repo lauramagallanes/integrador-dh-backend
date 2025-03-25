@@ -315,7 +315,8 @@ public class ProductoService implements IProductoService {
     public List<ProductoSalidaDto> buscarProductosPorFiltros(FiltroProductoEntradaDto filtros) {
         List<Producto> productos = productoRepository.buscarPorFiltros(
                 filtros.getNombre(),
-                filtros.getFechaEvento(),
+                filtros.getFechaInicio(),
+                filtros.getFechaFin(),
                 filtros.getCategoriaNombre()
         );
         return productos.stream()
