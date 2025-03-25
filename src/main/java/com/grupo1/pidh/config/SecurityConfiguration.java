@@ -46,6 +46,7 @@ public class SecurityConfiguration {
                     auth.antMatchers(HttpMethod.PUT, "/producto/**").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.DELETE, "/producto/**").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.GET, "/producto/**").permitAll();
+                    auth.antMatchers(HttpMethod.POST, "/producto/buscar").permitAll();
 
                     //UsuarioController
                     auth.antMatchers(HttpMethod.PUT, "/usuario/modificarusuariorole").hasAuthority("ADMIN");
