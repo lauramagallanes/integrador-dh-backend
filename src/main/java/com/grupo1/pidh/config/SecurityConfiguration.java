@@ -64,8 +64,11 @@ public class SecurityConfiguration {
                     auth.antMatchers(HttpMethod.GET, "/favoritos/**").authenticated();
 
                     //ReservaController
-                    auth.antMatchers(HttpMethod.POST, "/reserva/").authenticated();
+                    auth.antMatchers(HttpMethod.POST, "/reserva/**").authenticated();
                     auth.antMatchers(HttpMethod.GET, "/reserva/resenas/**").permitAll();
+                    auth.antMatchers(HttpMethod.PUT, "/reserva/**").authenticated();
+                    auth.antMatchers(HttpMethod.DELETE, "/reserva/**").authenticated();
+                    auth.antMatchers(HttpMethod.GET, "/reserva/**").authenticated();
 
 
                     auth.antMatchers("/swagger-ui/**").permitAll();
