@@ -11,14 +11,14 @@ public class AgregarResenaEntradaDto {
     private String resena;
 
     @NotNull
-    private Long disponibilidadProductoId;
+    private Long reservaId;
 
     public AgregarResenaEntradaDto(){}
 
-    public AgregarResenaEntradaDto(Integer puntuacion, String resena, Long disponibilidadProductoId) {
+    public AgregarResenaEntradaDto(Integer puntuacion, String resena, Long reservaId) {
         this.puntuacion = puntuacion;
         this.resena = resena;
-        this.disponibilidadProductoId = disponibilidadProductoId;
+        this.reservaId = reservaId;
     }
 
     public Integer getPuntuacion() {
@@ -37,11 +37,11 @@ public class AgregarResenaEntradaDto {
         this.resena = resena;
     }
 
-    public @NotNull Long getDisponibilidadProductoId() {
-        return disponibilidadProductoId;
+    public @NotNull Long getReservaId() {
+        return reservaId;
     }
 
-    public void setDisponibilidadProductoId(@NotNull Long disponibilidadProductoId) {
-        this.disponibilidadProductoId = disponibilidadProductoId;
+    public void setReservaId(@NotNull Long reservaId) {
+        this.reservaId = reservaId;
     }
 }
