@@ -146,31 +146,29 @@ public class ReservaService implements IReservaService {
         Usuario usuario = usuarioRepository.findByEmail(usuarioEmail)
                 .orElseThrow(()-> new ResourceNotFoundException("Usuario no encontrado"));
 
-        List<Reserva> reservas = reservaRepository.findByUsuarioEmailAndProducto_Id(usuarioEmail, dto.getProductoId());
+        Optional<Reserva> reservaOptional = reservaRepository.findByUsuarioEmailAndDisponinilidadProducto_Producto_Id(usuarioEmail, dto.getDisponibilidadProductoId());
 
-        if (reservas.isEmpty()){
+        if (reservaOptional.isEmpty()){
             throw new ConflictException("El usuario no tiene reservas activas para este producto");
         }
 
-        Optional<Reserva> reservaSinResena = reservas.stream()
-                .filter(reserva -> reserva.getResena() == null)
-                .findFirst();
-        if (reservaSinResena.isEmpty()){
-            throw new ConflictException("Todas las reservas para este producto ya tienen una reseña realizada por el usuario");
+        Reserva reserva = reservaOptional.get();
+        if (reserva.getResena() != null){
+            throw new ConflictException("Ya existe una reseña para esta reserva");
         }
-
-        Reserva reserva = reservaSinResena.get();
         reserva.setResena(dto.getResena());
         reserva.setPuntuacion(dto.getPuntuacion());
         reserva.setFechaResena(LocalDate.now());
 
         Reserva reservaGuardada = reservaRepository.save(reserva);
 
+
+
         return new ResenaDetalleSalidaDto(
-                reserva.getUsuario().getNombre(),
-                reserva.getPuntuacion(),
-                reserva.getResena(),
-                reserva.getFechaResena()
+                reservaGuardada.getUsuario().getNombre(),
+                reservaGuardada.getPuntuacion(),
+                reservaGuardada.getResena(),
+                reservaGuardada.getFechaResena()
         );
     }
 
