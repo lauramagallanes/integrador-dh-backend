@@ -146,7 +146,7 @@ public class ReservaService implements IReservaService {
         Usuario usuario = usuarioRepository.findByEmail(usuarioEmail)
                 .orElseThrow(()-> new ResourceNotFoundException("Usuario no encontrado"));
 
-        List<Reserva> reservas = reservaRepository.findByUsuarioEmailAndProductoId(usuarioEmail, dto.getProductoId());
+        List<Reserva> reservas = reservaRepository.findByUsuarioEmailAndProducto_Id(usuarioEmail, dto.getProductoId());
 
         if (reservas.isEmpty()){
             throw new ConflictException("El usuario no tiene reservas activas para este producto");
