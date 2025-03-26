@@ -1,8 +1,8 @@
 package com.grupo1.pidh.service.impl;
 
 import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
+import com.grupo1.pidh.dto.entrada.ModificarReservasEntradaDTO;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
-import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ResenaDetalleSalidaDto;
 import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
@@ -23,9 +23,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,12 +35,14 @@ public class ReservaService implements IReservaService {
     private final ReservaRepository reservaRepository;
     private final DisponibilidadProductoRepository disponibilidadProductoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ProductoRepository productoRepository;
     private final ModelMapper modelMapper;
 
-    public ReservaService(ReservaRepository reservaRepository, DisponibilidadProductoRepository disponibilidadProductoRepository, UsuarioRepository usuarioRepository, ModelMapper modelMapper) {
+    public ReservaService(ReservaRepository reservaRepository, DisponibilidadProductoRepository disponibilidadProductoRepository, UsuarioRepository usuarioRepository, ProductoRepository productoRepository, ModelMapper modelMapper) {
         this.reservaRepository = reservaRepository;
         this.disponibilidadProductoRepository = disponibilidadProductoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.productoRepository = productoRepository;
         this.modelMapper = modelMapper;
         configureMapping();
     }
@@ -83,7 +86,7 @@ public class ReservaService implements IReservaService {
             disponibilidadProducto.setCuposReservados(disponibilidadProducto.getCuposReservados() + cantidadPersonas);
             Reserva reserva = new Reserva(null, disponibilidadProducto, usuario, cantidadPersonas);
             reservaSalidaDTOList.add(modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class));
-            
+
         }
         disponibilidadProductoRepository.save(disponibilidadProducto);
 
@@ -113,32 +116,126 @@ public class ReservaService implements IReservaService {
 
     @Override
     public List<ReservaSalidaDTO> listarReservas() {
-        return null;
+        List<ReservaSalidaDTO> reservaSalidaDTOList = reservaRepository.findAll()
+                .stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .toList();
+        return reservaSalidaDTOList;
     }
 
     @Override
-    public List<ReservaSalidaDTO> listarReservasPorUsuario() {
-        return null;
+    public List<ReservaSalidaDTO> listarReservasPorUsuario(String usuarioEmail) {
+        Usuario usuario = usuarioRepository.findByEmail(usuarioEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        List<ReservaSalidaDTO> reservaSalidaDTOList = reservaRepository.findByUsuario(usuario)
+                .stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .toList();
+        return reservaSalidaDTOList;
     }
 
     @Override
-    public List<ReservaSalidaDTO> listarReservasPorProducto() {
-        return null;
+    public List<ReservaSalidaDTO> listarReservasPorProducto(Long productoId) {
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+
+        List<ReservaSalidaDTO> reservaSalidaDTOList = reservaRepository.findByDisponibilidadProducto_Producto(producto)
+                .stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .toList();
+        return reservaSalidaDTOList;
+    }
+
+    @Override
+    public List<ReservaSalidaDTO> listarReservasPorDisponibilidadProducto(Long disponibilidadProductoId) {
+        DisponibilidadProducto disponibilidadProducto = disponibilidadProductoRepository.findById(disponibilidadProductoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Disponibilidad no encontrada"));;
+        List<ReservaSalidaDTO> reservaSalidaDTOList = reservaRepository.findByDisponibilidadProducto(disponibilidadProducto)
+                .stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .toList();
+        return reservaSalidaDTOList;
     }
 
     @Override
     public ReservaSalidaDTO buscarReservaPorId(Long id) throws ResourceNotFoundException {
-        return null;
+        return  reservaRepository.findById(id)
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrado"));
     }
 
     @Override
     public void eliminarReserva(Long id) throws ResourceNotFoundException, ConflictException {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrado"));
+        LocalDateTime fechaHoraInicioEvento = reserva.getDisponibilidadProducto().getFechaEvento().atTime(reserva.getDisponibilidadProducto().getProducto().getHoraInicio());
+        LocalDateTime fechaHoraFinEvento = reserva.getDisponibilidadProducto().getFechaEvento().atTime(reserva.getDisponibilidadProducto().getProducto().getHoraFin());
+        LocalDateTime ahora = LocalDateTime.now();
 
+        if (fechaHoraFinEvento.isBefore(ahora)) {
+            throw new ConflictException("La reserva que quiere eliminar ya finalizó");
+        }else if (fechaHoraInicioEvento.isBefore(ahora)){
+            throw new ConflictException("La reserva que quiere eliminar ya empezó");
+        }
+        DisponibilidadProducto actualDisponibilidadProducto = reserva.getDisponibilidadProducto();
+
+        actualDisponibilidadProducto.setCuposReservados(actualDisponibilidadProducto.getCuposReservados() - reserva.getCantidadPersonas());
+        actualDisponibilidadProducto = disponibilidadProductoRepository.save(actualDisponibilidadProducto);
+        reservaRepository.delete(reserva);
     }
 
     @Override
-    public ReservaSalidaDTO editarProducto(Long id, RegistrarReservasEntradaDTO dto) throws ResourceNotFoundException {
-        return null;
+    public ReservaSalidaDTO editarReserva(Long id, ModificarReservasEntradaDTO dto) throws ResourceNotFoundException, ConflictException {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
+
+        LocalDateTime fechaHoraInicioEvento = reserva.getDisponibilidadProducto().getFechaEvento().atTime(reserva.getDisponibilidadProducto().getProducto().getHoraInicio());
+        LocalDateTime fechaHoraFinEvento = reserva.getDisponibilidadProducto().getFechaEvento().atTime(reserva.getDisponibilidadProducto().getProducto().getHoraFin());
+        LocalDateTime ahora = LocalDateTime.now();
+
+        if (fechaHoraFinEvento.isBefore(ahora)) {
+            throw new ConflictException("La reserva que quiere modificar ya finalizó");
+        }else if (fechaHoraInicioEvento.isBefore(ahora)){
+            throw new ConflictException("La reserva que quiere modificar ya empezó");
+        }
+        DisponibilidadProducto actualDisponibilidadProducto = reserva.getDisponibilidadProducto();
+
+        if (!Objects.equals(reserva.getUsuario().getEmail(), dto.getUsuarioEmail())){
+            Usuario usuario = usuarioRepository.findByEmail(dto.getUsuarioEmail())
+                    .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            reserva.setUsuario(usuario);
+        }
+
+        if (!Objects.equals(reserva.getDisponibilidadProducto().getId(), dto.getDisponibilidadProductoId())){
+            actualDisponibilidadProducto.setCuposReservados(actualDisponibilidadProducto.getCuposReservados() - reserva.getCantidadPersonas());
+            DisponibilidadProducto nuevaDisponibilidadProducto = disponibilidadProductoRepository.findById(dto.getDisponibilidadProductoId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Disponibilidad no encontrada"));
+
+            if ((nuevaDisponibilidadProducto.getCuposReservados() + dto.getCantidadPersonas()) > nuevaDisponibilidadProducto.getCuposTotales()){
+                throw new ConflictException("No hay cupos suficientes para realizar la reserva.");
+            }
+
+            nuevaDisponibilidadProducto.setCuposReservados(nuevaDisponibilidadProducto.getCuposReservados() + dto.getCantidadPersonas());
+            reserva.setDisponibilidadProducto(nuevaDisponibilidadProducto);
+            reserva.setCantidadPersonas(dto.getCantidadPersonas());
+            actualDisponibilidadProducto = disponibilidadProductoRepository.save(actualDisponibilidadProducto);
+            nuevaDisponibilidadProducto = disponibilidadProductoRepository.save(nuevaDisponibilidadProducto);
+
+        } else if (reserva.getCantidadPersonas() != dto.getCantidadPersonas()){
+            int cantidadPersonasDiferencia = dto.getCantidadPersonas() - reserva.getCantidadPersonas();
+
+            if ((actualDisponibilidadProducto.getCuposReservados() + cantidadPersonasDiferencia) > actualDisponibilidadProducto.getCuposTotales()){
+                throw new ConflictException("No hay cupos suficientes para realizar la reserva.");
+            }
+            actualDisponibilidadProducto.setCuposReservados(actualDisponibilidadProducto.getCuposReservados() + cantidadPersonasDiferencia);
+            reserva.setCantidadPersonas(reserva.getCantidadPersonas() + cantidadPersonasDiferencia);
+            reserva.setDisponibilidadProducto(actualDisponibilidadProducto);
+
+            actualDisponibilidadProducto = disponibilidadProductoRepository.save(actualDisponibilidadProducto);
+        }
+
+        return modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class);
     }
 
     @Override

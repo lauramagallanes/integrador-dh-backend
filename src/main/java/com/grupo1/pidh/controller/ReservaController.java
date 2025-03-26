@@ -1,6 +1,7 @@
 package com.grupo1.pidh.controller;
 
 import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
+import com.grupo1.pidh.dto.entrada.ModificarReservasEntradaDTO;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -56,6 +58,37 @@ public class ReservaController {
     public ResponseEntity<ResenaProductoSalidaDto> obtenerResenasPorProducto(@PathVariable Long productoId){
         ResenaProductoSalidaDto resenas = reservaService.obtenerResenasPorProducto(productoId);
         return ResponseEntity.ok(resenas);
+    }
+    @GetMapping("/usuario/{usuarioEmail}")
+    public ResponseEntity<List<ReservaSalidaDTO>> listarPorUsuario(@PathVariable String usuarioEmail) {
+        return ResponseEntity.ok(reservaService.listarReservasPorUsuario(usuarioEmail));
+    }
+    @GetMapping("/producto/{productoid}")
+    public ResponseEntity<List<ReservaSalidaDTO>> listarPorProducto(@PathVariable Long productoid) {
+        return ResponseEntity.ok(reservaService.listarReservasPorProducto(productoid));
+    }
+    @GetMapping("/disponibilidadproducto/{disponibilidadproductoid}")
+    public ResponseEntity<List<ReservaSalidaDTO>> listarPorDisponibilidadProducto(@PathVariable Long disponibilidadproductoid) {
+        return ResponseEntity.ok(reservaService.listarReservasPorDisponibilidadProducto(disponibilidadproductoid));
+    }
+    @GetMapping("/listar")
+    public ResponseEntity<List<ReservaSalidaDTO>> listar() {
+        return ResponseEntity.ok(reservaService.listarReservas());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservaSalidaDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(reservaService.buscarReservaPorId(id));
+    }
+
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<String> eliminarReserva(@RequestParam Long id) throws ResourceNotFoundException, ConflictException {
+        reservaService.eliminarReserva(id);
+        return new ResponseEntity<>("Reserva eliminada correctamente", HttpStatus.NO_CONTENT);
+    }
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<ReservaSalidaDTO> editarReserva(@PathVariable Long id, @Valid @RequestBody ModificarReservasEntradaDTO dto) throws ResourceNotFoundException, ConflictException {
+        ReservaSalidaDTO reservaSalidaDTO = reservaService.editarReserva(id, dto);
+        return new ResponseEntity<>(reservaSalidaDTO, HttpStatus.OK);
     }
 
 }
