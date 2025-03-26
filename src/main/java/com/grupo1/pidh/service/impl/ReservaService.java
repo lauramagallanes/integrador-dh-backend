@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -142,22 +143,28 @@ public class ReservaService implements IReservaService {
 
     @Override
     public ResenaDetalleSalidaDto agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException {
-        List<Reserva> reservas = reservaRepository.findByUsuarioEmailOrderByIdDesc(usuarioEmail);
+        Usuario usuario = usuarioRepository.findByEmail(usuarioEmail)
+                .orElseThrow(()-> new ResourceNotFoundException("Usuario no encontrado"));
+
+        List<Reserva> reservas = reservaRepository.findByUsuarioEmailAndProductoId(usuarioEmail, dto.getProductoId());
 
         if (reservas.isEmpty()){
-            throw new ResourceNotFoundException("No se encontró ninguna reserva activa para este usuario");
-        }
-        Reserva reserva = reservas.get(0);
-
-        if (reserva.getPuntuacion() != null){
-            throw new ConflictException("Esta reserva ya ha sido calificada");
+            throw new ConflictException("El usuario no tiene reservas activas para este producto");
         }
 
-        reserva.setPuntuacion(dto.getPuntuacion());
+        Optional<Reserva> reservaSinResena = reservas.stream()
+                .filter(reserva -> reserva.getResena() == null)
+                .findFirst();
+        if (reservaSinResena.isEmpty()){
+            throw new ConflictException("Todas las reservas para este producto ya tienen una reseña realizada por el usuario");
+        }
+
+        Reserva reserva = reservaSinResena.get();
         reserva.setResena(dto.getResena());
+        reserva.setPuntuacion(dto.getPuntuacion());
         reserva.setFechaResena(LocalDate.now());
 
-        reservaRepository.save(reserva);
+        Reserva reservaGuardada = reservaRepository.save(reserva);
 
         return new ResenaDetalleSalidaDto(
                 reserva.getUsuario().getNombre(),

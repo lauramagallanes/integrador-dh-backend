@@ -16,4 +16,6 @@ public interface ReservaRepository  extends JpaRepository<Reserva, Long> {
 
     @Query("SELECT r FROM Reserva r WHERE r.disponibilidadProducto.producto.id = :productoId AND r.puntuacion IS NOT NULL")
     List<Reserva> findResenasByProductoId(@Param("productoId") Long productoId);
+
+    List<Reserva> findByUsuarioEmailAndProductoId(String usuarioEmail, Long productoId);
 }
