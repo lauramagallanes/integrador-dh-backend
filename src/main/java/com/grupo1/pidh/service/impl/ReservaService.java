@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -142,28 +143,32 @@ public class ReservaService implements IReservaService {
 
     @Override
     public ResenaDetalleSalidaDto agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException {
-        List<Reserva> reservas = reservaRepository.findByUsuarioEmailOrderByIdDesc(usuarioEmail);
+        Usuario usuario = usuarioRepository.findByEmail(usuarioEmail)
+                .orElseThrow(()-> new ResourceNotFoundException("Usuario no encontrado"));
 
-        if (reservas.isEmpty()){
-            throw new ResourceNotFoundException("No se encontró ninguna reserva activa para este usuario");
+        Reserva reserva = reservaRepository.findById(dto.getReservaId())
+                .orElseThrow(()->new ResourceNotFoundException("Reserva no encontrada"));
+
+        if (!reserva.getUsuario().getEmail().equals(usuarioEmail)){
+            throw new ConflictException("Esta reserva no pertenece al usuario autenticado");
         }
-        Reserva reserva = reservas.get(0);
 
-        if (reserva.getPuntuacion() != null){
-            throw new ConflictException("Esta reserva ya ha sido calificada");
+        if (reserva.getResena() != null){
+            throw new ConflictException("Ya existe una reseña para esta reserva");
         }
-
-        reserva.setPuntuacion(dto.getPuntuacion());
         reserva.setResena(dto.getResena());
+        reserva.setPuntuacion(dto.getPuntuacion());
         reserva.setFechaResena(LocalDate.now());
 
-        reservaRepository.save(reserva);
+        Reserva reservaGuardada = reservaRepository.save(reserva);
+
+
 
         return new ResenaDetalleSalidaDto(
-                reserva.getUsuario().getNombre(),
-                reserva.getPuntuacion(),
-                reserva.getResena(),
-                reserva.getFechaResena()
+                reservaGuardada.getUsuario().getNombre(),
+                reservaGuardada.getPuntuacion(),
+                reservaGuardada.getResena(),
+                reservaGuardada.getFechaResena()
         );
     }
 

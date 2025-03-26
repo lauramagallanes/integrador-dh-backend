@@ -11,15 +11,20 @@ public class FiltroProductoEntradaDto {
 
     @Schema(type = "string", format = "date", example = "2025-03-01")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate fechaEvento;
+    private LocalDate fechaInicio;
+
+    @Schema(type = "string", format = "date", example = "2025-03-01")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate fechaFin;
 
     private String categoriaNombre;
 
     public FiltroProductoEntradaDto(){}
 
-    public FiltroProductoEntradaDto(String nombre, LocalDate fechaEvento, String categoriaNombre) {
+    public FiltroProductoEntradaDto(String nombre, LocalDate fechaInicio, LocalDate fechaFin, String categoriaNombre) {
         this.nombre = nombre;
-        this.fechaEvento = fechaEvento;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
         this.categoriaNombre = categoriaNombre;
     }
 
@@ -31,12 +36,20 @@ public class FiltroProductoEntradaDto {
         this.nombre = nombre;
     }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
     }
 
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
     public String getCategoriaNombre() {

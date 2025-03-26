@@ -5,17 +5,21 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class AgregarResenaEntradaDto {
+
     @Min(1) @Max(5)
     private Integer puntuacion;
     private String resena;
 
+    @NotNull
+    private Long reservaId;
+
     public AgregarResenaEntradaDto(){}
 
-    public AgregarResenaEntradaDto(Integer puntuacion, String resena) {
+    public AgregarResenaEntradaDto(Integer puntuacion, String resena, Long reservaId) {
         this.puntuacion = puntuacion;
         this.resena = resena;
+        this.reservaId = reservaId;
     }
-
 
     public Integer getPuntuacion() {
         return puntuacion;
@@ -31,5 +35,13 @@ public class AgregarResenaEntradaDto {
 
     public void setResena(String resena) {
         this.resena = resena;
+    }
+
+    public @NotNull Long getReservaId() {
+        return reservaId;
+    }
+
+    public void setReservaId(@NotNull Long reservaId) {
+        this.reservaId = reservaId;
     }
 }
