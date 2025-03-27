@@ -13,7 +13,7 @@ import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import java.util.List;
 
 public interface IReservaService {
-    List<ReservaSalidaDTO> registrarReservas(RegistrarReservasEntradaDTO dto) throws BadRequestException, ConflictException;
+    ReservaSalidaDTO registrarReserva(RegistrarReservasEntradaDTO dto) throws BadRequestException, ConflictException;
     List<ReservaSalidaDTO> listarReservas();
     List<ReservaSalidaDTO> listarReservasPorUsuario(String usuarioEmail);
     List<ReservaSalidaDTO> listarReservasPorProducto(Long id);

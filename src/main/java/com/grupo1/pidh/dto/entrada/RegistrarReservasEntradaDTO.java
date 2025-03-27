@@ -1,29 +1,22 @@
 package com.grupo1.pidh.dto.entrada;
 
 
-import com.grupo1.pidh.utils.enums.TipoTarifa;
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.time.LocalDate;
 
 public class RegistrarReservasEntradaDTO {
     @NotNull(message = "Debe ingresar una fecha disponible del producto")
     private Long disponibilidadProductoId;
     @NotBlank(message = "Debe ingresar un email de usuario")
     private String usuarioEmail;
-    @NotNull(message = "Debe ingresar una tarifa")
-    private TipoTarifa tipoTarifa;
     @Positive(message = "Debe ingresar la cantidad de reservas que quiere realizar")
-    private int cantidadReservas;
+    private int cantidadPersonas;
 
-    public RegistrarReservasEntradaDTO(Long disponibilidadProductoId, String usuarioEmail, TipoTarifa tipoTarifa, int cantidadReservas) {
+    public RegistrarReservasEntradaDTO(Long disponibilidadProductoId, String usuarioEmail, int cantidadpersonas) {
         this.disponibilidadProductoId = disponibilidadProductoId;
         this.usuarioEmail = usuarioEmail;
-        this.tipoTarifa = tipoTarifa;
-        this.cantidadReservas = cantidadReservas;
+        this.cantidadPersonas = cantidadpersonas;
     }
 
     public RegistrarReservasEntradaDTO() {
@@ -45,19 +38,12 @@ public class RegistrarReservasEntradaDTO {
         this.usuarioEmail = usuarioEmail;
     }
 
-    public TipoTarifa getTipoTarifa() {
-        return tipoTarifa;
+
+    public int getCantidadPersonas() {
+        return cantidadPersonas;
     }
 
-    public void setTipoTarifa(TipoTarifa tipoTarifa) {
-        this.tipoTarifa = tipoTarifa;
-    }
-
-    public int getCantidadReservas() {
-        return cantidadReservas;
-    }
-
-    public void setCantidadReservas(int cantidadReservas) {
-        this.cantidadReservas = cantidadReservas;
+    public void setCantidadPersonas(int cantidadPersonas) {
+        this.cantidadPersonas = cantidadPersonas;
     }
 }

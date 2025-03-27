@@ -55,16 +55,14 @@ public class ReservaService implements IReservaService {
     }
 
     @Override
-    public List<ReservaSalidaDTO> registrarReservas(RegistrarReservasEntradaDTO dto) throws BadRequestException, ResourceNotFoundException, ConflictException {
-        List<ReservaSalidaDTO> reservaSalidaDTOList = new ArrayList<>();
+    public ReservaSalidaDTO registrarReserva(RegistrarReservasEntradaDTO dto) throws BadRequestException, ResourceNotFoundException, ConflictException {
+
         if (dto.getDisponibilidadProductoId() == null){
             throw new BadRequestException("Debe ingresar una fecha disponible del producto");
         }else if (dto.getUsuarioEmail() == null){
             throw new BadRequestException("Debe ingresar un usuario");
-        }else if (dto.getTipoTarifa() == null){
-            throw new BadRequestException("Debe ingresar una tarifa");
-        }else if (dto.getCantidadReservas() == 0){
-            throw new BadRequestException("Debe indicar cuantas reservas quiere reservar");
+        }else if (dto.getCantidadPersonas() == 0){
+            throw new BadRequestException("Debe indicar cuantas personas incluye la reserva");
         }
 
         DisponibilidadProducto disponibilidadProducto = disponibilidadProductoRepository.findById(dto.getDisponibilidadProductoId())
@@ -73,45 +71,18 @@ public class ReservaService implements IReservaService {
         Usuario usuario = usuarioRepository.findByEmail(dto.getUsuarioEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-
-        int cantidadPersonas = obtenerCantidadPersonas(dto.getTipoTarifa());
-        int cuposAReservar = cantidadPersonas * dto.getCantidadReservas();
-        if ((disponibilidadProducto.getCuposReservados() + cuposAReservar) > disponibilidadProducto.getCuposTotales()){
+        if ((disponibilidadProducto.getCuposReservados() + dto.getCantidadPersonas()) > disponibilidadProducto.getCuposTotales()){
             throw new ConflictException("No hay cupos suficientes para realizar la reserva.");
         }
 
+        disponibilidadProducto.setCuposReservados(disponibilidadProducto.getCuposReservados() + dto.getCantidadPersonas());
+        Reserva reserva = new Reserva(null, disponibilidadProducto, usuario, dto.getCantidadPersonas());
+        ReservaSalidaDTO reservaSalidaDTO = modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class);
 
-
-        for (int i = 1; i <= dto.getCantidadReservas(); i++) {
-            disponibilidadProducto.setCuposReservados(disponibilidadProducto.getCuposReservados() + cantidadPersonas);
-            Reserva reserva = new Reserva(null, disponibilidadProducto, usuario, cantidadPersonas);
-            reservaSalidaDTOList.add(modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class));
-
-        }
         disponibilidadProductoRepository.save(disponibilidadProducto);
 
 
-        return reservaSalidaDTOList;
-    }
-
-    private int obtenerCantidadPersonas(TipoTarifa tipoTarifa) {
-        int cantidadPersonas = 0;
-        switch (tipoTarifa){
-            case POR_PERSONA:
-                cantidadPersonas = 1;
-                break;
-            case POR_PAREJA:
-                cantidadPersonas = 2;
-                break;
-            case POR_GRUPO_6:
-                cantidadPersonas = 6;
-                break;
-            case POR_GRUPO_10:
-                cantidadPersonas = 10;
-                break;
-
-        }
-        return cantidadPersonas;
+        return reservaSalidaDTO;
     }
 
     @Override

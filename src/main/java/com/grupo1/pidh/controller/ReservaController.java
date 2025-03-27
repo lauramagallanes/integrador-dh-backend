@@ -2,9 +2,7 @@ package com.grupo1.pidh.controller;
 
 import com.grupo1.pidh.dto.entrada.AgregarResenaEntradaDto;
 import com.grupo1.pidh.dto.entrada.ModificarReservasEntradaDTO;
-import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.entrada.RegistrarReservasEntradaDTO;
-import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ResenaDetalleSalidaDto;
 import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
@@ -13,18 +11,15 @@ import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -38,17 +33,17 @@ public class ReservaController {
     public ReservaController(ReservaService reservaService) {
         this.reservaService = reservaService;
     }
-    @Operation(summary = "Registrar nuevas reservas", description = "Crea una o varias reservas en la base de datos.")
+    @Operation(summary = "Registrar nueva reserva", description = "Crea una reserva en la base de datos.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Reservas creadas exitosamente"),
+            @ApiResponse(responseCode = "201", description = "Reserva creada exitosamente"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "409", description = "Conflicto al crear reservas")
+            @ApiResponse(responseCode = "409", description = "Conflicto al crear reserva")
     })
     @PostMapping("/registrar")
-    public ResponseEntity<List<ReservaSalidaDTO>> crearReservas(
+    public ResponseEntity<ReservaSalidaDTO> crearReservas(
             @Valid @RequestBody RegistrarReservasEntradaDTO dto) throws BadRequestException, ConflictException {
-        List<ReservaSalidaDTO> reservaSalidaDTOList = reservaService.registrarReservas(dto);
-        return new ResponseEntity<>(reservaSalidaDTOList, HttpStatus.CREATED);
+        ReservaSalidaDTO reservaSalidaDTO = reservaService.registrarReserva(dto);
+        return new ResponseEntity<>(reservaSalidaDTO, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Agregar reseña y puntuación", description = "Permite agregar una reseña a la ultima reserva realizada por el usuario")
