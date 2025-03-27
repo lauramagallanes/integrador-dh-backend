@@ -25,7 +25,10 @@ public interface ReservaRepository  extends JpaRepository<Reserva, Long> {
     List<Reserva> findByDisponibilidadProducto_Producto(Producto disponibilidadProducto);
     List<Reserva> findByDisponibilidadProducto(DisponibilidadProducto disponibilidadProducto);
 
-    //Optional<Reserva> findByUsuarioEmailAndDisponibilidadProducto_Producto_Id(String usuarioEmail, Long disponibilidadProductoId);
+
     Optional<Reserva> findByIdAndUsuarioEmail(Long id, String email);
+
+    @Query("SELECT r FROM Reserva r WHERE r.usuario.email = :usuarioEmail AND r.disponibilidadProducto.producto.id = :productoId")
+    List<Reserva> findByUsuarioEmailAndProductoId(@Param("usuarioEmail") String usuarioEmail, @Param("productoId") Long productoId);
 
 }

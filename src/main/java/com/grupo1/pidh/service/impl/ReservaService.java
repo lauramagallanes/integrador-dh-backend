@@ -293,4 +293,21 @@ public class ReservaService implements IReservaService {
                 .orElse(0.0);
         return new ResenaProductoSalidaDto(productoId, promedioPuntuacion, reservasDto.size(), listaResenas);
     }
+
+    @Override
+    public List<ReservaSalidaDTO> listarReservasPorUsuarioPorProducto(String email, Long productoId) throws ResourceNotFoundException {
+
+        if (productoId == null){
+            throw new ResourceNotFoundException("Debe proporcionar el ID del producto para poder realizar la consulta");
+        }
+
+        List<Reserva> reservas = reservaRepository.findByUsuarioEmailAndProductoId(email, productoId);
+
+        if (reservas.isEmpty()){
+            throw new ResourceNotFoundException("El usuario no tiene reservas para el producto con id " + productoId);
+        }
+        return reservas.stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
+                .collect(Collectors.toList());
+    }
 }
