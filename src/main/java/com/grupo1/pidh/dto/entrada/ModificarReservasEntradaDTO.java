@@ -5,21 +5,21 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-public class RegistrarReservasEntradaDTO {
+public class ModificarReservasEntradaDTO {
     @NotNull(message = "Debe ingresar una fecha disponible del producto")
     private Long disponibilidadProductoId;
     @NotBlank(message = "Debe ingresar un email de usuario")
     private String usuarioEmail;
-    @Positive(message = "Debe ingresar la cantidad de reservas que quiere realizar")
+    @NotNull(message = "Debe ingresar una cantidad de personas")
     private int cantidadPersonas;
 
-    public RegistrarReservasEntradaDTO(Long disponibilidadProductoId, String usuarioEmail, int cantidadpersonas) {
+    public ModificarReservasEntradaDTO(Long disponibilidadProductoId, String usuarioEmail, int cantidadPersonas) {
         this.disponibilidadProductoId = disponibilidadProductoId;
         this.usuarioEmail = usuarioEmail;
-        this.cantidadPersonas = cantidadpersonas;
+        this.cantidadPersonas = cantidadPersonas;
     }
 
-    public RegistrarReservasEntradaDTO() {
+    public ModificarReservasEntradaDTO() {
     }
 
     public Long getDisponibilidadProductoId() {
@@ -38,7 +38,6 @@ public class RegistrarReservasEntradaDTO {
         this.usuarioEmail = usuarioEmail;
     }
 
-
     public int getCantidadPersonas() {
         return cantidadPersonas;
     }
@@ -46,4 +45,5 @@ public class RegistrarReservasEntradaDTO {
     public void setCantidadPersonas(int cantidadPersonas) {
         this.cantidadPersonas = cantidadPersonas;
     }
+
 }

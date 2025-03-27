@@ -1,5 +1,6 @@
 package com.grupo1.pidh.service;
 
+import com.grupo1.pidh.dto.entrada.FiltroProductoEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
 import com.grupo1.pidh.exceptions.BadRequestException;
@@ -17,4 +18,5 @@ public interface IProductoService {
     ProductoSalidaDto buscarProductoPorId(Long id) throws ResourceNotFoundException;
     void eliminarProducto(Long id) throws ResourceNotFoundException, ConflictException;
     ProductoSalidaDto editarProducto(Long id, ProductoEntradaDto dto, List<MultipartFile> imagenes) throws ResourceNotFoundException;
+    List<ProductoSalidaDto> buscarProductosPorFiltros(FiltroProductoEntradaDto filtros);
 }
