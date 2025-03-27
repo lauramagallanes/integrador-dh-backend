@@ -24,5 +24,6 @@ public interface IReservaService {
     ReservaSalidaDTO editarReserva(Long id, ModificarReservasEntradaDTO dto) throws ResourceNotFoundException, ConflictException;
     ResenaDetalleSalidaDto agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException;
     ResenaProductoSalidaDto obtenerResenasPorProducto(Long productoId);
+    List<ReservaSalidaDTO> listarReservasPorUsuarioPorProducto(String email, Long productoId) throws ResourceNotFoundException;
 
 }

@@ -13,6 +13,7 @@ import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.service.impl.ReservaService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -112,6 +113,14 @@ public class ReservaController {
     public ResponseEntity<ReservaSalidaDTO> editarReserva(@PathVariable Long id, @Valid @RequestBody ModificarReservasEntradaDTO dto) throws ResourceNotFoundException, ConflictException {
         ReservaSalidaDTO reservaSalidaDTO = reservaService.editarReserva(id, dto);
         return new ResponseEntity<>(reservaSalidaDTO, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Listar reservas del usuario por producto", description = "Devuelve todas las reservas del usuario logueado para el producto especifico segun su Id.<br><br>" + "Ejemplo de uso:<br>" + "`GET /reserva/mis-reservas?productoId=5`")
+    @GetMapping("/mis-reservas")
+    public ResponseEntity<List<ReservaSalidaDTO>> obtenerReservasDelUsuarioPorProducto(@RequestParam Long productoId, Authentication authentication) throws ResourceNotFoundException{
+        String email = authentication.getName();
+        List<ReservaSalidaDTO> reservasSalidaDto = reservaService.listarReservasPorUsuarioPorProducto(email, productoId);
+        return ResponseEntity.ok(reservasSalidaDto);
     }
 
 }
