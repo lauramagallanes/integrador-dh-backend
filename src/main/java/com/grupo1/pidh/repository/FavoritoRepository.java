@@ -18,4 +18,6 @@ public interface FavoritoRepository extends JpaRepository<Favorito, Long> {
     Optional<Favorito> findByUsuarioIdAndProductoId(@Param("usuarioId") Long usuarioId, @Param("productoId") Long productoId);
 
     void deleteByUsuarioIdAndProductoId(Long usuarioId, Long productoId);
+
+    List<Favorito> findByProductoId(Long productoId);
 }

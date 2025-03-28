@@ -9,6 +9,7 @@ import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.CaracteristicaRepository;
 import com.grupo1.pidh.repository.CategoriaRepository;
+import com.grupo1.pidh.repository.FavoritoRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
@@ -44,14 +45,16 @@ public class ProductoService implements IProductoService {
 
     private final CategoriaRepository categoriaRepository;
     private final CaracteristicaRepository caracteristicaRepository;
+    private final FavoritoRepository favoritoRepository;
 
-    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, IS3Service s3Service, ModelMapper modelMapper, CategoriaRepository categoriaRepository, CaracteristicaRepository caracteristicaRepository) {
+    public ProductoService(ProductoRepository productoRepository, ObjectMapper objectMapper, IS3Service s3Service, ModelMapper modelMapper, CategoriaRepository categoriaRepository, CaracteristicaRepository caracteristicaRepository, FavoritoRepository favoritoRepository) {
         this.productoRepository = productoRepository;
         this.objectMapper = objectMapper;
         this.s3Service = s3Service;
         this.modelMapper = modelMapper;
         this.categoriaRepository = categoriaRepository;
         this.caracteristicaRepository = caracteristicaRepository;
+        this.favoritoRepository = favoritoRepository;
         configureMapping();
     }
 
@@ -201,6 +204,10 @@ public class ProductoService implements IProductoService {
         LOGGER.info("id del prodcuto a eliminar {}", id);
         if (buscarProductoPorId(id) != null) {
             try {
+                List<Favorito> favoritoList = favoritoRepository.findByProductoId(id).stream().toList();
+                for (Favorito favorito : favoritoList) {
+                    favoritoRepository.delete(favorito);
+                }
                 productoRepository.deleteById(id);
             }catch (DataIntegrityViolationException e){
                 LOGGER.error("Producto con informacion relacionada");
