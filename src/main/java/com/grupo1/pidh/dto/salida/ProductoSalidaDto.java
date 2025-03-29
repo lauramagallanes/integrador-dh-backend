@@ -30,13 +30,6 @@ public class ProductoSalidaDto {
 
     private TipoEvento tipoEvento;
 
-    /*@Schema(type = "string", format = "date", example = "2025-02-25")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate fechaEvento;*/
-
-    /*@Schema(type = "string", format = "date", example = "2025-03-25")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate fechaFinEvento;*/
 
     private List<DiaSemana> diasDisponible;
     private Set<CategoriaSalidaDto> categorias;
@@ -47,13 +40,14 @@ public class ProductoSalidaDto {
     private String direccion;
     private PoliticaCancelacion politicaCancelacion;
     private PoliticaPagos politicaPagos;
+    private String telefono;
 
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, String telefono) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -72,7 +66,7 @@ public class ProductoSalidaDto {
         this.direccion = direccion;
         this.politicaCancelacion = politicaCancelacion;
         this.politicaPagos = politicaPagos;
-
+        this.telefono = telefono;
     }
 
     public Long getId() {
@@ -230,5 +224,11 @@ public class ProductoSalidaDto {
         this.politicaPagos = politicaPagos;
     }
 
+    public String getTelefono() {
+        return telefono;
+    }
 
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
 }

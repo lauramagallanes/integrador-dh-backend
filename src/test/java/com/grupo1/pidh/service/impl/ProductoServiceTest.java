@@ -68,7 +68,7 @@ class ProductoServiceTest {
                 1L, "Observación de cielo nocturno", "Experiencia única", 500.00, POR_PERSONA,
                 "Español", horaInicio, horaFin, TipoEvento.FECHA_UNICA, disponibilidad,
                 Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList(),
-                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO
+                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO, "+59898372742"
         );
 
         multipartFiles = List.of(
@@ -95,7 +95,7 @@ class ProductoServiceTest {
                 "Observación de cielo nocturno", "Experiencia única", 500.00, POR_PERSONA,
                 "Español", horaInicio, horaFin, TipoEvento.FECHA_UNICA, Collections.emptyList(),
                 fechaEvento, fechaFinEvento, categoriasIds, caracteristicasIds, null,
-                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO, 20
+                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO, 20, "+59898372742"
         );
     }
 

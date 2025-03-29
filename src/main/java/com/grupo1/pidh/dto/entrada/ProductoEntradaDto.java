@@ -47,10 +47,12 @@ public class ProductoEntradaDto {
 
     @Schema(type = "string", format = "date", example = "2025-02-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    @FutureOrPresent(message = "La fecha del evento no puede ser anterior a la fecha actual")
     private LocalDate fechaEvento;
 
     @Schema(type = "string", format = "date", example = "2025-02-25")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    @FutureOrPresent(message = "La fecha del evento no puede ser anterior a la fecha actual")
     private LocalDate fechaFinEvento;
 
 
@@ -79,11 +81,15 @@ public class ProductoEntradaDto {
     @Positive(message = "Los cupos totales deben ser mayores a 0")
     private int cuposTotales;
 
+    @Pattern(regexp = "^\\+?[0-9]{7,15}$",
+            message = "El número de teléfono debe tener entre 7 y 15 dígitos y puede comenzar con '+'")
+    private String telefono;
+
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, LocalDate fechaFinEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, LocalDate fechaFinEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales, String telefono) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -104,6 +110,7 @@ public class ProductoEntradaDto {
         this.politicaCancelacion = politicaCancelacion;
         this.politicaPagos = politicaPagos;
         this.cuposTotales = cuposTotales;
+        this.telefono = telefono;
     }
 
     public String getNombre() {
@@ -266,5 +273,13 @@ public class ProductoEntradaDto {
 
     public void setCuposTotales(int cuposTotales) {
         this.cuposTotales = cuposTotales;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }
