@@ -247,6 +247,7 @@ public class ProductoService implements IProductoService {
         producto.setDireccion(dto.getDireccion());
         producto.setPoliticaCancelacion(dto.getPoliticaCancelacion());
         producto.setPoliticaPagos(dto.getPoliticaPagos());
+        producto.setTelefono(dto.getTelefono());
 
         if (dto.getCategoriasIds() != null) { // Permite dejar el producto sin categorías si se envía vacío
             Set<Categoria> nuevasCategorias = new HashSet<>();

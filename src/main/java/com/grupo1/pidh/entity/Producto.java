@@ -90,7 +90,10 @@ public class Producto {
     @Column(name = "politica_pagos")
     private PoliticaPagos politicaPagos;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DisponibilidadProducto> disponibilidad, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos) {
+    @Column(name = "telefono")
+    private String telefono;
+
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DisponibilidadProducto> disponibilidad, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, String telefono) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -110,6 +113,7 @@ public class Producto {
         this.direccion = direccion;
         this.politicaCancelacion = politicaCancelacion;
         this.politicaPagos = politicaPagos;
+        this.telefono = telefono;
     }
 
     public Producto(){}
@@ -265,5 +269,13 @@ public class Producto {
 
     public void setPoliticaPagos(PoliticaPagos politicaPagos) {
         this.politicaPagos = politicaPagos;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }
