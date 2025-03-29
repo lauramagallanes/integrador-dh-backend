@@ -54,4 +54,24 @@ public class CategoriaController {
         categoriaService.eliminarCategoria(id);
         return new ResponseEntity<>("Categoria eliminada correctamente", HttpStatus.NO_CONTENT);
     }
+
+    @Operation(summary = "Editar categoria", description = """
+    Edita una categoría existente por su ID. 
+    \n\n**Parámetros esperados**:
+    - `categoria`: objeto JSON con nombre y descripción (obligatorio).
+    - `imagenCategoria`: archivo de imagen (opcional).
+    
+    \n\n**Comportamiento**:
+    - Si se envía una nueva imagen, la imagen anterior será eliminada del servidor (S3) y reemplazada por la nueva.
+    - Si no se envía una imagen, se conserva la imagen actual asociada a la categoría.
+    
+    \n\n**Restricciones**:
+    - El nombre debe ser único.
+    - La imagen debe ser válida y cumplir con los requisitos definidos (tipo y tamaño).
+    """)
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<CategoriaSalidaDto> editarCategoria(@PathVariable Long id, @RequestPart("categoria") @Valid CategoriaEntradaDto dto, @RequestPart(value = "imagenCategoria", required = false) MultipartFile imagenCategoria) throws ResourceNotFoundException, ConflictException{
+        CategoriaSalidaDto categoriaSalidaDto =categoriaService.editarCategoria(id, dto, imagenCategoria);
+        return new ResponseEntity<>(categoriaSalidaDto, HttpStatus.OK);
+    }
 }
