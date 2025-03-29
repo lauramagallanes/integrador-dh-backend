@@ -14,12 +14,13 @@ public class ReservaSalidaDTO {
     private int cantidadPersonas;
     private Integer puntuacion;
     private String resena;
+    private String codigoConfirmacion;
 
     @Schema(type = "string", example = "2025-06-17")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaResena;
 
-    public ReservaSalidaDTO(Long id, DisponibilidadProductoSalidaDto disponibilidadProductoSalidaDto, UsuarioSalidaDto usuarioSalidaDto, int cantidadPersonas, Integer puntuacion, String resena, LocalDate fechaResena) {
+    public ReservaSalidaDTO(Long id, DisponibilidadProductoSalidaDto disponibilidadProductoSalidaDto, UsuarioSalidaDto usuarioSalidaDto, int cantidadPersonas, Integer puntuacion, String resena, LocalDate fechaResena, String codigoConfirmacion) {
         this.id = id;
         this.disponibilidadProductoSalidaDto = disponibilidadProductoSalidaDto;
         this.usuarioSalidaDto = usuarioSalidaDto;
@@ -27,6 +28,7 @@ public class ReservaSalidaDTO {
         this.puntuacion = puntuacion;
         this.resena = resena;
         this.fechaResena = fechaResena;
+        this.codigoConfirmacion = codigoConfirmacion;
     }
 
     public ReservaSalidaDTO() {
@@ -90,5 +92,13 @@ public class ReservaSalidaDTO {
 
     public void setFechaResena(LocalDate fechaResena) {
         this.fechaResena = fechaResena;
+    }
+
+    public String getCodigoConfirmacion() {
+        return codigoConfirmacion;
+    }
+
+    public void setCodigoConfirmacion(String codigoConfirmacion) {
+        this.codigoConfirmacion = codigoConfirmacion;
     }
 }

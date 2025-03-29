@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,7 +77,7 @@ public class ReservaService implements IReservaService {
         }
 
         disponibilidadProducto.setCuposReservados(disponibilidadProducto.getCuposReservados() + dto.getCantidadPersonas());
-        Reserva reserva = new Reserva(null, disponibilidadProducto, usuario, dto.getCantidadPersonas());
+        Reserva reserva = new Reserva(null, disponibilidadProducto, usuario, dto.getCantidadPersonas(), UUID.randomUUID().toString());
         ReservaSalidaDTO reservaSalidaDTO = modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class);
 
         disponibilidadProductoRepository.save(disponibilidadProducto);

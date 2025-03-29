@@ -26,15 +26,18 @@ public class Reserva {
 
     @Column(name="fecha_reseña")
     private LocalDate fechaResena;
+    @Column(name="codigo_confirmacion")
+    private String codigoConfirmacion;
 
     public Reserva() {
     }
 
-    public Reserva(Long id, DisponibilidadProducto disponibilidadProducto, Usuario usuario, int cantidadPersonas) {
+    public Reserva(Long id, DisponibilidadProducto disponibilidadProducto, Usuario usuario, int cantidadPersonas, String codigoConfirmacion) {
         this.id = id;
         this.disponibilidadProducto = disponibilidadProducto;
         this.usuario = usuario;
         this.cantidadPersonas = cantidadPersonas;
+        this.codigoConfirmacion = codigoConfirmacion;
     }
 
     public Reserva(Long id, DisponibilidadProducto disponibilidadProducto, Usuario usuario, int cantidadPersonas, Integer puntuacion, String resena, LocalDate fechaResena) {
@@ -101,5 +104,13 @@ public class Reserva {
 
     public void setFechaResena(LocalDate fechaResena) {
         this.fechaResena = fechaResena;
+    }
+
+    public String getCodigoConfirmacion() {
+        return codigoConfirmacion;
+    }
+
+    public void setCodigoConfirmacion(String codigoConfirmacion) {
+        this.codigoConfirmacion = codigoConfirmacion;
     }
 }
