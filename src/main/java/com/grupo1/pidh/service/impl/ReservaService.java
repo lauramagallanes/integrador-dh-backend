@@ -18,6 +18,7 @@ import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.repository.ReservaRepository;
 import com.grupo1.pidh.repository.UsuarioRepository;
 import com.grupo1.pidh.service.IReservaService;
+import com.grupo1.pidh.utils.enums.EstadoReserva;
 import com.grupo1.pidh.utils.enums.TipoTarifa;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -72,12 +73,22 @@ public class ReservaService implements IReservaService {
         Usuario usuario = usuarioRepository.findByEmail(dto.getUsuarioEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
+        LocalDateTime fechaHoraInicioEvento = disponibilidadProducto.getFechaEvento().atTime(disponibilidadProducto.getProducto().getHoraInicio());
+        LocalDateTime fechaHoraFinEvento = disponibilidadProducto.getFechaEvento().atTime(disponibilidadProducto.getProducto().getHoraFin());
+        LocalDateTime ahora = LocalDateTime.now();
+
+        if (fechaHoraFinEvento.isBefore(ahora)) {
+            throw new ConflictException("La actividad ya finalizó");
+        }else if (fechaHoraInicioEvento.isBefore(ahora)){
+            throw new ConflictException("La actividad ya empezó");
+        }
+
         if ((disponibilidadProducto.getCuposReservados() + dto.getCantidadPersonas()) > disponibilidadProducto.getCuposTotales()){
             throw new ConflictException("No hay cupos suficientes para realizar la reserva.");
         }
 
         disponibilidadProducto.setCuposReservados(disponibilidadProducto.getCuposReservados() + dto.getCantidadPersonas());
-        Reserva reserva = new Reserva(null, disponibilidadProducto, usuario, dto.getCantidadPersonas(), UUID.randomUUID().toString());
+        Reserva reserva = new Reserva(null, disponibilidadProducto, usuario, dto.getCantidadPersonas(), UUID.randomUUID().toString(), false);
         ReservaSalidaDTO reservaSalidaDTO = modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class);
 
         disponibilidadProductoRepository.save(disponibilidadProducto);
@@ -162,6 +173,12 @@ public class ReservaService implements IReservaService {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
 
+        switch(reserva.getEstado()){
+            case CANCELADA:
+                throw new ConflictException("No se puede modificar una reserva cancelada");
+            case FINALIZADA:
+                throw new ConflictException("No se puede modificar una reserva finalizada");
+        }
         LocalDateTime fechaHoraInicioEvento = reserva.getDisponibilidadProducto().getFechaEvento().atTime(reserva.getDisponibilidadProducto().getProducto().getHoraInicio());
         LocalDateTime fechaHoraFinEvento = reserva.getDisponibilidadProducto().getFechaEvento().atTime(reserva.getDisponibilidadProducto().getProducto().getHoraFin());
         LocalDateTime ahora = LocalDateTime.now();
@@ -281,5 +298,19 @@ public class ReservaService implements IReservaService {
         return reservas.stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaSalidaDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ReservaSalidaDTO cancelarReserva(Long id) throws ResourceNotFoundException, ConflictException {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada"));
+        switch(reserva.getEstado()){
+            case CANCELADA:
+                throw new ConflictException("No se puede cancelar una reserva cancelada");
+            case FINALIZADA:
+                throw new ConflictException("No se puede cancelar una reserva finalizada");
+        }
+        reserva.setEstaCancelada(true);
+       return modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class);
     }
 }

@@ -3,6 +3,7 @@ package com.grupo1.pidh.dto.salida;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.grupo1.pidh.service.impl.UsuarioService;
+import com.grupo1.pidh.utils.enums.EstadoReserva;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -15,12 +16,13 @@ public class ReservaSalidaDTO {
     private Integer puntuacion;
     private String resena;
     private String codigoConfirmacion;
+    private EstadoReserva estado;
 
     @Schema(type = "string", example = "2025-06-17")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaResena;
 
-    public ReservaSalidaDTO(Long id, DisponibilidadProductoSalidaDto disponibilidadProductoSalidaDto, UsuarioSalidaDto usuarioSalidaDto, int cantidadPersonas, Integer puntuacion, String resena, LocalDate fechaResena, String codigoConfirmacion) {
+    public ReservaSalidaDTO(Long id, DisponibilidadProductoSalidaDto disponibilidadProductoSalidaDto, UsuarioSalidaDto usuarioSalidaDto, int cantidadPersonas, Integer puntuacion, String resena, LocalDate fechaResena, String codigoConfirmacion, EstadoReserva estado) {
         this.id = id;
         this.disponibilidadProductoSalidaDto = disponibilidadProductoSalidaDto;
         this.usuarioSalidaDto = usuarioSalidaDto;
@@ -29,6 +31,7 @@ public class ReservaSalidaDTO {
         this.resena = resena;
         this.fechaResena = fechaResena;
         this.codigoConfirmacion = codigoConfirmacion;
+        this.estado = estado;
     }
 
     public ReservaSalidaDTO() {
@@ -100,5 +103,13 @@ public class ReservaSalidaDTO {
 
     public void setCodigoConfirmacion(String codigoConfirmacion) {
         this.codigoConfirmacion = codigoConfirmacion;
+    }
+
+    public EstadoReserva getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoReserva estado) {
+        this.estado = estado;
     }
 }
