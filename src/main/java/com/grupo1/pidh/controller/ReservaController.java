@@ -117,5 +117,15 @@ public class ReservaController {
         List<ReservaSalidaDTO> reservasSalidaDto = reservaService.listarReservasPorUsuarioPorProducto(email, productoId);
         return ResponseEntity.ok(reservasSalidaDto);
     }
-
+    @Operation(summary = "Cancelar una reserva", description = "Cancela una reserva existente.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reserva editada exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Reserva no encontrada"),
+            @ApiResponse(responseCode = "409", description = "Conflicto al editar la reserva")
+    })
+    @PutMapping("/cancelar/{id}")
+    public ResponseEntity<ReservaSalidaDTO> cancelar(@PathVariable Long id) throws ResourceNotFoundException, ConflictException {
+        ReservaSalidaDTO reservaSalidaDTO = reservaService.cancelarReserva(id);
+        return new ResponseEntity<>(reservaSalidaDTO, HttpStatus.OK);
+    }
 }

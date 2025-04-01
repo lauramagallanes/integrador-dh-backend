@@ -9,6 +9,7 @@ import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.CaracteristicaRepository;
 import com.grupo1.pidh.repository.CategoriaRepository;
+import com.grupo1.pidh.repository.FavoritoRepository;
 import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.utils.enums.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +42,7 @@ class ProductoServiceTest {
     private final ModelMapper modelMapper = new ModelMapper();
     private final IS3Service s3ServiceMock = mock(IS3Service.class);
     private final CaracteristicaRepository caracteristicaRepositoryMock = mock(CaracteristicaRepository.class);
+    private final FavoritoRepository favoritoRepositoryMock = mock(FavoritoRepository.class);
 
     private ObjectMapper objectMapper;
     private ProductoService productoService;
@@ -66,7 +68,7 @@ class ProductoServiceTest {
                 1L, "Observación de cielo nocturno", "Experiencia única", 500.00, POR_PERSONA,
                 "Español", horaInicio, horaFin, TipoEvento.FECHA_UNICA, disponibilidad,
                 Collections.emptyList(), new HashSet<>(), new HashSet<>(), Collections.emptyList(),
-                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO
+                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO, "+59898372742"
         );
 
         multipartFiles = List.of(
@@ -93,7 +95,7 @@ class ProductoServiceTest {
                 "Observación de cielo nocturno", "Experiencia única", 500.00, POR_PERSONA,
                 "Español", horaInicio, horaFin, TipoEvento.FECHA_UNICA, Collections.emptyList(),
                 fechaEvento, fechaFinEvento, categoriasIds, caracteristicasIds, null,
-                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO, 20
+                "Uruguay", "Montevideo", "Av. 18 de Julio 1234", PoliticaCancelacion.FLEXIBLE, PoliticaPagos.PAGO_TOTAL_ANTICIPADO, 20, "+59898372742"
         );
     }
 
@@ -101,7 +103,7 @@ class ProductoServiceTest {
     void initService() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
-        productoService = new ProductoService(productoRepositoryMock, objectMapper, s3ServiceMock, modelMapper, categoriaRepositoryMock, caracteristicaRepositoryMock);
+        productoService = new ProductoService(productoRepositoryMock, objectMapper, s3ServiceMock, modelMapper, categoriaRepositoryMock, caracteristicaRepositoryMock, favoritoRepositoryMock);
 
         when(categoriaRepositoryMock.findById(anyLong()))
                 .thenAnswer(invocation -> categorias.stream()

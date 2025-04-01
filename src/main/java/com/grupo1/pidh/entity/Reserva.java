@@ -1,7 +1,11 @@
 package com.grupo1.pidh.entity;
 
+import com.grupo1.pidh.exceptions.ConflictException;
+import com.grupo1.pidh.utils.enums.EstadoReserva;
+
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "RESERVAS")
@@ -26,15 +30,21 @@ public class Reserva {
 
     @Column(name="fecha_reseña")
     private LocalDate fechaResena;
+    @Column(name="codigo_confirmacion", nullable = false, unique = true)
+    private String codigoConfirmacion;
+    @Column(name="esta_cancelada", nullable = false)
+    private boolean estaCancelada;
 
     public Reserva() {
     }
 
-    public Reserva(Long id, DisponibilidadProducto disponibilidadProducto, Usuario usuario, int cantidadPersonas) {
+    public Reserva(Long id, DisponibilidadProducto disponibilidadProducto, Usuario usuario, int cantidadPersonas, String codigoConfirmacion,boolean estaCancelada) {
         this.id = id;
         this.disponibilidadProducto = disponibilidadProducto;
         this.usuario = usuario;
         this.cantidadPersonas = cantidadPersonas;
+        this.codigoConfirmacion = codigoConfirmacion;
+        this.estaCancelada = estaCancelada;
     }
 
     public Reserva(Long id, DisponibilidadProducto disponibilidadProducto, Usuario usuario, int cantidadPersonas, Integer puntuacion, String resena, LocalDate fechaResena) {
@@ -101,5 +111,34 @@ public class Reserva {
 
     public void setFechaResena(LocalDate fechaResena) {
         this.fechaResena = fechaResena;
+    }
+
+    public String getCodigoConfirmacion() {
+        return codigoConfirmacion;
+    }
+
+    public void setCodigoConfirmacion(String codigoConfirmacion) {
+        this.codigoConfirmacion = codigoConfirmacion;
+    }
+
+    public boolean isEstaCancelada() {
+        return estaCancelada;
+    }
+
+    public void setEstaCancelada(boolean estaCancelada) {
+        this.estaCancelada = estaCancelada;
+    }
+    public EstadoReserva getEstado(){
+        EstadoReserva estadoReserva;
+        LocalDateTime fechaHoraInicioEvento = disponibilidadProducto.getFechaEvento().atTime(disponibilidadProducto.getProducto().getHoraInicio());
+        if (estaCancelada){
+            estadoReserva = EstadoReserva.CANCELADA;
+        }else if (fechaHoraInicioEvento.isBefore(LocalDateTime.now())){
+            estadoReserva = EstadoReserva.FINALIZADA;
+        }else{
+            estadoReserva = EstadoReserva.CONFIRMADA;
+        }
+
+        return estadoReserva;
     }
 }

@@ -121,4 +121,28 @@ public class CategoriaService implements ICategoriaService {
             LOGGER.warn("Se ha eliminado la categoria con id {}", id);
         }
     }
+
+    @Override
+    public CategoriaSalidaDto editarCategoria(Long id, CategoriaEntradaDto dto, MultipartFile imagenCategoria) throws ResourceNotFoundException, ConflictException {
+        Categoria categoriaExistente = categoriaRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("La categoría con id " + id + " no existe"));
+
+        if (imagenCategoria !=null && !imagenCategoria.isEmpty()){
+            if (categoriaExistente.getImagenCategoriaUrl() != null){
+                s3Service.deleteFile(categoriaExistente.getImagenCategoriaUrl());
+            }
+
+            String nuevaImagenUrl = s3Service.uploadFile(imagenCategoria);
+            categoriaExistente.setImagenCategoriaUrl(nuevaImagenUrl);
+        }
+        categoriaExistente.setNombre(dto.getNombre());
+        categoriaExistente.setDescripcion(dto.getDescripcion());
+
+        try{
+            categoriaRepository.save(categoriaExistente);
+        } catch (DataIntegrityViolationException e){
+            throw new ConflictException("Ya existe una categoria con ese nombre");
+        }
+        return modelMapper.map(categoriaExistente, CategoriaSalidaDto.class);
+    }
 }

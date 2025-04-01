@@ -9,6 +9,7 @@ import com.grupo1.pidh.dto.salida.ReservaSalidaDTO;
 import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
+import com.grupo1.pidh.service.impl.ReservaService;
 
 import java.util.List;
 
@@ -25,5 +26,7 @@ public interface IReservaService {
     ResenaDetalleSalidaDto agregarResena(AgregarResenaEntradaDto dto, String usuarioEmail) throws ResourceNotFoundException, ConflictException;
     ResenaProductoSalidaDto obtenerResenasPorProducto(Long productoId);
     List<ReservaSalidaDTO> listarReservasPorUsuarioPorProducto(String email, Long productoId) throws ResourceNotFoundException;
+
+    ReservaSalidaDTO cancelarReserva(Long id) throws ResourceNotFoundException, ConflictException;
 
 }
