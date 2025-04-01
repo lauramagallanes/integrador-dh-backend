@@ -80,6 +80,9 @@ public class ProductoService implements IProductoService {
             for (Long categoriaId: dto.getCategoriasIds()){
                 Categoria categoria = categoriaRepository.findById(categoriaId)
                         .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada"));
+                if (!categoria.isActivo()){
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "La categoría " + categoria.getNombre() + " no está activa." );
+                }
                 categorias.add(categoria);
             }
         }
@@ -241,7 +244,6 @@ public class ProductoService implements IProductoService {
         producto.setHoraInicio(dto.getHoraInicio());
         producto.setHoraFin(dto.getHoraFin());
         producto.setTipoEvento(dto.getTipoEvento());
-        //producto.setDiasDisponible(dto.getDiasDisponible());
         producto.setPais(dto.getPais());
         producto.setCiudad(dto.getCiudad());
         producto.setDireccion(dto.getDireccion());
@@ -254,6 +256,9 @@ public class ProductoService implements IProductoService {
             for (Long categoriaId : dto.getCategoriasIds()) {
                 Categoria categoria = categoriaRepository.findById(categoriaId)
                         .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con ID: " + categoriaId));
+                if (!categoria.isActivo() && !producto.getCategorias().contains(categoria)){
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "La categoría " + categoria.getNombre() + " no está activa." );
+                }
                 nuevasCategorias.add(categoria);
             }
             if (!nuevasCategorias.isEmpty()){
