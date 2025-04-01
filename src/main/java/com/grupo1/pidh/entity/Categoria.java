@@ -19,13 +19,17 @@ public class Categoria {
     @Column(name = "imagen_url")
     private String imagenCategoriaUrl;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
     public Categoria(){}
 
-    public Categoria(Long id, String nombre, String descripcion, String imagenCategoriaUrl) {
+    public Categoria(Long id, String nombre, String descripcion, String imagenCategoriaUrl, boolean activo) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.imagenCategoriaUrl = imagenCategoriaUrl;
+        this.activo = activo;
     }
 
     public Long getId() {
@@ -58,5 +62,13 @@ public class Categoria {
 
     public void setImagenCategoriaUrl(String imagenCategoriaUrl) {
         this.imagenCategoriaUrl = imagenCategoriaUrl;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

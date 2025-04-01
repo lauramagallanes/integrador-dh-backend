@@ -81,8 +81,8 @@ class ProductoServiceTest {
 
         categoriasIds = new HashSet<>(Arrays.asList(1L, 2L));
         categorias = new HashSet<>(Arrays.asList(
-                new Categoria(1L, "Astroturismo", "Experiencia nocturna", null),
-                new Categoria(2L, "Naturaleza", "Observación de flora y fauna", null)
+                new Categoria(1L, "Astroturismo", "Experiencia nocturna", null, true),
+                new Categoria(2L, "Naturaleza", "Observación de flora y fauna", null, true)
         ));
 
         caracteristicasIds = new HashSet<>(Arrays.asList(1L, 3L));
