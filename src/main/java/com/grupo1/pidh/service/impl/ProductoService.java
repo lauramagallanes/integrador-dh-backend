@@ -279,11 +279,10 @@ public class ProductoService implements IProductoService {
             }
         }
 
-        List<DisponibilidadProducto> disponibilidadesConReservas = producto.getDisponibilidad().stream()
-                .filter(d -> d.getCuposReservados() >0)
-                .collect(Collectors.toList());
 
-        producto.getDisponibilidad().removeIf(d -> d.getCuposReservados() == 0);
+
+        List<DisponibilidadProducto> disponibilidadActual = producto.getDisponibilidad();
+        disponibilidadActual.removeIf(d -> d.getCuposReservados() == 0);
 
         List<DisponibilidadProducto> nuevasDisponibilidades = generarDisponibilidad(
                 producto,
@@ -292,8 +291,9 @@ public class ProductoService implements IProductoService {
                 dto.getFechaFinEvento(),
                 dto.getDiasDisponible(),
                 dto.getCuposTotales());
-        disponibilidadesConReservas.addAll(nuevasDisponibilidades);
-        producto.setDisponibilidad(disponibilidadesConReservas);
+
+        disponibilidadActual.addAll(nuevasDisponibilidades);
+
 
         try {
             producto = productoRepository.save(producto);
