@@ -47,7 +47,7 @@ public class CategoriaService implements ICategoriaService {
             imagenUrl = s3Service.uploadFile(imagenCategoria);
         }
 
-       Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl);
+       Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl, true);
 
         try{
             categoria= categoriaRepository.save(categoria);
@@ -137,7 +137,8 @@ public class CategoriaService implements ICategoriaService {
         }
         categoriaExistente.setNombre(dto.getNombre());
         categoriaExistente.setDescripcion(dto.getDescripcion());
-
+        categoriaExistente.setActivo(dto.isActivo());
+        
         try{
             categoriaRepository.save(categoriaExistente);
         } catch (DataIntegrityViolationException e){

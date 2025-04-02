@@ -12,13 +12,15 @@ public class CategoriaEntradaDto {
     private String descripcion;
 
     private MultipartFile imagenCategoria;
+    private boolean activo;
 
     public CategoriaEntradaDto(){}
 
-    public CategoriaEntradaDto(String nombre, String descripcion, MultipartFile imagenCategoria) {
+    public CategoriaEntradaDto(String nombre, String descripcion, MultipartFile imagenCategoria, boolean activo) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.imagenCategoria = imagenCategoria;
+        this.activo = activo;
     }
 
     public String getNombre() {
@@ -43,5 +45,13 @@ public class CategoriaEntradaDto {
 
     public void setImagenCategoria(MultipartFile imagenCategoria) {
         this.imagenCategoria = imagenCategoria;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

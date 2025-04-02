@@ -62,7 +62,7 @@ class ProductoServiceTest {
     static void setUp() {
         // 🔹 Crear disponibilidad para el producto
         List<DisponibilidadProducto> disponibilidad = new ArrayList<>();
-        disponibilidad.add(new DisponibilidadProducto(null, fechaEvento, 20));
+        disponibilidad.add(new DisponibilidadProducto(null, null, fechaEvento, 20, 0, null));
 
         producto = new Producto(
                 1L, "Observación de cielo nocturno", "Experiencia única", 500.00, POR_PERSONA,
@@ -81,8 +81,8 @@ class ProductoServiceTest {
 
         categoriasIds = new HashSet<>(Arrays.asList(1L, 2L));
         categorias = new HashSet<>(Arrays.asList(
-                new Categoria(1L, "Astroturismo", "Experiencia nocturna", null),
-                new Categoria(2L, "Naturaleza", "Observación de flora y fauna", null)
+                new Categoria(1L, "Astroturismo", "Experiencia nocturna", null, true),
+                new Categoria(2L, "Naturaleza", "Observación de flora y fauna", null, true)
         ));
 
         caracteristicasIds = new HashSet<>(Arrays.asList(1L, 3L));
