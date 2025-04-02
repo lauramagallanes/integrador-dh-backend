@@ -311,6 +311,8 @@ public class ReservaService implements IReservaService {
                 throw new ConflictException("No se puede cancelar una reserva finalizada");
         }
         reserva.setEstaCancelada(true);
+        DisponibilidadProducto disponibilidadProducto = reserva.getDisponibilidadProducto();
+        disponibilidadProducto.setCuposReservados(disponibilidadProducto.getCuposReservados() - reserva.getCantidadPersonas());
        return modelMapper.map(reservaRepository.save(reserva), ReservaSalidaDTO.class);
     }
 }

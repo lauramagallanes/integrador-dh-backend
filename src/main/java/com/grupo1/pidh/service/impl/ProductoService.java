@@ -279,23 +279,52 @@ public class ProductoService implements IProductoService {
             }
         }
 
-
-
+        //obtengo las disponibilidades
         List<DisponibilidadProducto> disponibilidadActual = producto.getDisponibilidad();
-        disponibilidadActual.removeIf(d -> d.getCuposReservados() == 0);
 
-        List<DisponibilidadProducto> nuevasDisponibilidades = generarDisponibilidad(
-                producto,
-                dto.getTipoEvento(),
-                dto.getFechaEvento(),
-                dto.getFechaFinEvento(),
-                dto.getDiasDisponible(),
-                dto.getCuposTotales());
+        //obtengo los nuevos dias validos
+        LocalDate fechaActual = dto.getFechaEvento();
+        LocalDate fechaFin = ((dto.getTipoEvento() == TipoEvento.FECHA_UNICA) ? dto.getFechaEvento() : dto.getFechaFinEvento());
+        List<LocalDate> diasDisponibles = new ArrayList<>();
+        while (!fechaActual.isAfter(fechaFin)){
+            String diaEnEspanol = traducirDiaSemana(fechaActual.getDayOfWeek());
+            if (dto.getDiasDisponible().contains(DiaSemana.valueOf(diaEnEspanol))){
+                diasDisponibles.add(fechaActual);
+            }
+            fechaActual=fechaActual.plusDays(1);
+        }
 
-        disponibilidadActual.addAll(nuevasDisponibilidades);
+        //busco si hay dias reservados que no estarán en el nuevo producto
+        List<DisponibilidadProducto> disponibildiadesNoBorrables = disponibilidadActual.stream()
+                .filter(d -> (!diasDisponibles.contains(d.getFechaEvento()) && d.getCuposReservados() != 0)).toList();
 
+       if (!disponibildiadesNoBorrables.isEmpty()){
+           throw new ResponseStatusException(HttpStatus.CONFLICT, "Hay reservas confirmadas para el "+ disponibildiadesNoBorrables.get(0).getFechaEvento().toString());
+       }
 
-        try {
+       //busco si hay dias reservados que tengan mas reservas que el nuevo cupo
+       disponibildiadesNoBorrables = disponibilidadActual.stream()
+               .filter(d -> d.getCuposReservados() > dto.getCuposTotales()).toList();
+       if (!disponibildiadesNoBorrables.isEmpty()){
+           throw new ResponseStatusException(HttpStatus.CONFLICT, "Hay más de "+ dto.getCuposTotales() +" reservas confirmadas para el "+ disponibildiadesNoBorrables.get(0).getFechaEvento().toString());
+       }
+
+       //elimino las reservas borrables
+       disponibilidadActual.removeIf(d -> !diasDisponibles.contains(d.getFechaEvento()) && d.getCuposReservados() == 0);
+
+       //agrego o modifico las disponibilidades
+       for (LocalDate fecha : diasDisponibles){
+           List<DisponibilidadProducto> disponibilidades = disponibilidadActual.stream().filter(d -> d.getFechaEvento().isEqual(fecha)).toList();
+           if (disponibilidades.isEmpty()){
+               disponibilidadActual.add(new DisponibilidadProducto(null, producto, fecha, dto.getCuposTotales(), 0, null));
+           }else{
+               for (DisponibilidadProducto d : disponibilidades){
+                   d.setCuposTotales(dto.getCuposTotales());
+               }
+           }
+       }
+
+       try {
             producto = productoRepository.save(producto);
         } catch (DataIntegrityViolationException e) {
             LOGGER.error("Error al actualizar el producto", e);
@@ -348,14 +377,14 @@ public class ProductoService implements IProductoService {
         List<DisponibilidadProducto> disponibilidadList = new ArrayList<>();
 
         if (tipoevento == TipoEvento.FECHA_UNICA){
-            disponibilidadList.add(new DisponibilidadProducto(producto, fechaInicio, cuposTotales));
+            disponibilidadList.add(new DisponibilidadProducto(null, producto, fechaInicio, cuposTotales, 0, null));
         } else if (tipoevento == TipoEvento.RECURRENTE) {
             LocalDate fechaActual = fechaInicio;
             while (!fechaActual.isAfter(fechaFin)){
                 String diaEnEspanol = traducirDiaSemana(fechaActual.getDayOfWeek());
 
                 if (diasDisponibles.contains(DiaSemana.valueOf(diaEnEspanol))){
-                    disponibilidadList.add(new DisponibilidadProducto(producto, fechaActual, cuposTotales));
+                    disponibilidadList.add(new DisponibilidadProducto(null, producto, fechaActual, cuposTotales, 0, null));
                 }
                 fechaActual=fechaActual.plusDays(1);
             }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "DISPONIBILIDAD_PRODUCTO")
@@ -27,23 +28,21 @@ public class DisponibilidadProducto {
     @Column(name = "cupos_reservados", nullable = false)
     private int cuposReservados;
 
+    @OneToMany(mappedBy = "disponibilidadProducto", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Reserva> reservas;
+
 
 
     public DisponibilidadProducto(){}
 
-    public DisponibilidadProducto(Long id, Producto producto, LocalDate fechaEvento, int cuposTotales, int cuposReservados) {
+    public DisponibilidadProducto(Long id, Producto producto, LocalDate fechaEvento, int cuposTotales, int cuposReservados, List<Reserva> reservas) {
         this.id = id;
         this.producto = producto;
         this.fechaEvento = fechaEvento;
         this.cuposTotales = cuposTotales;
         this.cuposReservados = cuposReservados;
+        this.reservas = reservas;
 
-    }
-
-    public DisponibilidadProducto(Producto producto, LocalDate fechaEvento, int cuposTotales) {
-        this.producto = producto;
-        this.fechaEvento = fechaEvento;
-        this.cuposTotales = cuposTotales;
     }
 
     public Long getId() {
@@ -89,5 +88,13 @@ public class DisponibilidadProducto {
 
     public int getCuposDisponibles(){
         return (cuposTotales - cuposReservados);
+    }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
     }
 }

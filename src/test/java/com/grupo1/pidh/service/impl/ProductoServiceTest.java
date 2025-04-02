@@ -62,7 +62,7 @@ class ProductoServiceTest {
     static void setUp() {
         // 🔹 Crear disponibilidad para el producto
         List<DisponibilidadProducto> disponibilidad = new ArrayList<>();
-        disponibilidad.add(new DisponibilidadProducto(null, fechaEvento, 20));
+        disponibilidad.add(new DisponibilidadProducto(null, null, fechaEvento, 20, 0, null));
 
         producto = new Producto(
                 1L, "Observación de cielo nocturno", "Experiencia única", 500.00, POR_PERSONA,
