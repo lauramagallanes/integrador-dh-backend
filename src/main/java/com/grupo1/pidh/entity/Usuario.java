@@ -22,7 +22,7 @@ public class Usuario implements UserDetails {
     private String nombre;
     @Column(length = 20, nullable = false, name = "apellido")
     private String apellido;
-    @Column(length = 320, nullable = false, unique = false, name = "email")
+    @Column(length = 320, nullable = false, unique = true, name = "email")
     private String email;
     @Column(length = 60, nullable = false, name = "password")
     private String password;
