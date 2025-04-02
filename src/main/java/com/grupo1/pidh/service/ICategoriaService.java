@@ -15,5 +15,5 @@ public interface ICategoriaService {
     CategoriaSalidaDto buscarCategoriaPorId(Long id) throws ResourceNotFoundException;
     void eliminarCategoria(Long id) throws ResourceNotFoundException, ConflictException;
     CategoriaSalidaDto editarCategoria(Long id, CategoriaEntradaDto dto, MultipartFile imagenCategoria) throws ResourceNotFoundException, ConflictException;
-
+    List<CategoriaSalidaDto> listarCategoriasDisponibles();
 }
