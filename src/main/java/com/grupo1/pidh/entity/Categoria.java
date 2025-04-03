@@ -1,5 +1,7 @@
 package com.grupo1.pidh.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class Categoria {
     private boolean activo;
 
     @ManyToMany(mappedBy = "categorias")
+    @JsonBackReference
     private List<Producto> productos;
 
     public Categoria(){}

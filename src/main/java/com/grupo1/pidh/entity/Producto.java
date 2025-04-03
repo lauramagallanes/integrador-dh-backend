@@ -53,6 +53,7 @@ public class Producto {
     private List<DiaSemana> diasDisponible;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
     @JoinTable(
             name = "producto_categorias",
             joinColumns = @JoinColumn(name = "producto_id"),

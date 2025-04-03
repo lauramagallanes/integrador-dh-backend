@@ -1,6 +1,7 @@
 package com.grupo1.pidh.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -29,6 +30,7 @@ public class DisponibilidadProducto {
     private int cuposReservados;
 
     @OneToMany(mappedBy = "disponibilidadProducto", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonManagedReference
     private List<Reserva> reservas;
 
 
