@@ -74,4 +74,10 @@ public class CategoriaController {
         CategoriaSalidaDto categoriaSalidaDto =categoriaService.editarCategoria(id, dto, imagenCategoria);
         return new ResponseEntity<>(categoriaSalidaDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "Listar categorias reservables", description = "Lista todas las categorias reservables en la DB")
+    @GetMapping("/listarreservables")
+    public ResponseEntity<List<CategoriaSalidaDto>> listarReservables(){
+        return ResponseEntity.ok(categoriaService.listarCategoriasDisponibles());
+    }
 }

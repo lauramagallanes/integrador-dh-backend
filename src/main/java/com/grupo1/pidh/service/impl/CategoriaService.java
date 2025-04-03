@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grupo1.pidh.dto.entrada.CategoriaEntradaDto;
 import com.grupo1.pidh.dto.salida.CategoriaSalidaDto;
 import com.grupo1.pidh.entity.Categoria;
+import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.CategoriaRepository;
+import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.service.ICategoriaService;
 
 import com.grupo1.pidh.service.IS3Service;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,10 +47,10 @@ public class CategoriaService implements ICategoriaService {
         String imagenUrl = null;
 
         if (imagenCategoria != null && !imagenCategoria.isEmpty()){
-            imagenUrl = s3Service.uploadFile(imagenCategoria);
+            imagenUrl = "";//s3Service.uploadFile(imagenCategoria);
         }
 
-       Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl, true);
+       Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl, true, null);
 
         try{
             categoria= categoriaRepository.save(categoria);
@@ -132,7 +135,7 @@ public class CategoriaService implements ICategoriaService {
                 s3Service.deleteFile(categoriaExistente.getImagenCategoriaUrl());
             }
 
-            String nuevaImagenUrl = s3Service.uploadFile(imagenCategoria);
+            String nuevaImagenUrl = "";//s3Service.uploadFile(imagenCategoria);
             categoriaExistente.setImagenCategoriaUrl(nuevaImagenUrl);
         }
         categoriaExistente.setNombre(dto.getNombre());
@@ -146,4 +149,21 @@ public class CategoriaService implements ICategoriaService {
         }
         return modelMapper.map(categoriaExistente, CategoriaSalidaDto.class);
     }
+    @Override
+    public List<CategoriaSalidaDto> listarCategoriasDisponibles() {
+
+        List<CategoriaSalidaDto> categoriasSalidaDto = categoriaRepository.findDistinctCategoriasByFechaDisponibilidad(LocalDate.now())
+                .stream()
+                .map(categoria -> modelMapper.map(categoria, CategoriaSalidaDto.class))
+                .toList();
+
+        try{
+            LOGGER.info("Listado de categorias: {}", objectMapper.writeValueAsString(categoriasSalidaDto));
+        }catch (Exception e){
+            LOGGER.error("Error serializando el listado de categorias", e);
+        }
+
+        return categoriasSalidaDto;
+    }
+
 }

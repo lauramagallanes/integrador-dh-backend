@@ -1,6 +1,7 @@
 package com.grupo1.pidh.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "CATEGORIAS")
@@ -22,14 +23,18 @@ public class Categoria {
     @Column(name = "activo", nullable = false)
     private boolean activo;
 
+    @ManyToMany(mappedBy = "categorias")
+    private List<Producto> productos;
+
     public Categoria(){}
 
-    public Categoria(Long id, String nombre, String descripcion, String imagenCategoriaUrl, boolean activo) {
+    public Categoria(Long id, String nombre, String descripcion, String imagenCategoriaUrl, boolean activo, List<Producto> productos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.imagenCategoriaUrl = imagenCategoriaUrl;
         this.activo = activo;
+        this.productos = productos;
     }
 
     public Long getId() {
@@ -70,5 +75,13 @@ public class Categoria {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
     }
 }

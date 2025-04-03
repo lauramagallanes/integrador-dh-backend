@@ -160,7 +160,7 @@ public class ProductoService implements IProductoService {
     public List<ProductoSalidaDto> listarProductosAleatorio() {
 
         try {
-            List<Producto> productos = productoRepository.findAll();
+            List<Producto> productos = productoRepository.buscarPorFiltros(null, LocalDate.now(), null, null);
             if (productos.isEmpty()) {
                 LOGGER.warn("No se encontraron productos en la base de datos.");
                 return Collections.emptyList();
@@ -227,7 +227,7 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public ProductoSalidaDto editarProducto(Long id, ProductoEntradaDto dto, List<MultipartFile> imagenes) throws ResourceNotFoundException {
+    public ProductoSalidaDto editarProducto(Long id, ProductoEntradaDto dto, List<MultipartFile> imagenes) throws ResourceNotFoundException, ConflictException, BadRequestException {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Producto no encontrado"));
 
@@ -284,29 +284,35 @@ public class ProductoService implements IProductoService {
 
         //obtengo los nuevos dias validos
         LocalDate fechaActual = dto.getFechaEvento();
-        LocalDate fechaFin = ((dto.getTipoEvento() == TipoEvento.FECHA_UNICA) ? dto.getFechaEvento() : dto.getFechaFinEvento());
         List<LocalDate> diasDisponibles = new ArrayList<>();
-        while (!fechaActual.isAfter(fechaFin)){
-            String diaEnEspanol = traducirDiaSemana(fechaActual.getDayOfWeek());
-            if (dto.getDiasDisponible().contains(DiaSemana.valueOf(diaEnEspanol))){
-                diasDisponibles.add(fechaActual);
+        if (dto.getTipoEvento() == TipoEvento.FECHA_UNICA){
+            diasDisponibles.add(fechaActual);
+        }else {
+            LocalDate fechaFin = dto.getFechaFinEvento();
+            if (dto.getDiasDisponible() == null){
+                throw new BadRequestException("Para eventos de fecha recurrente debe agregar al menos un día de Lunes a Domingo");
             }
-            fechaActual=fechaActual.plusDays(1);
+            while (!fechaActual.isAfter(fechaFin)) {
+                String diaEnEspanol = traducirDiaSemana(fechaActual.getDayOfWeek());
+                if (dto.getDiasDisponible().contains(DiaSemana.valueOf(diaEnEspanol))) {
+                    diasDisponibles.add(fechaActual);
+                }
+                fechaActual = fechaActual.plusDays(1);
+            }
         }
-
         //busco si hay dias reservados que no estarán en el nuevo producto
         List<DisponibilidadProducto> disponibildiadesNoBorrables = disponibilidadActual.stream()
                 .filter(d -> (!diasDisponibles.contains(d.getFechaEvento()) && d.getCuposReservados() != 0)).toList();
 
        if (!disponibildiadesNoBorrables.isEmpty()){
-           throw new ResponseStatusException(HttpStatus.CONFLICT, "Hay reservas confirmadas para el "+ disponibildiadesNoBorrables.get(0).getFechaEvento().toString());
+           throw new ConflictException("Hay reservas confirmadas para el "+ disponibildiadesNoBorrables.get(0).getFechaEvento().toString());
        }
 
        //busco si hay dias reservados que tengan mas reservas que el nuevo cupo
        disponibildiadesNoBorrables = disponibilidadActual.stream()
                .filter(d -> d.getCuposReservados() > dto.getCuposTotales()).toList();
        if (!disponibildiadesNoBorrables.isEmpty()){
-           throw new ResponseStatusException(HttpStatus.CONFLICT, "Hay más de "+ dto.getCuposTotales() +" reservas confirmadas para el "+ disponibildiadesNoBorrables.get(0).getFechaEvento().toString());
+           throw new ConflictException("Hay más de "+ dto.getCuposTotales() +" reservas confirmadas para el "+ disponibildiadesNoBorrables.get(0).getFechaEvento().toString());
        }
 
        //elimino las reservas borrables
