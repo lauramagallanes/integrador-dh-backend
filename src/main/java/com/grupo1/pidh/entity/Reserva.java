@@ -1,5 +1,6 @@
 package com.grupo1.pidh.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.utils.enums.EstadoReserva;
 
@@ -15,6 +16,7 @@ public class Reserva {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "disponibilidad_producto_id", nullable = false)
+    @JsonBackReference
     private DisponibilidadProducto disponibilidadProducto;
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
