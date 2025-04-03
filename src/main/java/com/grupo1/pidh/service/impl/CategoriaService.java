@@ -47,7 +47,7 @@ public class CategoriaService implements ICategoriaService {
         String imagenUrl = null;
 
         if (imagenCategoria != null && !imagenCategoria.isEmpty()){
-            imagenUrl = "";//s3Service.uploadFile(imagenCategoria);
+            imagenUrl = s3Service.uploadFile(imagenCategoria);
         }
 
        Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl, true, null);
@@ -135,7 +135,7 @@ public class CategoriaService implements ICategoriaService {
                 s3Service.deleteFile(categoriaExistente.getImagenCategoriaUrl());
             }
 
-            String nuevaImagenUrl = "";//s3Service.uploadFile(imagenCategoria);
+            String nuevaImagenUrl = s3Service.uploadFile(imagenCategoria);
             categoriaExistente.setImagenCategoriaUrl(nuevaImagenUrl);
         }
         categoriaExistente.setNombre(dto.getNombre());
