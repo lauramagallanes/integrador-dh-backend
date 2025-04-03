@@ -1,7 +1,9 @@
 package com.grupo1.pidh.controller;
 
+import com.grupo1.pidh.dto.entrada.FiltroProductoEntradaDto;
 import com.grupo1.pidh.dto.entrada.ProductoEntradaDto;
 import com.grupo1.pidh.dto.salida.ProductoSalidaDto;
+import com.grupo1.pidh.dto.salida.ResenaProductoSalidaDto;
 import com.grupo1.pidh.exceptions.BadRequestException;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
@@ -69,8 +71,21 @@ public class ProductoController {
 
     @Operation(summary = "Editar producto", description = "Edita o actualiza un producto ya existente en la BD")
     @PutMapping("/editar/{id}")
-    public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes, HttpServletRequest request) throws ResourceNotFoundException{
+    public ResponseEntity<ProductoSalidaDto> editarProducto(@PathVariable Long id, @RequestPart("producto") @Valid ProductoEntradaDto dto, @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes, HttpServletRequest request) throws ResourceNotFoundException, ConflictException, BadRequestException {
         ProductoSalidaDto productoSalidaDto = productoService.editarProducto(id, dto, imagenes);
         return new ResponseEntity<>(productoSalidaDto, HttpStatus.OK);
     }
+
+    @Operation(summary = "Filtrar productos por nombre", description = "Filtra productos por nombre letra por letra")
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<ProductoSalidaDto>> filtrarProductosPorNombre(@RequestParam String query){
+        return ResponseEntity.ok(productoService.filtrarProductosPorNombre(query));
+    }
+
+    @Operation(summary = "Buscar productos con filtros", description = "Filtra productos por nombre, fecha de disponibilidad y categoria, siendo los filtros de busqueda opcionales")
+    @PostMapping("/buscar")
+    public ResponseEntity<List<ProductoSalidaDto>> buscarProductosPorFiltros(@RequestBody FiltroProductoEntradaDto dto){
+        return ResponseEntity.ok(productoService.buscarProductosPorFiltros(dto));
+    }
+
 }

@@ -42,10 +42,11 @@ public class SecurityConfiguration {
                     auth.antMatchers(HttpMethod.GET, "/categoria/**").permitAll();
 
                     //ProductoController
-                    auth.antMatchers(HttpMethod.POST, "/producto/**").hasAuthority("ADMIN");
+                    auth.antMatchers(HttpMethod.POST, "/producto/registrar").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.PUT, "/producto/**").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.DELETE, "/producto/**").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.GET, "/producto/**").permitAll();
+                    auth.antMatchers(HttpMethod.POST, "/producto/buscar").permitAll();
 
                     //UsuarioController
                     auth.antMatchers(HttpMethod.PUT, "/usuario/modificarusuariorole").hasAuthority("ADMIN");
@@ -53,6 +54,22 @@ public class SecurityConfiguration {
                     auth.antMatchers(HttpMethod.GET, "/usuario/listar").hasAuthority("ADMIN");
                     auth.antMatchers(HttpMethod.GET, "/usuario/**").authenticated();
                     auth.antMatchers(HttpMethod.DELETE, "/usuario/**").authenticated();
+
+                    //DisponibilidadProductoController
+                    auth.antMatchers(HttpMethod.GET, "/disponibilidad/**").permitAll();
+
+                    //FavoritoController
+                    auth.antMatchers(HttpMethod.POST, "/favoritos/**").authenticated();
+                    auth.antMatchers(HttpMethod.DELETE, "/favoritos/**").authenticated();
+                    auth.antMatchers(HttpMethod.GET, "/favoritos/**").authenticated();
+
+                    //ReservaController
+                    auth.antMatchers(HttpMethod.POST, "/reserva/**").authenticated();
+                    auth.antMatchers(HttpMethod.GET, "/reserva/resenas/**").permitAll();
+                    auth.antMatchers(HttpMethod.PUT, "/reserva/**").authenticated();
+                    auth.antMatchers(HttpMethod.DELETE, "/reserva/**").authenticated();
+                    auth.antMatchers(HttpMethod.GET, "/reserva/**").authenticated();
+
 
                     auth.antMatchers("/swagger-ui/**").permitAll();
                     auth.antMatchers("/v3/api-docs/**").permitAll();

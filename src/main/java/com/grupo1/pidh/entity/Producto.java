@@ -2,9 +2,7 @@ package com.grupo1.pidh.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.grupo1.pidh.utils.converter.DiaSemanaConverter;
-import com.grupo1.pidh.utils.enums.DiaSemana;
-import com.grupo1.pidh.utils.enums.TipoEvento;
-import com.grupo1.pidh.utils.enums.TipoTarifa;
+import com.grupo1.pidh.utils.enums.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -46,14 +44,16 @@ public class Producto {
     private TipoEvento tipoEvento;
 
 
-    @Column(name = "fecha_evento")
-    private LocalDate fechaEvento;
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<DisponibilidadProducto> disponibilidad;
 
     @Convert(converter = DiaSemanaConverter.class) //uso el converter que creé
     @Column(name = "dias_disponible")
     private List<DiaSemana> diasDisponible;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
     @JoinTable(
             name = "producto_categorias",
             joinColumns = @JoinColumn(name = "producto_id"),
@@ -74,7 +74,27 @@ public class Producto {
     @JsonManagedReference
     private List<ProductoImagen> productoImagenes;
 
-    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes) {
+    @Column(name = "pais")
+    private String pais;
+
+    @Column(name = "ciudad")
+    private String ciudad;
+
+    @Column(name = "direccion")
+    private String direccion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "politica_cancelacion")
+    private PoliticaCancelacion politicaCancelacion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "politica_pagos")
+    private PoliticaPagos politicaPagos;
+
+    @Column(name = "telefono")
+    private String telefono;
+
+    public Producto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DisponibilidadProducto> disponibilidad, List<DiaSemana> diasDisponible, Set<Categoria> categorias, Set<Caracteristica> caracteristicas, List<ProductoImagen> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, String telefono) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -84,11 +104,17 @@ public class Producto {
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
         this.tipoEvento = tipoEvento;
-        this.fechaEvento = fechaEvento;
+        this.disponibilidad = disponibilidad;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
         this.caracteristicas = caracteristicas;
         this.productoImagenes = productoImagenes;
+        this.pais = pais;
+        this.ciudad = ciudad;
+        this.direccion = direccion;
+        this.politicaCancelacion = politicaCancelacion;
+        this.politicaPagos = politicaPagos;
+        this.telefono = telefono;
     }
 
     public Producto(){}
@@ -165,12 +191,12 @@ public class Producto {
         this.tipoEvento = tipoEvento;
     }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
+    public List<DisponibilidadProducto> getDisponibilidad() {
+        return disponibilidad;
     }
 
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
+    public void setDisponibilidad(List<DisponibilidadProducto> disponibilidad) {
+        this.disponibilidad = disponibilidad;
     }
 
     public List<DiaSemana> getDiasDisponible() {
@@ -204,5 +230,53 @@ public class Producto {
 
     public void setCaracteristicas(Set<Caracteristica> caracteristicas) {
         this.caracteristicas = caracteristicas;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public PoliticaPagos getPoliticaPagos() {
+        return politicaPagos;
+    }
+
+    public void setPoliticaPagos(PoliticaPagos politicaPagos) {
+        this.politicaPagos = politicaPagos;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }

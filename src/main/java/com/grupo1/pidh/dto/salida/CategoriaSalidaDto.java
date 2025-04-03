@@ -6,14 +6,16 @@ public class CategoriaSalidaDto {
     private String nombre;
     private String descripcion;
     private String imagenCategoriaUrl;
+    private boolean activo;
 
     public CategoriaSalidaDto(){}
 
-    public CategoriaSalidaDto(Long id, String nombre, String descripcion, String imagenCategoriaUrl) {
+    public CategoriaSalidaDto(Long id, String nombre, String descripcion, String imagenCategoriaUrl, boolean activo) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.imagenCategoriaUrl = imagenCategoriaUrl;
+        this.activo = activo;
     }
 
     public Long getId() {
@@ -46,5 +48,13 @@ public class CategoriaSalidaDto {
 
     public void setImagenCategoriaUrl(String imagenCategoriaUrl) {
         this.imagenCategoriaUrl = imagenCategoriaUrl;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

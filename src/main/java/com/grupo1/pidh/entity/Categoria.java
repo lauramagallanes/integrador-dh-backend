@@ -1,6 +1,9 @@
 package com.grupo1.pidh.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "CATEGORIAS")
@@ -19,13 +22,22 @@ public class Categoria {
     @Column(name = "imagen_url")
     private String imagenCategoriaUrl;
 
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
+    @ManyToMany(mappedBy = "categorias")
+    @JsonBackReference
+    private List<Producto> productos;
+
     public Categoria(){}
 
-    public Categoria(Long id, String nombre, String descripcion, String imagenCategoriaUrl) {
+    public Categoria(Long id, String nombre, String descripcion, String imagenCategoriaUrl, boolean activo, List<Producto> productos) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.imagenCategoriaUrl = imagenCategoriaUrl;
+        this.activo = activo;
+        this.productos = productos;
     }
 
     public Long getId() {
@@ -58,5 +70,21 @@ public class Categoria {
 
     public void setImagenCategoriaUrl(String imagenCategoriaUrl) {
         this.imagenCategoriaUrl = imagenCategoriaUrl;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
     }
 }

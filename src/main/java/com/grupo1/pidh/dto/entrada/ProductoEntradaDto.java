@@ -1,9 +1,7 @@
 package com.grupo1.pidh.dto.entrada;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.grupo1.pidh.utils.enums.DiaSemana;
-import com.grupo1.pidh.utils.enums.TipoEvento;
-import com.grupo1.pidh.utils.enums.TipoTarifa;
+import com.grupo1.pidh.utils.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.*;
@@ -48,8 +46,14 @@ public class ProductoEntradaDto {
     private List<DiaSemana> diasDisponible;
 
     @Schema(type = "string", format = "date", example = "2025-02-25")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    @FutureOrPresent(message = "La fecha del evento no puede ser anterior a la fecha actual")
     private LocalDate fechaEvento;
+
+    @Schema(type = "string", format = "date", example = "2025-02-25")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
+    @FutureOrPresent(message = "La fecha del evento no puede ser anterior a la fecha actual")
+    private LocalDate fechaFinEvento;
 
 
     //@NotEmpty(message = "Debe seleccionar al menos una categoría")
@@ -59,11 +63,33 @@ public class ProductoEntradaDto {
 
     private List<ProductoImagenEntradaDto> productoImagenes;
 
+    @NotBlank(message = "Debe ingresar un Pais")
+    private String pais;
+
+    @NotBlank(message = "Debe ingresar una ciudad")
+    private String ciudad;
+
+    @NotBlank(message = "Debe ingresar una dirección")
+    private String direccion;
+
+    @NotNull(message = "Debe seleccionar una politica de cancelacion")
+    private PoliticaCancelacion politicaCancelacion;
+
+    @NotNull(message = "Debe seleccionar una politica de pagos")
+    private PoliticaPagos politicaPagos;
+
+    @Positive(message = "Los cupos totales deben ser mayores a 0")
+    private int cuposTotales;
+
+    @Pattern(regexp = "^\\+?[0-9]{7,15}$",
+            message = "El número de teléfono debe tener entre 7 y 15 dígitos y puede comenzar con '+'")
+    private String telefono;
+
     public ProductoEntradaDto(){
 
     }
 
-    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes) {
+    public ProductoEntradaDto(String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, LocalDate fechaEvento, LocalDate fechaFinEvento, Set<Long> categoriasIds, Set<Long> caracteristicasIds, List<ProductoImagenEntradaDto> productoImagenes, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, int cuposTotales, String telefono) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.valorTarifa = valorTarifa;
@@ -74,9 +100,17 @@ public class ProductoEntradaDto {
         this.tipoEvento = tipoEvento;
         this.diasDisponible = diasDisponible;
         this.fechaEvento = fechaEvento;
+        this.fechaFinEvento = fechaFinEvento;
         this.categoriasIds = categoriasIds;
         this.caracteristicasIds = caracteristicasIds;
         this.productoImagenes = productoImagenes;
+        this.pais = pais;
+        this.ciudad = ciudad;
+        this.direccion = direccion;
+        this.politicaCancelacion = politicaCancelacion;
+        this.politicaPagos = politicaPagos;
+        this.cuposTotales = cuposTotales;
+        this.telefono = telefono;
     }
 
     public String getNombre() {
@@ -151,13 +185,6 @@ public class ProductoEntradaDto {
         this.diasDisponible = diasDisponible;
     }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
-    }
-
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
-    }
 
     public Set<Long> getCategoriasIds() {
         return categoriasIds;
@@ -181,5 +208,78 @@ public class ProductoEntradaDto {
 
     public void setCaracteristicasIds(Set<Long> caracteristicasIds) {
         this.caracteristicasIds = caracteristicasIds;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public PoliticaPagos getPoliticaPagos() {
+        return politicaPagos;
+    }
+
+    public void setPoliticaPagos(PoliticaPagos politicaPagos) {
+        this.politicaPagos = politicaPagos;
+    }
+
+    public LocalDate getFechaEvento() {
+        return fechaEvento;
+    }
+
+    public void setFechaEvento(LocalDate fechaEvento) {
+        this.fechaEvento = fechaEvento;
+    }
+
+    public LocalDate getFechaFinEvento() {
+        return fechaFinEvento;
+    }
+
+    public void setFechaFinEvento(LocalDate fechaFinEvento) {
+        this.fechaFinEvento = fechaFinEvento;
+    }
+
+    @Positive(message = "Los cupos totales deben ser mayores a 0")
+    public int getCuposTotales() {
+        return cuposTotales;
+    }
+
+    public void setCuposTotales(int cuposTotales) {
+        this.cuposTotales = cuposTotales;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }

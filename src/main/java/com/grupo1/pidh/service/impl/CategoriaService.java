@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grupo1.pidh.dto.entrada.CategoriaEntradaDto;
 import com.grupo1.pidh.dto.salida.CategoriaSalidaDto;
 import com.grupo1.pidh.entity.Categoria;
+import com.grupo1.pidh.entity.Producto;
 import com.grupo1.pidh.exceptions.ConflictException;
 import com.grupo1.pidh.exceptions.ResourceNotFoundException;
 import com.grupo1.pidh.repository.CategoriaRepository;
+import com.grupo1.pidh.repository.ProductoRepository;
 import com.grupo1.pidh.service.ICategoriaService;
 
 import com.grupo1.pidh.service.IS3Service;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,10 +47,10 @@ public class CategoriaService implements ICategoriaService {
         String imagenUrl = null;
 
         if (imagenCategoria != null && !imagenCategoria.isEmpty()){
-            imagenUrl = s3Service.uploadFile(imagenCategoria);
+            imagenUrl = "";//s3Service.uploadFile(imagenCategoria);
         }
 
-       Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl);
+       Categoria categoria = new Categoria(null, dto.getNombre(), dto.getDescripcion(), imagenUrl, true, null);
 
         try{
             categoria= categoriaRepository.save(categoria);
@@ -121,4 +124,46 @@ public class CategoriaService implements ICategoriaService {
             LOGGER.warn("Se ha eliminado la categoria con id {}", id);
         }
     }
+
+    @Override
+    public CategoriaSalidaDto editarCategoria(Long id, CategoriaEntradaDto dto, MultipartFile imagenCategoria) throws ResourceNotFoundException, ConflictException {
+        Categoria categoriaExistente = categoriaRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("La categoría con id " + id + " no existe"));
+
+        if (imagenCategoria !=null && !imagenCategoria.isEmpty()){
+            if (categoriaExistente.getImagenCategoriaUrl() != null){
+                s3Service.deleteFile(categoriaExistente.getImagenCategoriaUrl());
+            }
+
+            String nuevaImagenUrl = "";//s3Service.uploadFile(imagenCategoria);
+            categoriaExistente.setImagenCategoriaUrl(nuevaImagenUrl);
+        }
+        categoriaExistente.setNombre(dto.getNombre());
+        categoriaExistente.setDescripcion(dto.getDescripcion());
+        categoriaExistente.setActivo(dto.isActivo());
+        
+        try{
+            categoriaRepository.save(categoriaExistente);
+        } catch (DataIntegrityViolationException e){
+            throw new ConflictException("Ya existe una categoria con ese nombre");
+        }
+        return modelMapper.map(categoriaExistente, CategoriaSalidaDto.class);
+    }
+    @Override
+    public List<CategoriaSalidaDto> listarCategoriasDisponibles() {
+
+        List<CategoriaSalidaDto> categoriasSalidaDto = categoriaRepository.findDistinctCategoriasByFechaDisponibilidad(LocalDate.now())
+                .stream()
+                .map(categoria -> modelMapper.map(categoria, CategoriaSalidaDto.class))
+                .toList();
+
+        try{
+            LOGGER.info("Listado de categorias: {}", objectMapper.writeValueAsString(categoriasSalidaDto));
+        }catch (Exception e){
+            LOGGER.error("Error serializando el listado de categorias", e);
+        }
+
+        return categoriasSalidaDto;
+    }
+
 }

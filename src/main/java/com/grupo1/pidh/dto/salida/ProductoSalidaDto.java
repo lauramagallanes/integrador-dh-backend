@@ -2,9 +2,7 @@ package com.grupo1.pidh.dto.salida;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.grupo1.pidh.utils.enums.DiaSemana;
-import com.grupo1.pidh.utils.enums.TipoEvento;
-import com.grupo1.pidh.utils.enums.TipoTarifa;
+import com.grupo1.pidh.utils.enums.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -29,21 +27,27 @@ public class ProductoSalidaDto {
     @Schema(type = "string", example = "14:30:00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime horaFin;
+
     private TipoEvento tipoEvento;
 
-    @Schema(type = "string", format = "date", example = "2025-02-25")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate fechaEvento;
+
     private List<DiaSemana> diasDisponible;
     private Set<CategoriaSalidaDto> categorias;
     private Set<CaracteristicaSalidaDto> caracteristicas;
     private List<ProductoImagenSalidaDto> productoImagenesSalidaDto;
+    private String pais;
+    private String ciudad;
+    private String direccion;
+    private PoliticaCancelacion politicaCancelacion;
+    private PoliticaPagos politicaPagos;
+    private String telefono;
+
 
     public ProductoSalidaDto(){
 
     }
 
-    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, LocalDate fechaEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto) {
+    public ProductoSalidaDto(Long id, String nombre, String descripcion, Double valorTarifa, TipoTarifa tipoTarifa, String idioma, LocalTime horaInicio, LocalTime horaFin, TipoEvento tipoEvento, List<DiaSemana> diasDisponible, Set<CategoriaSalidaDto> categorias, Set<CaracteristicaSalidaDto> caracteristicas, List<ProductoImagenSalidaDto> productoImagenesSalidaDto, String pais, String ciudad, String direccion, PoliticaCancelacion politicaCancelacion, PoliticaPagos politicaPagos, String telefono) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -53,11 +57,16 @@ public class ProductoSalidaDto {
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
         this.tipoEvento = tipoEvento;
-        this.fechaEvento = fechaEvento;
         this.diasDisponible = diasDisponible;
         this.categorias = categorias;
         this.caracteristicas = caracteristicas;
         this.productoImagenesSalidaDto = productoImagenesSalidaDto;
+        this.pais = pais;
+        this.ciudad = ciudad;
+        this.direccion = direccion;
+        this.politicaCancelacion = politicaCancelacion;
+        this.politicaPagos = politicaPagos;
+        this.telefono = telefono;
     }
 
     public Long getId() {
@@ -148,13 +157,6 @@ public class ProductoSalidaDto {
         this.productoImagenesSalidaDto = productoImagenesSalidaDto;
     }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
-    }
-
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
-    }
 
     public List<DiaSemana> getDiasDisponible() {
         return diasDisponible;
@@ -170,5 +172,63 @@ public class ProductoSalidaDto {
 
     public void setCaracteristicas(Set<CaracteristicaSalidaDto> caracteristicas) {
         this.caracteristicas = caracteristicas;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public PoliticaCancelacion getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+
+    public String getPoliticaCancelacionDescripcion() {
+        return politicaCancelacion != null ? politicaCancelacion.getDescripcion() : null;
+    }
+
+    public void setPoliticaCancelacion(PoliticaCancelacion politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public PoliticaPagos getPoliticaPagos() {
+        return politicaPagos;
+    }
+
+
+    public String getPoliticaPagosDescripcion() {
+        return politicaPagos != null ? politicaPagos.getDescripcion() : null;
+    }
+
+    public void setPoliticaPagos(PoliticaPagos politicaPagos) {
+        this.politicaPagos = politicaPagos;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }
