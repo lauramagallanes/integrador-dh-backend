@@ -69,9 +69,6 @@ public class ReservaSalidaDTO {
         this.cantidadPersonas = cantidadPersonas;
     }
 
-    public UsuarioSalidaDto getUsuarioSalidaDto() {
-        return usuarioSalidaDto;
-    }
 
     public Integer getPuntuacion() {
         return puntuacion;
