@@ -160,7 +160,7 @@ public class ProductoService implements IProductoService {
     public List<ProductoSalidaDto> listarProductosAleatorio() {
 
         try {
-            List<Producto> productos = productoRepository.findAll();
+            List<Producto> productos = productoRepository.buscarPorFiltros(null, LocalDate.now(), null, null);
             if (productos.isEmpty()) {
                 LOGGER.warn("No se encontraron productos en la base de datos.");
                 return Collections.emptyList();
